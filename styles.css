@@ -99,7 +99,14 @@ a:hover { text-decoration-thickness: 2px; }
 }
 
 .wrap { width: 100%; max-width: var(--wrap); margin-inline: auto; padding-inline: 16px; }
-.wrap.narrow { max-width: var(--wrap-narrow); }
+
+/* Narrow sections share the wide sections' left rail instead of being centred
+   independently — two centred wrappers of different widths put section headings
+   on two different left edges (170px apart at 1440, a 4px near-miss at 768).
+   The container keeps the wide rail; its children carry the narrow measure. */
+.wrap.narrow { max-width: var(--wrap); }
+.wrap.narrow > * { max-width: var(--wrap-narrow); }
+.wrap.narrow > p { max-width: var(--measure); }  /* keep the reading measure */
 
 .skip-link {
   position: absolute;
