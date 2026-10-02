@@ -78,7 +78,7 @@
   var demo = flow && flow.querySelector('.gate-demo');
   if (!demo) return;
 
-  var decision = demo.querySelector('.gate-decision');
+  var decisions = demo.querySelectorAll('[data-decide]');
   var status = demo.querySelector('.gate-status');
 
   var MESSAGES = {
@@ -90,7 +90,14 @@
 
   function set(state) {
     flow.setAttribute('data-state', state);
-    decision.hidden = (state !== 'held');
+    /* Approve and Reject are inert unless something is actually held. Without
+       this the panel can be driven to "approved" with nothing ever gated —
+       the demonstration would contradict the claim it exists to make. Disabled
+       rather than hidden: the viewer sees the controls exist and are inert
+       until a write earns them, which is the thesis made visible, and they
+       leave the tab order while they would be meaningless. */
+    var held = (state === 'held');
+    for (var i = 0; i < decisions.length; i++) decisions[i].disabled = !held;
     status.textContent = MESSAGES[state];
     /* Focus is deliberately not moved. The live region announces the change;
        taking focus would move it out from under whoever pressed the button. */
@@ -103,8 +110,10 @@
     var decide = el.getAttribute('data-decide');
     if (send === 'low') set('low');
     else if (send === 'high') set('held');
-    else if (decide === 'approve') set('approved');
-    else if (decide === 'reject') set('rejected');
+    else if (flow.getAttribute('data-state') === 'held') {
+      if (decide === 'approve') set('approved');
+      else if (decide === 'reject') set('rejected');
+    }
   });
 
   demo.hidden = false;
