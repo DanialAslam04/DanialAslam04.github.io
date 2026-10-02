@@ -223,6 +223,14 @@ a:hover { text-decoration-thickness: 2px; }
             mask-image: linear-gradient(to right, #000 calc(100% - 24px), transparent 100%);
   }
 
+  /* Once a focused link scrolls flush to the right edge, the fade would dissolve
+     its focus indicator. Drop the mask entirely while the nav holds focus — the
+     affordance is for pointer users, who are not the ones at risk here. */
+  .site-nav ul:focus-within {
+    -webkit-mask-image: none;
+            mask-image: none;
+  }
+
   /* The header is two rows tall here, so anchors need more clearance. */
   #top, .section { scroll-margin-top: 118px; }
 }

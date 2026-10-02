@@ -51,6 +51,25 @@
     else if (query.addListener) query.addListener(onChange);
   }
 
+  /* ---------- keep a focused nav link fully in view ---------- */
+
+  /* The nav row scrolls horizontally below 720px. Browsers only auto-scroll a
+     focused element that is *entirely* outside the scroller, so a partially
+     visible link — "Education" at 320px — keeps its focus ring clipped at the
+     edge and nothing fires. scroll-padding/-margin-inline-end do not help,
+     because no scroll is initiated to pad. block:'nearest' is load-bearing:
+     the default would scroll the page vertically as well. */
+  var navList = document.querySelector('.site-nav ul');
+
+  if (navList) {
+    navList.addEventListener('focusin', function (event) {
+      var link = event.target && event.target.closest ? event.target.closest('a') : null;
+      if (link && typeof link.scrollIntoView === 'function') {
+        link.scrollIntoView({ inline: 'nearest', block: 'nearest' });
+      }
+    });
+  }
+
   /* ---------- reveal on scroll ---------- */
 
   if (!root.classList.contains('js-reveal')) return;
