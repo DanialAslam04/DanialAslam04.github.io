@@ -595,8 +595,10 @@ a:hover { color: var(--accent); }        /* link affordance = AUTHORISED */
 .edu-entry h3 { font-size: var(--t1); font-weight: 600; margin-bottom: .2em; }
 .edu-meta { color: var(--muted); margin: 0 0 1.5rem; }
 .certs {
-  font-family: var(--code); font-size: var(--mono);
-  letter-spacing: .03em; color: var(--muted); max-width: 78ch; line-height: 1.8;
+  font-family: var(--code); font-size: var(--mono-md);
+  letter-spacing: normal;   /* content, not a label — same treatment as the
+                               stack chips, rather than a fifth tracking value */
+  color: var(--muted); max-width: 78ch; line-height: 1.8;
 }
 .certs-k {
   color: var(--text); font-size: var(--mono-sm);
@@ -674,18 +676,23 @@ a:hover { color: var(--accent); }        /* link affordance = AUTHORISED */
   background: transparent; color: var(--text);
   font-family: var(--sans); font-size: .9375rem; cursor: pointer;
 }
-.gbtn:hover { border-color: var(--text); background: var(--surface); }
+/* Hover is scoped to :not(:disabled) rather than undone afterwards. Undoing it
+   left a gap: .gbtn-go:hover sets color to --on-accent for the filled hover
+   state, and the disabled override reset the background but not the colour —
+   so approving a write and leaving the pointer where it was rendered the
+   Approve label in the ground colour at 1.04:1. Invisible, and reachable
+   simply by not moving the mouse. */
+.gbtn:not(:disabled):hover { border-color: var(--text); background: var(--surface); }
 .gbtn:disabled {
   color: var(--muted); border-color: var(--rule-soft);
   cursor: not-allowed; opacity: .55;
 }
-.gbtn:disabled:hover { background: transparent; border-color: var(--rule-soft); }
 /* Driven by the state attribute, not :has() — criterion 20 bans it unguarded. */
 .flow:not([data-state="held"]) .gate-decision-k { color: var(--muted); }
 /* Approve is the only button that authorises anything, so it is the only one
    that may carry the accent. */
-.gbtn-go { border-color: var(--accent); color: var(--accent); }
-.gbtn-go:hover { background: var(--accent); color: var(--on-accent); border-color: var(--accent); }
+.gbtn-go:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+.gbtn-go:not(:disabled):hover { background: var(--accent); color: var(--on-accent); border-color: var(--accent); }
 .gate-status {
   margin: 14px 0 0; color: var(--muted); font-size: .9375rem; max-width: 56ch;
 }

@@ -81,6 +81,38 @@
   var decisions = demo.querySelectorAll('[data-decide]');
   var status = demo.querySelector('.gate-status');
 
+  /* The node that moved has to say so. Leaving the label at "Commits on
+     approval / nothing lands until then" after it has committed makes the one
+     frame this panel exists to produce read as though nothing happened — and
+     it put the live region ahead of the visible text, which is the wrong way
+     round for a sighted reader. Only the node that changed changes. */
+  var nodes = {};
+  var defaults = {};
+  var list = flow.querySelectorAll('[data-node]');
+  for (var n = 0; n < list.length; n++) {
+    var key = list[n].getAttribute('data-node');
+    nodes[key] = list[n];
+    defaults[key] = [
+      list[n].querySelector('.fnode-t').textContent,
+      list[n].querySelector('.fnode-s').textContent
+    ];
+  }
+
+  var LABELS = {
+    low:      { low:    ['Committed', 'no approval needed'] },
+    held:     {},
+    approved: { change: ['Committed', 'landed on your approval'] },
+    rejected: { change: ['Nothing landed', 'the request returns to proposed'] }
+  };
+
+  function label(state) {
+    for (var key in nodes) {
+      var pair = (LABELS[state] && LABELS[state][key]) || defaults[key];
+      nodes[key].querySelector('.fnode-t').textContent = pair[0];
+      nodes[key].querySelector('.fnode-s').textContent = pair[1];
+    }
+  }
+
   var MESSAGES = {
     low: 'Low-risk write committed. Policy let it through \u2014 no approval asked for, nothing waiting.',
     held: 'High-risk write held at the gate. Nothing has landed yet; it is waiting on a decision.',
@@ -98,6 +130,7 @@
        leave the tab order while they would be meaningless. */
     var held = (state === 'held');
     for (var i = 0; i < decisions.length; i++) decisions[i].disabled = !held;
+    label(state);
     status.textContent = MESSAGES[state];
     /* Focus is deliberately not moved. The live region announces the change;
        taking focus would move it out from under whoever pressed the button. */
