@@ -489,3 +489,15 @@ a:hover { text-decoration-thickness: 2px; }
   }
   .js-reveal .reveal { opacity: 1; transform: none; }
 }
+
+/* Hero rhythm compresses on phones: vertical space is the scarce resource there,
+   and the proof strip has to earn its place without pushing the CTAs under the
+   fold on a 667px-tall screen. Desktop rhythm is untouched. */
+@media (max-width: 420px) {
+  .hero { padding-top: 32px; }
+  .hero .role { margin-bottom: 10px; }
+  .hero .tagline { margin-bottom: 10px; }
+  .hero .hero-sub { margin-bottom: 0; }
+  .hero .proof { margin-top: 14px; gap: 4px 18px; }
+  .hero .cta-row { margin-top: 16px; }
+}
