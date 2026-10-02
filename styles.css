@@ -160,12 +160,15 @@ a:hover { text-decoration-thickness: 2px; }
   padding: 0;
 }
 .site-nav a {
-  display: block;
+  display: flex;
+  align-items: center;
+  min-height: 44px;
   padding: 10px 12px;
   color: var(--muted);
   text-decoration: none;
   border-radius: 8px;
   font-size: .95rem;
+  white-space: nowrap;
 }
 .site-nav a:hover { color: var(--text); background: var(--surface); }
 
@@ -190,7 +193,32 @@ a:hover { text-decoration-thickness: 2px; }
 }
 
 @media (max-width: 720px) {
-  .site-nav { display: none; }
+  .header-inner { flex-wrap: wrap; padding-bottom: 0; }
+
+  /* Full-width second row. min-width:0 lets the flex item shrink so the
+     overflow is contained here and never reaches <body> (criterion 11). */
+  .site-nav {
+    order: 3;
+    flex-basis: 100%;
+    min-width: 0;
+    border-top: 1px solid var(--border);
+    margin-inline: -16px;
+    padding-inline: 16px;
+  }
+  .site-nav ul {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;           /* Firefox */
+    -ms-overflow-style: none;        /* old Edge */
+    padding: 4px 0 6px;
+  }
+  .site-nav ul::-webkit-scrollbar { display: none; }  /* Chrome, Safari */
+  .site-nav li { flex: none; }
+
+  /* The header is two rows tall here, so anchors need more clearance. */
+  #top, .section { scroll-margin-top: 118px; }
 }
 
 /* ---------- hero ---------- */
@@ -233,6 +261,9 @@ a:hover { text-decoration-thickness: 2px; }
 /* ---------- sections ---------- */
 
 .section { padding: clamp(48px, 7vw, 88px) 0; border-top: 1px solid var(--border); }
+
+/* Clear the sticky header when jumping to an in-page anchor. */
+#top, .section { scroll-margin-top: 72px; }
 .section-note { color: var(--muted); margin-top: -4px; margin-bottom: 32px; }
 .lede { font-size: var(--step-1); }
 .muted { color: var(--muted); }
