@@ -1,72 +1,138 @@
-/* Muhammad Danial Aslam — portfolio
-   Dark-first. Light theme via prefers-color-scheme, overridable by the toggle.
-   No :has(), no container queries, no backdrop-filter — Safari/Firefox are not
-   automated in QA, so nothing here needs a fallback. */
+/* ============================================================================
+   Muhammad Danial Aslam — portfolio
+   Organising idea: freedom inside a boundary. Expressive content, visibly
+   contained — large type that stops at a rule, one full-bleed moment framed by
+   a rail that never moves, colour that means AUTHORISED rather than decorating.
+
+   Tier 0 build: the static page is the artifact. No motion anywhere yet, and
+   nothing on this page depends on animation to become visible.
+   ========================================================================== */
+
+@font-face {
+  font-family: 'Instrument Serif';
+  font-style: normal;          /* roman only — no italic file ships. Never set
+                                  this face in italic or <em>: the browser would
+                                  shear a synthetic oblique and it shows badly
+                                  at this stroke contrast. */
+  font-weight: 400;
+  font-display: swap;
+  src: url('assets/instrument-serif-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+                 U+02DC, U+2000-206F, U+2122, U+2212, U+FEFF, U+FFFD;
+}
+
+/* IBM Plex Mono over JetBrains Mono deliberately: the mono carries identity
+   here — rail numbers, section labels, chips, the proof strip — and Plex reads
+   as a typeface where JetBrains reads as an IDE, which is the cockpit-costume
+   failure the direction warns about. Two real weights, no synthetic bold. */
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal; font-weight: 400; font-display: swap;
+  src: url('assets/ibm-plex-mono-400.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+                 U+02DC, U+2000-206F, U+2122, U+2212, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal; font-weight: 600; font-display: swap;
+  src: url('assets/ibm-plex-mono-600.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+                 U+02DC, U+2000-206F, U+2122, U+2212, U+FEFF, U+FFFD;
+}
+
+/* Metric-matched fallback so the swap does not shift layout (CLS ~0). */
+@font-face {
+  font-family: 'Instrument Fallback';
+  src: local('Times New Roman'), local('Times'), local('Georgia');
+  size-adjust: 93%;
+  ascent-override: 92%;
+  descent-override: 24%;
+  line-gap-override: 0%;
+}
+
+/* ─────────────────────────── tokens ─────────────────────────── */
 
 :root {
-  --bg:        #0D1117;
-  --surface:   #161B22;
-  --surface-2: #1C232C;
-  --border:    #30363D;
-  --text:      #E6EDF3;
-  --muted:     #9FB0C0;
-  --accent:    #58A6FF;
-  --accent-2:  #3FB9A5;
-  --on-accent: #0D1117;
-  --badge-bg:  #10302C;
-  --badge-fg:  #6FD9C6;
-  --shadow:    0 1px 2px rgba(0,0,0,.4);
+  /* Ground is deliberately off GitHub's #0D1117 — that palette reads as
+     borrowed UI chrome. Slightly cooler, slightly deeper. */
+  --ground:     oklch(0.165 0.009 255);
+  --surface:    oklch(0.218 0.011 255);
+  --surface-2:  oklch(0.258 0.012 255);
+  --panel:      oklch(0.138 0.010 255);   /* the full-bleed diagram ground */
+  --rule:       oklch(0.395 0.012 255);   /* hairline — §2.4 floor */
+  --rule-soft:  oklch(0.305 0.011 255);
+  --text:       oklch(0.962 0.004 255);
+  --muted:      oklch(0.800 0.012 255);
+  --accent:     oklch(0.646 0.212 32);    /* vermilion = AUTHORISED */
+  --on-accent:  oklch(0.165 0.009 255);
+  --proposed:   oklch(0.705 0.045 250);   /* PROPOSED, not committed */
 
-  --measure: 68ch;
-  --wrap: 1100px;
-  --wrap-narrow: 760px;
-  --r: 12px;
+  --shell: 1240px;
+  --rail-w: 120px;
+  --rail-gap: 40px;
+  --pad: 24px;          /* 16px below 768 — see the narrow block */
 
-  --step-0: 1rem;
-  --step-1: 1.125rem;
-  --step-2: 1.375rem;
-  --step-3: 1.75rem;
-  --step-4: 2.25rem;
-  --step-5: clamp(2.25rem, 1.4rem + 4.2vw, 3.75rem);
+  --d1: clamp(3.5rem, 11vw, 8.875rem);        /* hero name */
+  /* The display ladder. Solved against the rule "every adjacent step differs by
+     >=6px at every width 320-1920", swept over all 1601 widths rather than
+     checked at a few — the failures are at the crossovers where one token
+     leaves its floor before the next does, around 722px and 765px, which
+     spot-checking at round numbers misses entirely. */
+  --d2:   clamp(1.6875rem, 3.4vw, 3.125rem);  /* section openers, contact */
+  --pull: clamp(1.3125rem, 2.6vw, 2.375rem);  /* work entry pull-lines */
+  --deck: clamp(2.125rem, 4.4vw, 4rem);       /* the thesis — it is the claim,
+                                                 so it outranks the navigational
+                                                 section headings */
+  --t1: clamp(1.375rem, 1.8vw, 1.75rem);      /* h3, entry titles */
+  --t0: 1.0625rem;
+  --lede: 1.1875rem;
+  /* Three perceptible steps. The previous scale varied five letter-spacings at
+     one size, which is variation on the single axis a reader cannot perceive. */
+  --mono-lg: 0.875rem;    /* names a region */
+  --mono-md: 0.8125rem;   /* labels a value */
+  --mono-sm: 0.6875rem;   /* annotates */
+  --mono: var(--mono-md); /* kept so nothing downstream breaks silently */
+
+  --serif: 'Instrument Serif', 'Instrument Fallback', Georgia, 'Times New Roman', serif;
+  --sans: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --code: 'IBM Plex Mono', ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
 
   color-scheme: dark;
 }
 
-/* OS prefers light, and the visitor has not overridden it */
 @media (prefers-color-scheme: light) {
   :root:not([data-theme="dark"]) {
-    --bg:        #FFFFFF;
-    --surface:   #F6F8FA;
-    --surface-2: #EEF1F5;
-    --border:    #D0D7DE;
-    --text:      #1F2328;
-    --muted:     #57606A;
-    --accent:    #0969DA;
-    --accent-2:  #0F766E;
-    --on-accent: #FFFFFF;
-    --badge-bg:  #E4F3F0;
-    --badge-fg:  #0B5F57;
-    --shadow:    0 1px 2px rgba(31,35,40,.08);
+    --ground:    oklch(0.995 0.001 255);
+    --surface:   oklch(0.968 0.003 255);
+    --surface-2: oklch(0.942 0.004 255);
+    --panel:     oklch(0.925 0.005 255);
+    --rule:      oklch(0.730 0.009 255);
+    --rule-soft: oklch(0.868 0.006 255);
+    --text:      oklch(0.225 0.010 255);
+    --muted:     oklch(0.455 0.012 255);
+    --accent:    oklch(0.505 0.192 32);
+    --on-accent: oklch(0.995 0.001 255);
+    --proposed:  oklch(0.470 0.055 250);
     color-scheme: light;
   }
 }
 
-/* Explicit toggle wins over the OS preference, both directions */
 :root[data-theme="light"] {
-  --bg:        #FFFFFF;
-  --surface:   #F6F8FA;
-  --surface-2: #EEF1F5;
-  --border:    #D0D7DE;
-  --text:      #1F2328;
-  --muted:     #57606A;
-  --accent:    #0969DA;
-  --accent-2:  #0F766E;
-  --on-accent: #FFFFFF;
-  --badge-bg:  #E4F3F0;
-  --badge-fg:  #0B5F57;
-  --shadow:    0 1px 2px rgba(31,35,40,.08);
+  --ground:    oklch(0.995 0.001 255);
+  --surface:   oklch(0.968 0.003 255);
+  --surface-2: oklch(0.942 0.004 255);
+  --panel:     oklch(0.925 0.005 255);
+  --rule:      oklch(0.730 0.009 255);
+  --rule-soft: oklch(0.868 0.006 255);
+  --text:      oklch(0.225 0.010 255);
+  --muted:     oklch(0.455 0.012 255);
+  --accent:    oklch(0.505 0.192 32);
+  --on-accent: oklch(0.995 0.001 255);
+  --proposed:  oklch(0.470 0.055 250);
   color-scheme: light;
 }
+
+@media (max-width: 767px) { :root { --pad: 16px; } }
 
 *, *::before, *::after { box-sizing: border-box; }
 
@@ -74,416 +140,512 @@ html { scroll-behavior: smooth; }
 
 body {
   margin: 0;
-  background: var(--bg);
+  background: var(--ground);
   color: var(--text);
-  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  font-size: var(--step-0);
+  font-family: var(--sans);
+  font-size: var(--t0);
   line-height: 1.65;
   -webkit-font-smoothing: antialiased;
   overflow-wrap: break-word;
 }
 
-h1, h2, h3 { line-height: 1.2; margin: 0 0 .5em; letter-spacing: -.02em; }
-h1 { font-size: var(--step-5); font-weight: 700; }
-h2 { font-size: var(--step-4); font-weight: 650; }
-h3 { font-size: var(--step-2); font-weight: 620; }
-p  { margin: 0 0 1rem; max-width: var(--measure); }
+h1, h2, h3 { margin: 0 0 .5em; line-height: 1.08; }
+p { margin: 0 0 1rem; max-width: 68ch; }
 
-a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 3px; }
-a:hover { text-decoration-thickness: 2px; }
+a { color: inherit; text-underline-offset: 3px; text-decoration-thickness: 1px; }
+a:hover { color: var(--accent); }        /* link affordance = AUTHORISED */
 
-:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 3px;
-  border-radius: 4px;
-}
+/* outline-offset is load-bearing for accessibility, not aesthetics. At 3px the
+   ring's adjacent colour is the page ground on both sides whatever the control
+   is filled with, so it measures 5.32:1 dark and 6.36:1 light. At 0 the ring
+   sits against an inverted button fill, where light theme measures 2.64:1 —
+   a fail. Do not reduce it; nothing in the criteria currently guards this. */
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 3px; }
 
-.wrap { width: 100%; max-width: var(--wrap); margin-inline: auto; padding-inline: 16px; }
-
-/* Narrow sections share the wide sections' left rail instead of being centred
-   independently — two centred wrappers of different widths put section headings
-   on two different left edges (170px apart at 1440, a 4px near-miss at 768).
-   The container keeps the wide rail; its children carry the narrow measure. */
-.wrap.narrow { max-width: var(--wrap); }
-.wrap.narrow > * { max-width: var(--wrap-narrow); }
-.wrap.narrow > p { max-width: var(--measure); }  /* keep the reading measure */
+.shell { width: 100%; max-width: var(--shell); margin-inline: auto; padding-inline: var(--pad); }
+.muted { color: var(--muted); }
 
 .skip-link {
-  position: absolute;
-  left: 16px;
-  top: -100px;
-  z-index: 100;
-  background: var(--accent);
-  color: var(--on-accent);
-  padding: 12px 16px;
-  border-radius: 8px;
-  font-weight: 600;
-  text-decoration: none;
-  transition: top .15s ease;
+  position: absolute; left: 16px; top: -100px; z-index: 100;
+  background: var(--accent); color: var(--on-accent);
+  padding: 12px 16px; border-radius: 6px; font-weight: 600; text-decoration: none;
 }
 .skip-link:focus { top: 16px; }
 
-/* ---------- header ---------- */
+/* ─────────────────────────── header ─────────────────────────── */
 
 .site-header {
-  position: sticky;
-  top: 0;
-  z-index: 50;
-  background: var(--bg);
-  border-bottom: 1px solid var(--border);
+  position: sticky; top: 0; z-index: 50;
+  background: var(--ground);
+  border-bottom: 1px solid var(--rule-soft);
 }
-.header-inner {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  min-height: 60px;
-}
+.header-inner { display: flex; align-items: center; gap: 16px; min-height: 60px; }
 .brand {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  color: var(--text);
-  text-decoration: none;
-  font-weight: 650;
-  margin-right: auto;
-  padding: 8px 0;
+  display: inline-flex; align-items: center; gap: 10px;
+  margin-right: auto; padding: 8px 0;
+  text-decoration: none; font-weight: 640; font-size: .95rem;
 }
+.brand:hover { color: inherit; }
 .brand-mark {
-  display: grid;
-  place-items: center;
-  width: 30px; height: 30px;
-  border-radius: 8px;
-  background: var(--accent);
-  color: var(--on-accent);
-  font-size: .8rem;
-  font-weight: 700;
-  letter-spacing: .02em;
+  display: grid; place-items: center; width: 28px; height: 28px; border-radius: 7px;
+  border: 1px solid var(--rule); color: var(--text);
+  font-family: var(--code); font-size: .7rem; font-weight: 700;
 }
-.site-nav ul {
-  display: flex;
-  gap: 4px;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
+.site-nav ul { display: flex; gap: 2px; list-style: none; margin: 0; padding: 0; }
 .site-nav a {
-  display: flex;
-  align-items: center;
-  min-height: 44px;
-  padding: 10px 12px;
-  color: var(--muted);
-  text-decoration: none;
-  border-radius: 8px;
-  font-size: .95rem;
-  white-space: nowrap;
+  display: flex; align-items: center; min-height: 44px; padding: 10px 11px;
+  color: var(--muted); text-decoration: none; border-radius: 7px;
+  font-family: var(--code); font-size: var(--mono-md);
+  letter-spacing: .08em; text-transform: uppercase; white-space: nowrap;
 }
 .site-nav a:hover { color: var(--text); background: var(--surface); }
+@media (max-width: 899px) {
+  .header-inner { flex-wrap: wrap; }
+  .site-nav {
+    order: 3; flex-basis: 100%; min-width: 0;   /* min-width:0 keeps the overflow
+                                                   inside the nav, not on <body> */
+    border-top: 1px solid var(--rule-soft);
+    margin-inline: calc(var(--pad) * -1);
+    padding-inline: var(--pad);
+  }
+  .site-nav ul {
+    flex-wrap: nowrap; overflow-x: auto;
+    overscroll-behavior-x: contain; -webkit-overflow-scrolling: touch;
+    scrollbar-width: none; -ms-overflow-style: none;
+    padding-block: 2px 4px;
+  }
+  .site-nav ul::-webkit-scrollbar { display: none; }
+  .site-nav li { flex: none; }
+  .site-nav a { padding: 10px 8px; letter-spacing: .06em; }
+}
+@media (max-width: 360px) {
+  .site-nav a { padding: 10px 6px; font-size: .75rem; }
+}
 
 .theme-toggle {
-  display: grid;
-  place-items: center;
-  width: 44px; height: 44px;
-  flex: none;
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  background: var(--surface);
-  color: var(--text);
-  cursor: pointer;
+  display: grid; place-items: center; width: 44px; height: 44px; flex: none;
+  border: 1px solid var(--rule); border-radius: 9px;
+  background: transparent; color: var(--text); cursor: pointer;
 }
-.theme-toggle:hover { background: var(--surface-2); }
+.theme-toggle:hover { background: var(--surface); }
 .icon-sun { display: none; }
 :root[data-theme="light"] .icon-sun { display: block; }
 :root[data-theme="light"] .icon-moon { display: none; }
 @media (prefers-color-scheme: light) {
-  :root:not([data-theme="dark"]) .icon-sun  { display: block; }
+  :root:not([data-theme="dark"]) .icon-sun { display: block; }
   :root:not([data-theme="dark"]) .icon-moon { display: none; }
 }
 
-@media (max-width: 720px) {
-  .header-inner { flex-wrap: wrap; padding-bottom: 0; }
+/* ──────────────────────── grid + rail ──────────────────────── */
 
-  /* Full-width second row. min-width:0 lets the flex item shrink so the
-     overflow is contained here and never reaches <body> (criterion 11). */
-  .site-nav {
-    order: 3;
-    flex-basis: 100%;
-    min-width: 0;
-    border-top: 1px solid var(--border);
-    margin-inline: -16px;
-    padding-inline: 16px;
+.sec-grid { display: block; }
+.rail { display: none; }
+
+@media (min-width: 900px) {
+  .sec-grid {
+    display: grid;
+    grid-template-columns: var(--rail-w) minmax(0, 1fr);
+    column-gap: var(--rail-gap);
   }
-  .site-nav ul {
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    overscroll-behavior-x: contain;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;           /* Firefox */
-    -ms-overflow-style: none;        /* old Edge */
-    padding: 4px 0 6px;
+  .rail {
+    display: block;
+    position: sticky;
+    top: 92px;
+    align-self: start;
+    border-top: 1px solid var(--rule);
+    padding-top: 12px;
+    font-family: var(--code);
+    font-size: var(--mono-lg); font-weight: 600;
+    letter-spacing: .10em;
+    text-transform: uppercase;
+    color: var(--muted);
   }
-  .site-nav ul::-webkit-scrollbar { display: none; }  /* Chrome, Safari */
-  .site-nav li { flex: none; }
+  .rail-num { display: block; color: var(--text); font-weight: 600; }
+  .rail-label { display: block; margin-top: 2px; }
+}
 
-  /* Hint that the row scrolls. Decorative: no fade if unsupported, nothing lost. */
-  .site-nav ul {
-    -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 24px), transparent 100%);
-            mask-image: linear-gradient(to right, #000 calc(100% - 24px), transparent 100%);
+/* Below 900 the rail collapses to a horizontal label row above its section. */
+@media (max-width: 899px) {
+  .section > .shell > .rail,
+  .hero > .shell > .rail {
+    display: flex; gap: 10px; align-items: baseline;
+    border-top: 1px solid var(--rule);
+    padding-top: 10px; margin-bottom: 20px;
+    font-family: var(--code); font-size: var(--mono);
+    letter-spacing: .08em; text-transform: uppercase; color: var(--muted);
   }
-
-  /* Once a focused link scrolls flush to the right edge, the fade would dissolve
-     its focus indicator. Drop the mask entirely while the nav holds focus — the
-     affordance is for pointer users, who are not the ones at risk here. */
-  .site-nav ul:focus-within {
-    -webkit-mask-image: none;
-            mask-image: none;
-  }
-
-  /* The header is two rows tall here, so anchors need more clearance. */
-  #top, .section { scroll-margin-top: 118px; }
-
-  /* R4. Four links fit the row without scrolling on common phones; the
-     overflow machinery below stays as a safety net rather than the norm. */
-  .site-nav ul { gap: 2px; }
-  .site-nav a { padding: 10px 8px; }
+  .rail[aria-hidden="true"]:empty { display: none; }
+  .rail-num { color: var(--text); font-weight: 600; }
 }
 
-/* Narrowest phones: shave the gutters so the row still fits without scrolling. */
-@media (max-width: 360px) {
-  .site-nav a { padding: 10px 7px; font-size: .9rem; }
+/* ───────────────────────── sections ───────────────────────── */
+
+#top, .section { scroll-margin-top: 76px; }
+@media (max-width: 899px) { #top, .section { scroll-margin-top: 124px; } }
+
+.section { padding-block: clamp(64px, 8vw, 128px); border-top: 1px solid var(--rule-soft); }
+
+.section h2 {
+  font-family: var(--serif);
+  font-size: var(--d2);
+  font-weight: 400;
+  letter-spacing: -.03em;
+  margin-bottom: .45em;
 }
+.sec-note { color: var(--muted); margin-top: -.25rem; margin-bottom: 2.5rem; }
+.lede { font-size: var(--lede); color: var(--text); }
 
-/* ---------- hero ---------- */
+/* ─────────────────────────── hero ─────────────────────────── */
 
-.hero { padding: clamp(56px, 10vw, 112px) 0 clamp(40px, 6vw, 72px); }
-.hero h1 { margin-bottom: 8px; }
-.role {
-  font-size: var(--step-3);
-  color: var(--text);
-  font-weight: 600;
-  margin-bottom: 16px;
+.hero { padding-top: clamp(48px, 9vw, 112px); padding-bottom: clamp(32px, 5vw, 56px); }
+
+.hero-name {
+  font-family: var(--serif);
+  font-size: var(--d1);
+  font-weight: 400;
+  letter-spacing: -.035em;
+  line-height: .96;
+  margin: 0 0 .22em;
+  max-width: none;
 }
-.tagline {
-  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
-  font-size: var(--step-1);
-  color: var(--accent);
-  margin-bottom: 16px;
+/* Authored break: the fragments stack when they cannot sit side by side, and
+   neither can ever break mid-word. No <br>, which would force it everywhere. */
+.hero-name .l, .hero-deck .l { display: inline-block; }
+
+.hero-role {
+  font-family: var(--code);
+  font-size: var(--mono-lg); font-weight: 600;
+  letter-spacing: .10em;
+  text-transform: uppercase;
+  color: var(--accent);          /* "where you are" — his standing claim */
+  margin: 0 0 1.6rem;
 }
-.hero-sub { font-size: var(--step-1); color: var(--muted); max-width: 56ch; }
-
-/* R13. Scoped to .hero deliberately: `.role` also matches the Education
-   <article class="role">, which inherits this block's 28px/600 and only escapes
-   looking wrong because each of its children sets its own size. An unscoped
-   `.role` here would resize that block too. */
-@media (max-width: 420px) {
-  .hero .role { font-size: var(--step-2); }
+.hero-deck {
+  font-family: var(--serif);
+  font-size: var(--deck);
+  line-height: 1.1;
+  letter-spacing: -.028em;
+  max-width: 22ch;
+  margin: 0 0 1.4rem;
 }
+.hero-sub { color: var(--muted); font-size: var(--lede); max-width: 54ch; margin-bottom: 2rem; }
 
-/* ---------- hero proof strip (R1) ---------- */
+.cta-row { display: flex; flex-wrap: wrap; gap: 10px; }
+.btn {
+  display: inline-flex; align-items: center; min-height: 44px; padding: 10px 18px;
+  border: 1px solid var(--rule); border-radius: 8px;
+  text-decoration: none; font-size: .9375rem; font-weight: 520;
+}
+.btn:hover { border-color: var(--accent); color: var(--accent); background: var(--surface); }
+.btn-primary { background: var(--text); border-color: var(--text); color: var(--ground); }
+.btn-primary:hover { background: var(--text); color: var(--ground); border-color: var(--text); opacity: .88; }
 
+/* Proof strip — a baseline row pinned under the hero, spanning the full width. */
+.hero-foot { margin-top: clamp(40px, 6vw, 72px); }
 .proof {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px 20px;
-  list-style: none;
-  margin: 20px 0 0;
-  padding: 0;
-  color: var(--muted);
-  font-size: .95rem;
+  display: flex; flex-wrap: wrap; gap: 8px 28px;
+  list-style: none; margin: 0; padding-top: 14px;
+  border-top: 1px solid var(--rule);
+  font-family: var(--code); font-size: var(--mono-md);
+  letter-spacing: .08em; text-transform: uppercase; color: var(--muted);
 }
 .proof li { display: flex; align-items: center; gap: 9px; }
 .proof li::before {
-  content: "";
-  width: 6px; height: 6px;
-  border-radius: 50%;
-  background: var(--accent-2);
-  flex: none;
+  content: ""; width: 5px; height: 5px; flex: none;
+  background: var(--proposed);
 }
 
-.cta-row { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 24px; }
-.btn {
-  display: inline-flex;
-  align-items: center;
-  min-height: 44px;
-  padding: 10px 18px;
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  background: var(--surface);
-  color: var(--text);
-  text-decoration: none;
-  font-weight: 560;
-  box-shadow: var(--shadow);
-  transition: transform .14s ease, background .14s ease, border-color .14s ease;
+/* ───────────────────── 01 about — split ───────────────────── */
+
+.about-split { display: grid; gap: clamp(28px, 4vw, 56px); }
+@media (min-width: 900px) {
+  .about-split { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: start; }
 }
-.btn:hover { background: var(--surface-2); border-color: var(--accent); transform: translateY(-1px); }
-.btn-primary { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
-.btn-primary:hover { background: var(--accent); filter: brightness(1.08); }
-
-/* ---------- sections ---------- */
-
-.section { padding: clamp(48px, 7vw, 88px) 0; border-top: 1px solid var(--border); }
-
-/* Clear the sticky header when jumping to an in-page anchor. */
-#top, .section { scroll-margin-top: 72px; }
-.section-note { color: var(--muted); margin-top: -4px; margin-bottom: 32px; }
-.lede { font-size: var(--step-1); }
-.muted { color: var(--muted); }
-
-/* ---------- case studies ---------- */
-
-.case {
-  border: 1px solid var(--border);
-  border-radius: var(--r);
-  background: var(--surface);
-  padding: 24px;
-  margin-bottom: 16px;
+.pull {
+  margin: 0; padding-left: 20px;
+  border-left: 1px solid var(--accent);
 }
-.case:last-child { margin-bottom: 0; }
-.case-head {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 8px;
+.pull p {
+  font-family: var(--serif);
+  font-size: var(--d2);
+  line-height: 1.12;
+  letter-spacing: -.025em;
+  margin: 0;
+  max-width: 20ch;
 }
-.case-head h3 { margin: 0; }
+
+/* ──────────────── 02 work — numbered entries ──────────────── */
+
+.entries { list-style: none; margin: 0; padding: 0; }
+.entry {
+  display: grid; gap: 10px 40px;
+  padding-block: clamp(28px, 3.5vw, 44px);
+  border-top: 1px solid var(--rule);
+}
+.entry:last-child { border-bottom: 1px solid var(--rule); }
+@media (min-width: 900px) {
+  .entry { grid-template-columns: minmax(0, 1fr) 260px; }
+}
+.entry-name {
+  display: flex; align-items: baseline; gap: 12px;
+  font-family: var(--code); font-size: var(--mono-md); font-weight: 400;
+  letter-spacing: .08em; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 1rem;
+}
+.entry-num { color: var(--text); font-weight: 600; }
+.entry-pull {
+  font-family: var(--serif);
+  font-size: var(--pull);
+  line-height: 1.12; letter-spacing: -.028em;
+  max-width: 26ch; margin: 0 0 .9rem;
+}
+.entry-desc { color: var(--muted); max-width: 52ch; margin: 0; }
+/* Not a chip. It stands in for the demo link that cannot exist, so it has to
+   read as a different class of object rather than a differently-worded one:
+   squared, filled, ruled on its leading edge, and set apart from the stack. */
 .badge {
   display: inline-block;
-  padding: 4px 10px;
-  border-radius: 999px;
-  background: var(--badge-bg);
-  color: var(--badge-fg);
-  font-size: .78rem;
-  font-weight: 650;
-  letter-spacing: .01em;
-  white-space: nowrap;
+  font-family: var(--code); font-size: var(--mono-sm); font-weight: 600;
+  letter-spacing: .06em; text-transform: uppercase;
+  color: var(--text); background: var(--surface-2);
+  border: 1px solid var(--rule); border-left-width: 3px;
+  border-radius: 2px; padding: 5px 10px; white-space: nowrap;
+}
+.entry-aside { display: flex; flex-direction: column; align-items: flex-start; gap: 14px; }
+.stack {
+  display: flex; flex-wrap: wrap; gap: 7px;
+  list-style: none; margin: 0; padding: 0;
+  font-family: var(--code); font-size: var(--mono); color: var(--muted);
+}
+.stack li { border: 1px solid var(--rule-soft); border-radius: 4px; padding: 3px 8px; }
+
+/* ───────── 03 approach — the full-bleed diagram panel ───────── */
+
+/* A full-bleed panel ends its section: the parent's bottom padding would
+   otherwise add after the panel's own and leave a dead band with nothing in
+   it — 187px between the diagram and Skills, where every other section gap
+   is zero. */
+.section-approach { padding-bottom: 0; }
+.section-approach .bleed { margin-bottom: 0; border-bottom: 0; }
+
+.bleed {
+  margin-block: clamp(40px, 6vw, 72px);
+  padding-block: clamp(40px, 6vw, 80px);
+  background: var(--panel);
+  border-block: 1px solid var(--rule);
 }
 
-.chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  list-style: none;
-  margin: 16px 0 0;
-  padding: 0;
-}
-.chips li {
-  padding: 5px 11px;
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  background: var(--bg);
-  color: var(--muted);
-  font-size: .85rem;
-}
-.chips-lg li { font-size: .9rem; padding: 7px 13px; }
+.flow { --node-pad: 16px; --trunk: 22px; }
 
-/* ---------- diagram ---------- */
+.flow-spine { list-style: none; margin: 0; padding: 0; }
 
-.diagram { margin: 32px 0; }
-.flow {
-  display: block;
-  width: 100%;
-  max-width: 440px;
-  height: auto;
-  margin-inline: auto;
-  color: var(--border);
-}
-.flow-step rect { fill: var(--surface); stroke: var(--border); stroke-width: 1.5; }
-.flow-gate rect { stroke: var(--accent-2); }
-.flow-end  rect { fill: var(--surface-2); stroke-dasharray: 4 4; }
-.flow-t {
-  fill: var(--text);
-  /* 20/17 rather than 15/12.5: inside a viewBox these are coordinate units, not
-     rendered pixels. At 320px the diagram scales to 0.655, so 15 rendered at
-     9.8px and 12.5 at 8.2px. 20/17 clears an 11px floor at the worst width and
-     keeps the ratio the design had. */
-  font-size: 20px;
-  font-weight: 620;
-  text-anchor: middle;
-  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-}
-.flow-s {
-  fill: var(--muted);
-  font-size: 17px;
-  text-anchor: middle;
-  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-}
-.diagram figcaption {
-  color: var(--muted);
-  font-size: .9rem;
-  text-align: center;
-  margin-top: 12px;
-  max-width: var(--measure);
-  margin-inline: auto;
-}
-
-/* ---------- skills ---------- */
-
-.skill-grid {
+.fnode {
+  position: relative;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 16px;
-}
-.skill-group {
-  border: 1px solid var(--border);
-  border-radius: var(--r);
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 4px 12px;
+  padding: 14px var(--node-pad);
+  border: 1px solid var(--rule);
+  border-radius: 10px;
   background: var(--surface);
-  padding: 20px;
 }
-.skill-group h3 { font-size: var(--step-0); text-transform: uppercase; letter-spacing: .06em; color: var(--muted); font-weight: 650; }
-.skill-group .chips { margin-top: 12px; }
-
-/* ---------- education ---------- */
-
-.role { margin-bottom: 24px; }
-.role-head h3 { margin-bottom: 2px; }
-.role-meta { color: var(--muted); margin: 0 0 8px; font-size: .95rem; }
-.cert-h { font-size: var(--step-0); text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin-top: 32px; }
-
-/* ---------- contact ---------- */
-
-.contact-list { list-style: none; margin: 24px 0 0; padding: 0; }
-.contact-list li {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 4px 16px;
-  padding: 3px 0;
-  border-bottom: 1px solid var(--border);
+.fnode-t {
+  grid-column: 1; font-weight: 620; font-size: 1rem; line-height: 1.25;
 }
-.contact-k {
-  flex: 0 0 110px;
-  color: var(--muted);
-  font-size: .9rem;
-  text-transform: uppercase;
-  letter-spacing: .05em;
+.fnode-s {
+  grid-column: 1; color: var(--muted); font-size: .875rem; line-height: 1.3;
 }
-.contact-list a {
-  display: inline-flex;
-  align-items: center;
+/* Held at 12px rather than the --mono-sm 11px: this chip lives inside the
+   diagram, where Addendum 10 sets a >=12px floor for secondary labels measured
+   at 320px. The diagram floor wins over the mono scale inside the panel. */
+.idchip {
+  grid-column: 2; grid-row: 1 / span 2; align-self: center;
+  font-family: var(--code); font-size: 0.75rem;
+  letter-spacing: .06em; text-transform: uppercase;
+  color: var(--proposed); border: 1px solid currentColor;
+  border-radius: 999px; padding: 2px 7px; white-space: nowrap;
+}
+.fnode-policy { border-color: var(--rule); box-shadow: inset 0 0 0 1px var(--rule); }
+.fnode-gate { border-color: var(--accent); }
+.fnode-out { background: var(--surface-2); }
+.fnode-pending { background: transparent; border-style: dashed; }
+
+/* Connectors are CSS rules at device-independent 1px — they do not live in a
+   scaled coordinate system, so they cannot render sub-pixel the way a viewBox
+   stroke does. The trunk runs down the left like a tree. */
+.flow-spine > li + li { margin-top: 26px; }
+.flow-spine > li + li::before,
+.flow-branches::before {
+  content: ""; position: absolute;
+  left: var(--trunk); top: -26px; height: 26px;
+  border-left: 1px solid var(--rule);
+}
+.flow-branches {
+  position: relative; margin-top: 26px;
+  display: grid; gap: 26px;
+}
+.branch { position: relative; padding-left: 30px; }
+.branch::before {
+  content: ""; position: absolute; left: var(--trunk); top: 0;
+  width: calc(30px - var(--trunk)); height: 20px;
+  border-left: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+  border-bottom-left-radius: 7px;
+}
+.branch:not(:last-child)::after {
+  content: ""; position: absolute; left: var(--trunk); top: 20px; bottom: -26px;
+  border-left: 1px solid var(--rule);
+}
+.branch-k {
+  font-family: var(--code); font-size: var(--mono-md);
+  letter-spacing: .08em; text-transform: uppercase;
+  color: var(--muted); margin: 0 0 10px;
+}
+.branch-high .branch-k { color: var(--accent); }
+.branch .fnode + .fnode { margin-top: 22px; position: relative; }
+.branch .fnode + .fnode::before {
+  content: ""; position: absolute; left: var(--trunk); top: -22px; height: 22px;
+  border-left: 1px solid var(--rule);
+}
+.flow-cap {
+  margin: 28px 0 0; color: var(--muted); font-size: .9375rem; max-width: 62ch;
+}
+
+/* Horizontal pipeline from 1024 up — the visual event. */
+@media (min-width: 1024px) {
+  .flow-spine {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(0, 1fr);
+    gap: 34px;
+    align-items: stretch;
+  }
+  .fnode { grid-template-columns: minmax(0, 1fr); align-content: start; }
+  .idchip { grid-column: 1; grid-row: auto; justify-self: start; margin-top: 8px; }
+  .flow-spine > li + li { margin-top: 0; }
+  .flow-spine > li + li::before {
+    left: -34px; top: 50%; height: 0; width: 34px;
+    border-left: 0; border-top: 1px solid var(--rule);
+  }
+  /* Two equal columns at full width. The fork descends from the policy node at
+     the right of the spine, runs left along a bar, and drops into each branch. */
+  .flow-branches {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 34px; margin-top: 64px;
+  }
+  .flow-branches::before {               /* the bar */
+    content: ""; position: absolute;
+    left: 0; right: 10%; top: -32px; height: 0;
+    border-top: 1px solid var(--rule);
+    border-left: 0;
+  }
+  .flow-branches::after {                /* stub down from the policy node */
+    content: ""; position: absolute;
+    right: 10%; top: -64px; height: 32px;
+    border-left: 1px solid var(--rule);
+  }
+  .branch { padding-left: 0; }
+  .branch::before {                      /* stub down into each branch */
+    content: ""; position: absolute;
+    left: 0; top: -32px; width: 0; height: 32px;
+    border-left: 1px solid var(--rule);
+    border-bottom: 0; border-bottom-left-radius: 0;
+  }
+  .branch:not(:last-child)::after { display: none; }
+  .branch .fnode + .fnode::before { left: 50%; }
+}
+
+/* ───────────────── 04 skills — bento, unequal ───────────────── */
+
+.bento { display: grid; gap: 14px; grid-template-columns: minmax(0, 1fr); align-items: start; }
+@media (min-width: 720px) {
+  .bento { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .cell-primary { grid-column: span 2; }
+}
+@media (min-width: 1024px) {
+  .bento { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .cell-primary { grid-column: span 2; }   /* weighted by span and type, not by
+                                              stretching to fill a grid row */
+  .cell-wide { grid-column: span 1; }
+}
+.cell {
+  border: 1px solid var(--rule-soft); border-radius: 12px;
+  background: var(--surface); padding: 20px;
+}
+.cell h3 {
+  font-family: var(--code); font-size: var(--mono-lg);
+  letter-spacing: .10em; text-transform: uppercase;
+  color: var(--muted); font-weight: 600; margin-bottom: 14px;
+}
+.cell-primary { background: var(--surface-2); border-color: var(--rule); }
+.cell-primary h3 { color: var(--text); }  /* not accent: the rule reserves
+   that for authorised/active/where-you-are. Primacy here is carried by span. */
+.cell-primary .chips li { font-size: .9375rem; }
+
+.chips { display: flex; flex-wrap: wrap; gap: 7px; list-style: none; margin: 0; padding: 0; }
+.chips li {
+  border: 1px solid var(--rule-soft); border-radius: 4px;
+  padding: 4px 11px; font-size: .875rem; color: var(--text);
+}
+
+/* ─────────────── 05 education — the quiet block ─────────────── */
+
+.section-edu { padding-block: clamp(44px, 5vw, 76px); }
+.edu-entry h3 { font-size: var(--t1); font-weight: 600; margin-bottom: .2em; }
+.edu-meta { color: var(--muted); margin: 0 0 1.5rem; }
+.certs {
+  font-family: var(--code); font-size: var(--mono-md);
+  letter-spacing: normal;   /* content, not a label — same treatment as the
+                               stack chips, rather than a fifth tracking value */
+  color: var(--muted); max-width: 78ch; line-height: 1.8;
+}
+.certs-k {
+  color: var(--text); font-size: var(--mono-sm);
+  text-transform: uppercase; letter-spacing: .06em;
+  margin-right: 10px; border-right: 1px solid var(--rule); padding-right: 10px;
+}
+
+/* ───────────────── 06 contact — airy and loud ───────────────── */
+
+.contact-statement {
+  font-family: var(--serif); font-size: var(--d2); font-weight: 400;
+  letter-spacing: -.03em; max-width: 16ch; margin-bottom: .5em;
+}
+.contact-email { margin: 0 0 2.25rem; max-width: none; }
+.contact-email a {
+  font-size: clamp(1.25rem, 2.6vw, 2rem);
+  text-decoration: none;
+  border-bottom: 1px solid var(--rule);
+  padding-bottom: 2px;
+  display: inline-block;
   min-height: 44px;
 }
+.contact-email a:hover { border-bottom-color: var(--accent); }
+.contact-meta { list-style: none; margin: 0; padding: 0; }
+.contact-meta li {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 4px 20px;
+  padding: 4px 0; border-top: 1px solid var(--rule-soft);
+}
+.contact-meta li:last-child { border-bottom: 1px solid var(--rule-soft); }
+.contact-meta .k {
+  flex: 0 0 108px;
+  font-family: var(--code); font-size: var(--mono-md);
+  letter-spacing: .08em; text-transform: uppercase; color: var(--muted);
+}
+.contact-meta a { display: inline-flex; align-items: center; min-height: 44px; }
 
-/* ---------- footer ---------- */
+/* ─────────────────────────── footer ─────────────────────────── */
 
 .site-footer {
-  border-top: 1px solid var(--border);
-  padding: 32px 0 48px;
-  color: var(--muted);
-  font-size: .92rem;
+  border-top: 1px solid var(--rule-soft);
+  padding-block: 36px 56px;
+  color: var(--muted); font-size: .9rem;
 }
 .site-footer p { margin: 0 0 4px; }
 
-/* ---------- reveal ---------- */
-
-.reveal { opacity: 1; }
-
-.js-reveal .reveal {
-  opacity: 0;
-  transform: translateY(12px);
-  transition: opacity .5s ease, transform .5s ease;
-}
-.js-reveal .reveal.is-visible { opacity: 1; transform: none; }
-
+/* Honour reduced motion even though nothing animates yet — scroll-behavior is
+   motion, and the declaration should not wait for the motion layer to land. */
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   *, *::before, *::after {
@@ -491,22 +653,70 @@ a:hover { text-decoration-thickness: 2px; }
     animation-iteration-count: 1 !important;
     transition-duration: .001ms !important;
   }
-  .js-reveal .reveal { opacity: 1; transform: none; }
 }
 
-/* Hero rhythm compresses on phones: vertical space is the scarce resource there,
-   and the proof strip has to earn its place without pushing the CTAs under the
-   fold on a 667px-tall screen. Desktop rhythm is untouched. */
-@media (max-width: 420px) {
-  .hero { padding-top: 32px; }
-  .hero .role { margin-bottom: 10px; }
-  .hero .tagline { margin-bottom: 10px; }
-  .hero .hero-sub { margin-bottom: 0; }
-  .hero .proof { margin-top: 14px; gap: 4px 18px; }
-  .hero .cta-row { margin-top: 16px; }
+/* ───────────────── Stage B — the gate that holds ───────────────── */
+
+.gate-demo { margin-top: 36px; padding-top: 24px; border-top: 1px solid var(--rule); }
+.gate-demo-k {
+  font-family: var(--code); font-size: var(--mono-md);
+  letter-spacing: .08em; text-transform: uppercase;
+  color: var(--muted); margin: 0 0 12px;
+}
+.gate-controls, .gate-decision { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.gate-decision { margin-top: 12px; }
+.gate-decision-k {
+  font-family: var(--code); font-size: var(--mono-md);
+  letter-spacing: .08em; text-transform: uppercase; color: var(--accent);
+  margin-right: 4px;
+}
+.gbtn {
+  display: inline-flex; align-items: center; min-height: 44px;
+  padding: 10px 16px; border: 1px solid var(--rule); border-radius: 6px;
+  background: transparent; color: var(--text);
+  font-family: var(--sans); font-size: .9375rem; cursor: pointer;
+}
+/* Hover is scoped to :not(:disabled) rather than undone afterwards. Undoing it
+   left a gap: .gbtn-go:hover sets color to --on-accent for the filled hover
+   state, and the disabled override reset the background but not the colour —
+   so approving a write and leaving the pointer where it was rendered the
+   Approve label in the ground colour at 1.04:1. Invisible, and reachable
+   simply by not moving the mouse. */
+.gbtn:not(:disabled):hover { border-color: var(--text); background: var(--surface); }
+.gbtn:disabled {
+  color: var(--muted); border-color: var(--rule-soft);
+  cursor: not-allowed; opacity: .55;
+}
+/* Driven by the state attribute, not :has() — criterion 20 bans it unguarded. */
+.flow:not([data-state="held"]) .gate-decision-k { color: var(--muted); }
+/* Approve is the only button that authorises anything, so it is the only one
+   that may carry the accent. */
+.gbtn-go:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+.gbtn-go:not(:disabled):hover { background: var(--accent); color: var(--on-accent); border-color: var(--accent); }
+.gate-status {
+  margin: 14px 0 0; color: var(--muted); font-size: .9375rem; max-width: 56ch;
 }
 
-/* The shortened sub drops a two-word orphan at desktop measures. Balance is a
-   progressive enhancement: engines without it fall back to normal wrapping,
-   which is the behaviour that ships today. */
-.hero-sub { text-wrap: balance; }
+/* State. Driven by a data attribute, never by animation — the resting page is
+   the poster, and every state below is reachable with transitions suppressed. */
+.fnode, .branch-k, .gate-status { transition: color .18s ease, border-color .18s ease, background-color .18s ease, opacity .18s ease; }
+
+.flow[data-state] .branch { opacity: .45; }
+.flow[data-state="low"] .branch-low,
+.flow[data-state="held"] .branch-high,
+.flow[data-state="approved"] .branch-high,
+.flow[data-state="rejected"] .branch-high { opacity: 1; }
+
+/* Committed = authorised. This is the accent's reason to exist. */
+.flow[data-state="low"] .branch-low .fnode-out,
+.flow[data-state="approved"] .fnode-pending {
+  border-color: var(--accent); border-style: solid;
+  background: var(--surface); color: var(--text);
+}
+.flow[data-state="low"] .branch-low .branch-k,
+.flow[data-state="approved"] .branch-high .branch-k { color: var(--accent); }
+
+/* Held = proposed, not committed. Nothing has landed. */
+.flow[data-state="held"] .fnode-gate { background: var(--surface-2); }
+.flow[data-state="held"] .fnode-pending { border-color: var(--proposed); color: var(--muted); }
+.flow[data-state="rejected"] .fnode-pending { border-color: var(--rule); opacity: .6; }
