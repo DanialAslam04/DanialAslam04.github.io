@@ -392,14 +392,18 @@ a:hover { text-decoration-thickness: 2px; }
 .flow-end  rect { fill: var(--surface-2); stroke-dasharray: 4 4; }
 .flow-t {
   fill: var(--text);
-  font-size: 15px;
+  /* 20/17 rather than 15/12.5: inside a viewBox these are coordinate units, not
+     rendered pixels. At 320px the diagram scales to 0.655, so 15 rendered at
+     9.8px and 12.5 at 8.2px. 20/17 clears an 11px floor at the worst width and
+     keeps the ratio the design had. */
+  font-size: 20px;
   font-weight: 620;
   text-anchor: middle;
   font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 }
 .flow-s {
   fill: var(--muted);
-  font-size: 12.5px;
+  font-size: 17px;
   text-anchor: middle;
   font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 }
