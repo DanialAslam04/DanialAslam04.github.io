@@ -203,12 +203,12 @@
           <div class="flow-branches">
             <div class="branch branch-low">
               <p class="branch-k">Low risk</p>
-              <div class="fnode fnode-out"><span class="fnode-t">Commits</span><span class="fnode-s">no interruption</span></div>
+              <div class="fnode fnode-out" data-node="low"><span class="fnode-t">Commits</span><span class="fnode-s">no interruption</span></div>
             </div>
             <div class="branch branch-high">
               <p class="branch-k">High risk</p>
               <div class="fnode fnode-gate"><span class="fnode-t">Gate</span><span class="fnode-s">holds for approval</span></div>
-              <div class="fnode fnode-out fnode-pending"><span class="fnode-t">Commits on approval</span><span class="fnode-s">nothing lands until then</span></div>
+              <div class="fnode fnode-out fnode-pending" data-node="change"><span class="fnode-t">Commits on approval</span><span class="fnode-s">nothing lands until then</span></div>
             </div>
           </div>
 
@@ -221,10 +221,10 @@
               <button type="button" class="gbtn" data-send="low">Low-risk write</button>
               <button type="button" class="gbtn" data-send="high">High-risk write</button>
             </div>
-            <div class="gate-decision" hidden>
+            <div class="gate-decision">
               <span class="gate-decision-k">Waiting on you</span>
-              <button type="button" class="gbtn gbtn-go" data-decide="approve">Approve</button>
-              <button type="button" class="gbtn" data-decide="reject">Reject</button>
+              <button type="button" class="gbtn gbtn-go" data-decide="approve" disabled>Approve</button>
+              <button type="button" class="gbtn" data-decide="reject" disabled>Reject</button>
             </div>
             <p class="gate-status" role="status" aria-live="polite">Nothing in flight. Both paths are shown above.</p>
           </div>

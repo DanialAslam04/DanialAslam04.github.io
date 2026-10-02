@@ -86,7 +86,12 @@
   --t1: clamp(1.375rem, 1.8vw, 1.75rem);      /* h3, entry titles */
   --t0: 1.0625rem;
   --lede: 1.1875rem;
-  --mono: 0.8125rem;
+  /* Three perceptible steps. The previous scale varied five letter-spacings at
+     one size, which is variation on the single axis a reader cannot perceive. */
+  --mono-lg: 0.875rem;    /* names a region */
+  --mono-md: 0.8125rem;   /* labels a value */
+  --mono-sm: 0.6875rem;   /* annotates */
+  --mono: var(--mono-md); /* kept so nothing downstream breaks silently */
 
   --serif: 'Instrument Serif', 'Instrument Fallback', Georgia, 'Times New Roman', serif;
   --sans: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
@@ -150,6 +155,11 @@ p { margin: 0 0 1rem; max-width: 68ch; }
 a { color: inherit; text-underline-offset: 3px; text-decoration-thickness: 1px; }
 a:hover { color: var(--accent); }        /* link affordance = AUTHORISED */
 
+/* outline-offset is load-bearing for accessibility, not aesthetics. At 3px the
+   ring's adjacent colour is the page ground on both sides whatever the control
+   is filled with, so it measures 5.32:1 dark and 6.36:1 light. At 0 the ring
+   sits against an inverted button fill, where light theme measures 2.64:1 —
+   a fail. Do not reduce it; nothing in the criteria currently guards this. */
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 3px; }
 
 .shell { width: 100%; max-width: var(--shell); margin-inline: auto; padding-inline: var(--pad); }
@@ -185,7 +195,7 @@ a:hover { color: var(--accent); }        /* link affordance = AUTHORISED */
 .site-nav a {
   display: flex; align-items: center; min-height: 44px; padding: 10px 11px;
   color: var(--muted); text-decoration: none; border-radius: 7px;
-  font-family: var(--code); font-size: var(--mono);
+  font-family: var(--code); font-size: var(--mono-md);
   letter-spacing: .08em; text-transform: uppercase; white-space: nowrap;
 }
 .site-nav a:hover { color: var(--text); background: var(--surface); }
@@ -245,8 +255,8 @@ a:hover { color: var(--accent); }        /* link affordance = AUTHORISED */
     border-top: 1px solid var(--rule);
     padding-top: 12px;
     font-family: var(--code);
-    font-size: var(--mono);
-    letter-spacing: .08em;
+    font-size: var(--mono-lg); font-weight: 600;
+    letter-spacing: .10em;
     text-transform: uppercase;
     color: var(--muted);
   }
@@ -304,8 +314,8 @@ a:hover { color: var(--accent); }        /* link affordance = AUTHORISED */
 
 .hero-role {
   font-family: var(--code);
-  font-size: var(--mono);
-  letter-spacing: .12em;
+  font-size: var(--mono-lg); font-weight: 600;
+  letter-spacing: .10em;
   text-transform: uppercase;
   color: var(--accent);          /* "where you are" — his standing claim */
   margin: 0 0 1.6rem;
@@ -336,8 +346,8 @@ a:hover { color: var(--accent); }        /* link affordance = AUTHORISED */
   display: flex; flex-wrap: wrap; gap: 8px 28px;
   list-style: none; margin: 0; padding-top: 14px;
   border-top: 1px solid var(--rule);
-  font-family: var(--code); font-size: var(--mono);
-  letter-spacing: .05em; text-transform: uppercase; color: var(--muted);
+  font-family: var(--code); font-size: var(--mono-md);
+  letter-spacing: .08em; text-transform: uppercase; color: var(--muted);
 }
 .proof li { display: flex; align-items: center; gap: 9px; }
 .proof li::before {
@@ -378,8 +388,8 @@ a:hover { color: var(--accent); }        /* link affordance = AUTHORISED */
 }
 .entry-name {
   display: flex; align-items: baseline; gap: 12px;
-  font-family: var(--code); font-size: var(--mono); font-weight: 400;
-  letter-spacing: .09em; text-transform: uppercase;
+  font-family: var(--code); font-size: var(--mono-md); font-weight: 400;
+  letter-spacing: .08em; text-transform: uppercase;
   color: var(--muted); margin-bottom: 1rem;
 }
 .entry-num { color: var(--text); font-weight: 600; }
@@ -395,8 +405,8 @@ a:hover { color: var(--accent); }        /* link affordance = AUTHORISED */
    squared, filled, ruled on its leading edge, and set apart from the stack. */
 .badge {
   display: inline-block;
-  font-family: var(--code); font-size: .6875rem; font-weight: 600;
-  letter-spacing: .1em; text-transform: uppercase;
+  font-family: var(--code); font-size: var(--mono-sm); font-weight: 600;
+  letter-spacing: .06em; text-transform: uppercase;
   color: var(--text); background: var(--surface-2);
   border: 1px solid var(--rule); border-left-width: 3px;
   border-radius: 2px; padding: 5px 10px; white-space: nowrap;
@@ -410,6 +420,13 @@ a:hover { color: var(--accent); }        /* link affordance = AUTHORISED */
 .stack li { border: 1px solid var(--rule-soft); border-radius: 4px; padding: 3px 8px; }
 
 /* ───────── 03 approach — the full-bleed diagram panel ───────── */
+
+/* A full-bleed panel ends its section: the parent's bottom padding would
+   otherwise add after the panel's own and leave a dead band with nothing in
+   it — 187px between the diagram and Skills, where every other section gap
+   is zero. */
+.section-approach { padding-bottom: 0; }
+.section-approach .bleed { margin-bottom: 0; border-bottom: 0; }
 
 .bleed {
   margin-block: clamp(40px, 6vw, 72px);
@@ -439,10 +456,13 @@ a:hover { color: var(--accent); }        /* link affordance = AUTHORISED */
 .fnode-s {
   grid-column: 1; color: var(--muted); font-size: .875rem; line-height: 1.3;
 }
+/* Held at 12px rather than the --mono-sm 11px: this chip lives inside the
+   diagram, where Addendum 10 sets a >=12px floor for secondary labels measured
+   at 320px. The diagram floor wins over the mono scale inside the panel. */
 .idchip {
   grid-column: 2; grid-row: 1 / span 2; align-self: center;
-  font-family: var(--code); font-size: .625rem;
-  letter-spacing: .07em; text-transform: uppercase;
+  font-family: var(--code); font-size: 0.75rem;
+  letter-spacing: .06em; text-transform: uppercase;
   color: var(--proposed); border: 1px solid currentColor;
   border-radius: 999px; padding: 2px 7px; white-space: nowrap;
 }
@@ -478,8 +498,8 @@ a:hover { color: var(--accent); }        /* link affordance = AUTHORISED */
   border-left: 1px solid var(--rule);
 }
 .branch-k {
-  font-family: var(--code); font-size: var(--mono);
-  letter-spacing: .09em; text-transform: uppercase;
+  font-family: var(--code); font-size: var(--mono-md);
+  letter-spacing: .08em; text-transform: uppercase;
   color: var(--muted); margin: 0 0 10px;
 }
 .branch-high .branch-k { color: var(--accent); }
@@ -554,8 +574,8 @@ a:hover { color: var(--accent); }        /* link affordance = AUTHORISED */
   background: var(--surface); padding: 20px;
 }
 .cell h3 {
-  font-family: var(--code); font-size: var(--mono);
-  letter-spacing: .08em; text-transform: uppercase;
+  font-family: var(--code); font-size: var(--mono-lg);
+  letter-spacing: .10em; text-transform: uppercase;
   color: var(--muted); font-weight: 600; margin-bottom: 14px;
 }
 .cell-primary { background: var(--surface-2); border-color: var(--rule); }
@@ -575,11 +595,14 @@ a:hover { color: var(--accent); }        /* link affordance = AUTHORISED */
 .edu-entry h3 { font-size: var(--t1); font-weight: 600; margin-bottom: .2em; }
 .edu-meta { color: var(--muted); margin: 0 0 1.5rem; }
 .certs {
-  font-family: var(--code); font-size: var(--mono);
-  letter-spacing: .03em; color: var(--muted); max-width: 78ch; line-height: 1.8;
+  font-family: var(--code); font-size: var(--mono-md);
+  letter-spacing: normal;   /* content, not a label — same treatment as the
+                               stack chips, rather than a fifth tracking value */
+  color: var(--muted); max-width: 78ch; line-height: 1.8;
 }
 .certs-k {
-  color: var(--text); text-transform: uppercase; letter-spacing: .09em;
+  color: var(--text); font-size: var(--mono-sm);
+  text-transform: uppercase; letter-spacing: .06em;
   margin-right: 10px; border-right: 1px solid var(--rule); padding-right: 10px;
 }
 
@@ -607,7 +630,7 @@ a:hover { color: var(--accent); }        /* link affordance = AUTHORISED */
 .contact-meta li:last-child { border-bottom: 1px solid var(--rule-soft); }
 .contact-meta .k {
   flex: 0 0 108px;
-  font-family: var(--code); font-size: var(--mono);
+  font-family: var(--code); font-size: var(--mono-md);
   letter-spacing: .08em; text-transform: uppercase; color: var(--muted);
 }
 .contact-meta a { display: inline-flex; align-items: center; min-height: 44px; }
@@ -636,15 +659,15 @@ a:hover { color: var(--accent); }        /* link affordance = AUTHORISED */
 
 .gate-demo { margin-top: 36px; padding-top: 24px; border-top: 1px solid var(--rule); }
 .gate-demo-k {
-  font-family: var(--code); font-size: var(--mono);
-  letter-spacing: .09em; text-transform: uppercase;
+  font-family: var(--code); font-size: var(--mono-md);
+  letter-spacing: .08em; text-transform: uppercase;
   color: var(--muted); margin: 0 0 12px;
 }
 .gate-controls, .gate-decision { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
 .gate-decision { margin-top: 12px; }
 .gate-decision-k {
-  font-family: var(--code); font-size: var(--mono);
-  letter-spacing: .09em; text-transform: uppercase; color: var(--accent);
+  font-family: var(--code); font-size: var(--mono-md);
+  letter-spacing: .08em; text-transform: uppercase; color: var(--accent);
   margin-right: 4px;
 }
 .gbtn {
@@ -653,11 +676,23 @@ a:hover { color: var(--accent); }        /* link affordance = AUTHORISED */
   background: transparent; color: var(--text);
   font-family: var(--sans); font-size: .9375rem; cursor: pointer;
 }
-.gbtn:hover { border-color: var(--text); background: var(--surface); }
+/* Hover is scoped to :not(:disabled) rather than undone afterwards. Undoing it
+   left a gap: .gbtn-go:hover sets color to --on-accent for the filled hover
+   state, and the disabled override reset the background but not the colour —
+   so approving a write and leaving the pointer where it was rendered the
+   Approve label in the ground colour at 1.04:1. Invisible, and reachable
+   simply by not moving the mouse. */
+.gbtn:not(:disabled):hover { border-color: var(--text); background: var(--surface); }
+.gbtn:disabled {
+  color: var(--muted); border-color: var(--rule-soft);
+  cursor: not-allowed; opacity: .55;
+}
+/* Driven by the state attribute, not :has() — criterion 20 bans it unguarded. */
+.flow:not([data-state="held"]) .gate-decision-k { color: var(--muted); }
 /* Approve is the only button that authorises anything, so it is the only one
    that may carry the accent. */
-.gbtn-go { border-color: var(--accent); color: var(--accent); }
-.gbtn-go:hover { background: var(--accent); color: var(--on-accent); border-color: var(--accent); }
+.gbtn-go:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+.gbtn-go:not(:disabled):hover { background: var(--accent); color: var(--on-accent); border-color: var(--accent); }
 .gate-status {
   margin: 14px 0 0; color: var(--muted); font-size: .9375rem; max-width: 56ch;
 }
