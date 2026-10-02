@@ -260,6 +260,35 @@ a:hover { text-decoration-thickness: 2px; }
 }
 .hero-sub { font-size: var(--step-1); color: var(--muted); max-width: 56ch; }
 
+/* R13. Scoped to .hero deliberately: `.role` also matches the Education
+   <article class="role">, which inherits this block's 28px/600 and only escapes
+   looking wrong because each of its children sets its own size. An unscoped
+   `.role` here would resize that block too. */
+@media (max-width: 420px) {
+  .hero .role { font-size: var(--step-2); }
+}
+
+/* ---------- hero proof strip (R1) ---------- */
+
+.proof {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 20px;
+  list-style: none;
+  margin: 20px 0 0;
+  padding: 0;
+  color: var(--muted);
+  font-size: .95rem;
+}
+.proof li { display: flex; align-items: center; gap: 9px; }
+.proof li::before {
+  content: "";
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--accent-2);
+  flex: none;
+}
+
 .cta-row { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 24px; }
 .btn {
   display: inline-flex;
