@@ -23,9 +23,17 @@
     if (!c || !c.getContext) return;
     /* Canvas cannot read CSS tokens, so read them once here rather than
        keeping a second copy of the palette that drifts from the first. */
-    var cs = getComputedStyle(document.documentElement);
-    var SIG = (cs.getPropertyValue('--sig-rgb') || '255 84 54').trim().replace(/\s+/g, ',');
-    var NODE = (cs.getPropertyValue('--cool-rgb') || '150 170 210').trim().replace(/\s+/g, ',');
+    var SIG, NODE, LINK_A, NODE_A, PULSE_SOLID;
+    function readTokens() {
+      var cs = getComputedStyle(document.documentElement);
+      var g = function (n, d) { var v = cs.getPropertyValue(n).trim(); return v || d; };
+      SIG  = g('--sig-rgb', '150 206 255').replace(/\s+/g, ',');
+      NODE = g('--field-node', '150 170 210').replace(/\s+/g, ',');
+      LINK_A = parseFloat(g('--field-link-a', '.10'));
+      NODE_A = parseFloat(g('--field-node-a', '.30'));
+      PULSE_SOLID = g('--pulse-solid', '0') === '1';
+    }
+    readTokens();
     var x = c.getContext('2d'), w, h, dpr, nodes = [], pulses = [], running = false, spawnTimer = null;
 
     function size() {
@@ -64,13 +72,13 @@
           var a = nodes[i], b = nodes[j], dx = a.x - b.x, dy = a.y - b.y;
           var d = Math.sqrt(dx * dx + dy * dy);
           if (d < .16) {
-            x.strokeStyle = 'rgba(' + NODE + ',' + (0.1 * (1 - d / .16)) + ')';
+            x.strokeStyle = 'rgba(' + NODE + ',' + (LINK_A * (1 - d / .16)) + ')';
             x.beginPath(); x.moveTo(a.x * w, a.y * h); x.lineTo(b.x * w, b.y * h); x.stroke();
           }
         }
       }
       for (i = 0; i < nodes.length; i++) {
-        x.fillStyle = 'rgba(' + NODE + ',.30)';
+        x.fillStyle = 'rgba(' + NODE + ',' + NODE_A + ')';
         x.beginPath(); x.arc(nodes[i].x * w, nodes[i].y * h, 1.1 * dpr, 0, 6.283); x.fill();
       }
       for (var p = pulses.length - 1; p >= 0; p--) {
@@ -78,10 +86,18 @@
         if (pu.t >= 1) { pulses.splice(p, 1); continue; }
         var na = nodes[pu.a], nb = nodes[pu.b];
         var px = (na.x + (nb.x - na.x) * pu.t) * w, py = (na.y + (nb.y - na.y) * pu.t) * h;
-        var g = x.createRadialGradient(px, py, 0, px, py, 14 * dpr);
-        g.addColorStop(0, 'rgba(' + SIG + ',' + (0.55 * (1 - Math.abs(pu.t - .5) * 2)) + ')');
-        g.addColorStop(1, 'rgba(' + SIG + ',0)');
-        x.fillStyle = g; x.beginPath(); x.arc(px, py, 14 * dpr, 0, 6.283); x.fill();
+        var a = 1 - Math.abs(pu.t - .5) * 2;
+        if (PULSE_SOLID) {
+          /* A soft gradient on white paints nothing. In light the pulse is a
+             solid dot — the intent kept, the technique replaced. */
+          x.fillStyle = 'rgba(' + SIG + ',' + (0.85 * a) + ')';
+          x.beginPath(); x.arc(px, py, 4 * dpr, 0, 6.283); x.fill();
+        } else {
+          var g = x.createRadialGradient(px, py, 0, px, py, 14 * dpr);
+          g.addColorStop(0, 'rgba(' + SIG + ',' + (0.55 * a) + ')');
+          g.addColorStop(1, 'rgba(' + SIG + ',0)');
+          x.fillStyle = g; x.beginPath(); x.arc(px, py, 14 * dpr, 0, 6.283); x.fill();
+        }
       }
     }
 
@@ -97,6 +113,7 @@
       if (spawnTimer) { clearInterval(spawnTimer); spawnTimer = null; }
     }
 
+    window.__fieldRetheme = function () { readTokens(); if (reduce) draw(false); };
     draw(false);                                   /* one still frame, always */
     if (reduce) return;                            /* and that is the whole field */
     start();
@@ -105,6 +122,33 @@
     document.addEventListener('visibilitychange', function () {
       document.hidden ? stop() : start();
     });
+  })();
+
+  /* ---------------------- 1b. theme ---------------------- */
+  (function () {
+    var root = document.documentElement;
+    var btn = document.getElementById('theme');
+    if (!btn) return;
+    function system() {
+      return window.matchMedia && matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+    }
+    function active() { return root.getAttribute('data-theme') || system(); }
+    function label() {
+      btn.setAttribute('aria-label', 'Switch to ' + (active() === 'light' ? 'dark' : 'light') + ' theme');
+    }
+    btn.addEventListener('click', function () {
+      root.setAttribute('data-theme', active() === 'light' ? 'dark' : 'light');
+      try { localStorage.setItem('theme', root.getAttribute('data-theme')); } catch (e) {}
+      label();
+      /* The canvas holds no palette of its own; it re-reads the tokens. */
+      if (window.__fieldRetheme) window.__fieldRetheme();
+    });
+    label();
+    if (window.matchMedia) {
+      var q = matchMedia('(prefers-color-scheme: light)');
+      var on = function () { if (!root.hasAttribute('data-theme')) { label(); if (window.__fieldRetheme) window.__fieldRetheme(); } };
+      q.addEventListener ? q.addEventListener('change', on) : q.addListener && q.addListener(on);
+    }
   })();
 
   /* ---------------------- 2. momentum scroll ---------------------- */
