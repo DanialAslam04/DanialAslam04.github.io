@@ -165,7 +165,7 @@
   /* ---------------------- 3. line reveals ---------------------- */
   if (window.gsap && window.ScrollTrigger && !reduce) {
     gsap.utils.toArray('.rv').forEach(function (el) {
-      var lines = el.querySelectorAll(':scope > span');
+      var lines = el.querySelectorAll(':scope > span:not(.visually-hidden)');
       if (!lines.length) return;
       gsap.set(lines, { yPercent: 115, opacity: 0 });     /* from-state, at runtime */
       gsap.to(lines, {
@@ -200,7 +200,8 @@
     var ticks = sections.map(function () {
       var t = document.createElement('div'); t.className = 'tick'; rail.appendChild(t); return t;
     });
-    var tops = [], docH = 1, vh = 1, ticking = false;
+    var tops = [], heights = [], units = [], looses = [], litState = [], liveState = [];
+    var docH = 1, vh = 1, ticking = false;
     var terminal = document.querySelector('.terminal'), terminalTop = 0, landed = false;
 
     /* Geometry is read on resize, not on scroll. Reading layout inside a
@@ -212,6 +213,9 @@
       tops = sections.map(function (s, i) {
         var top = s.getBoundingClientRect().top + (window.scrollY || window.pageYOffset);
         ticks[i].style.top = ((top / docH) * vh) + 'px';
+        heights[i] = s.offsetHeight;          /* read here, not every frame */
+        units[i] = s.querySelector('.unit');  /* resolved once, not every frame */
+        looses[i] = s.querySelector('.chip-loose');
         return top;
       });
     }
@@ -228,24 +232,25 @@
       for (var i = 0; i < sections.length; i++) {
         var rel = tops[i] - y;                         /* from cached geometry */
         var lit = rel < vh * 0.62;
-        ticks[i].classList.toggle('lit', lit);
-        var inView = lit && rel + sections[i].offsetHeight > vh * 0.2;
-        var unit = sections[i].querySelector('.unit');
+        /* Only write when the value actually changes. classList.toggle with a
+           forced boolean still writes, and a write invalidates style whether
+           or not the class moved — thirteen ticks plus their units, every
+           frame, was the bulk of the recalculation cost. */
+        if (litState[i] !== lit) { litState[i] = lit; ticks[i].classList.toggle('lit', lit); }
+        var inView = lit && rel + heights[i] > vh * 0.2;
+        var unit = units[i];
         if (unit) {
-          unit.classList.toggle('live', inView);
+          if (liveState[i] !== inView) { liveState[i] = inView; unit.classList.toggle('live', inView); }
           /* The toolset filter latches rather than toggling. It carries
              information, not tone — "the tools outside this role are not
              reachable" is a fact about the system, so re-running it on every
              pass would make it a loop, and un-running it on scroll-past would
              unsay it. The dimmed items also carry visually-hidden "outside
              this role" text; the meaning must not live in opacity alone. */
-          if (inView && sections[i].hasAttribute('data-filter')) unit.classList.add('filtered');
+          if (inView && sections[i].hasAttribute('data-filter') && !unit.classList.contains('filtered')) unit.classList.add('filtered');
         }
         /* Same reasoning: identity, once attached, stays attached. */
-        if (inView && sections[i].hasAttribute('data-chip')) {
-          var loose = sections[i].querySelector('.chip-loose');
-          if (loose) loose.classList.add('lit');
-        }
+        if (inView && looses[i] && !looses[i].classList.contains('lit')) looses[i].classList.add('lit');
       }
     }
     function onScroll() { if (!ticking) { ticking = true; requestAnimationFrame(paint); } }
