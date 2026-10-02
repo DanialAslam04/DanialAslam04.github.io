@@ -133,12 +133,12 @@
   <section class="section" id="approach" aria-labelledby="approach-h">
     <div class="wrap narrow">
       <h2 id="approach-h" class="reveal">How I Build Agents</h2>
-      <p class="lede reveal">An agent reasons freely — but it can never reach past the boundary its caller was given, and no state changes without explicit approval. The same pattern runs across all three platforms.</p>
+      <p class="lede reveal">An agent reasons freely — but it can never reach past the boundary its caller was given. Low-risk writes commit autonomously; high-risk ones stop at a gate. The same pattern runs across all three platforms.</p>
 
       <figure class="diagram reveal">
         <svg viewBox="0 0 440 620" role="img" aria-labelledby="diagram-title diagram-desc" class="flow">
           <title id="diagram-title">The agent execution pattern</title>
-          <desc id="diagram-desc">A five-stage vertical pipeline. The caller carries identity. The agent proposes an action. A role-filtered toolset bounds what the agent can see. An MCP tool server propagates the caller's identity on every call. A preview-then-confirm gate blocks any state change until it is explicitly approved.</desc>
+          <desc id="diagram-desc">A five-stage vertical pipeline. The caller carries identity. The agent proposes an action. A role-filtered toolset bounds what the agent can see. An MCP tool server propagates the caller's identity on every call. A policy gate holds high-risk state changes until they are approved, while lower-risk changes commit autonomously.</desc>
           <g class="flow-line" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
             <path d="M220 86 V110"/><path d="M220 196 V220"/><path d="M220 306 V330"/><path d="M220 416 V440"/><path d="M220 526 V550"/>
           </g>
@@ -168,14 +168,14 @@
           <g class="flow-step flow-gate">
             <rect x="40" y="460" width="360" height="66" rx="10"/>
             <text x="220" y="488" class="flow-t">Preview-then-confirm gate</text>
-            <text x="220" y="510" class="flow-s">nothing lands without approval</text>
+            <text x="220" y="510" class="flow-s">high-risk writes only</text>
           </g>
           <g class="flow-step flow-end">
             <rect x="40" y="570" width="360" height="40" rx="10"/>
             <text x="220" y="595" class="flow-t">State change</text>
           </g>
         </svg>
-        <figcaption>The caller's identity travels the whole way down; the gate is the only door to a state change.</figcaption>
+        <figcaption>The caller's identity travels the whole way down; the gate stops only what policy says needs a human.</figcaption>
       </figure>
 
       <p class="reveal">Underneath: <strong>Vertex AI</strong> and <strong>Gemini</strong> for inference, routed through <strong>LiteLLM</strong>; <strong>BigQuery vector search</strong> backing RAG and semantic discovery; <strong>GKE</strong> for orchestration and <strong>Redis</strong> for caching and rate limiting.</p>
