@@ -26,6 +26,7 @@
 <meta name="theme-color" content="#0B0D10"/>
 
 <link rel="preload" href="assets/instrument-serif-latin.woff2" as="font" type="font/woff2" crossorigin/>
+<link rel="preload" href="assets/ibm-plex-mono-400.woff2" as="font" type="font/woff2" crossorigin/>
 <link rel="stylesheet" href="styles.css"/>
 
 <script type="application/ld+json">
@@ -136,28 +137,37 @@
 
         <ol class="entries">
           <li class="entry">
-            <div class="entry-k"><span class="entry-num">01</span><span class="badge">Private client platform</span></div>
             <div class="entry-main">
-              <h3>Multi-Tenant Drayage TMS</h3>
-              <p>An LLM pipeline ingests delivery orders straight from email, extracts and validates the structured data, runs credit checks and creates loads — <strong>end to end with no human in the flow</strong>. The order-to-delivery lifecycle runs unattended.</p>
+              <h3 class="entry-name"><span class="entry-num">01</span>Multi-Tenant Drayage TMS</h3>
+              <p class="entry-pull">Email in. Loads out. No human in the flow.</p>
+              <p class="entry-desc">An LLM pipeline ingests delivery orders straight from email, extracts and validates the structured data, runs credit checks and creates loads. The order-to-delivery lifecycle runs unattended.</p>
+            </div>
+            <div class="entry-aside">
+              <span class="badge">Private client platform</span>
               <ul class="stack"><li>LLM extraction</li><li>Multi-tenancy</li><li>Workflow automation</li></ul>
             </div>
           </li>
 
           <li class="entry">
-            <div class="entry-k"><span class="entry-num">02</span><span class="badge">Private client platform</span></div>
             <div class="entry-main">
-              <h3>Business-Acquisition Marketplace</h3>
-              <p>A Spring Boot domain backend paired with a Python/FastAPI agentic service running <strong>five LLM agents on Google ADK</strong>. Three roles — buyers, brokers and admins — each see a different slice of the system.</p>
+              <h3 class="entry-name"><span class="entry-num">02</span>Business-Acquisition Marketplace</h3>
+              <p class="entry-pull">Five LLM agents on Google ADK. Three roles, each seeing a different slice.</p>
+              <p class="entry-desc">A Spring Boot domain backend paired with a Python/FastAPI agentic service. Buyers, brokers and admins each see a different projection of the same system.</p>
+            </div>
+            <div class="entry-aside">
+              <span class="badge">Private client platform</span>
               <ul class="stack"><li>Spring Boot</li><li>FastAPI</li><li>Google ADK</li><li>Stripe</li><li>Plaid</li></ul>
             </div>
           </li>
 
           <li class="entry">
-            <div class="entry-k"><span class="entry-num">03</span><span class="badge">Private client platform</span></div>
             <div class="entry-main">
-              <h3>Concierge Care Platform</h3>
-              <p>Connects aging-adult clients with field staff through an onboarding agent, a task-planning agent and a pod matching engine. A different control pattern from the risk-tiered gate below: <strong>the planning agent runs autonomously and a coordinator reviews and adjusts the plan afterwards</strong>.</p>
+              <h3 class="entry-name"><span class="entry-num">03</span>Concierge Care Platform</h3>
+              <p class="entry-pull">An onboarding agent, a task-planning agent, and a pod matching engine.</p>
+              <p class="entry-desc">Connects aging-adult clients with field staff. A different control pattern from the risk-tiered gate: the planning agent runs autonomously and a coordinator reviews and adjusts the plan afterwards.</p>
+            </div>
+            <div class="entry-aside">
+              <span class="badge">Private client platform</span>
               <ul class="stack"><li>Multi-agent orchestration</li><li>Gusto Embedded Payroll</li><li>Checkr</li></ul>
             </div>
           </li>
@@ -173,6 +183,7 @@
       <div class="sec-body">
         <h2 id="approach-h">How I Build Agents</h2>
         <p class="lede">The agent reasons freely inside a boundary it cannot widen. Policy decides what commits on its own and what waits for a person — so routine writes are never slowed down, and the ones that matter are never silent.</p>
+        <p>Underneath: <strong>Vertex AI</strong> and <strong>Gemini</strong> for inference, routed through <strong>LiteLLM</strong>; <strong>BigQuery vector search</strong> backing RAG and semantic discovery; <strong>GKE</strong> for orchestration and <strong>Redis</strong> for caching and rate limiting.</p>
       </div>
     </div>
 
@@ -204,12 +215,6 @@
       </div>
     </div>
 
-    <div class="shell sec-grid">
-      <div class="rail" aria-hidden="true"></div>
-      <div class="sec-body">
-        <p>Underneath: <strong>Vertex AI</strong> and <strong>Gemini</strong> for inference, routed through <strong>LiteLLM</strong>; <strong>BigQuery vector search</strong> backing RAG and semantic discovery; <strong>GKE</strong> for orchestration and <strong>Redis</strong> for caching and rate limiting.</p>
-      </div>
-    </div>
   </section>
 
   <!-- 04 SKILLS — bento, unequal -->

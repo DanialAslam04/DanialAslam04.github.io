@@ -21,6 +21,25 @@
                  U+02DC, U+2000-206F, U+2122, U+2212, U+FEFF, U+FFFD;
 }
 
+/* IBM Plex Mono over JetBrains Mono deliberately: the mono carries identity
+   here — rail numbers, section labels, chips, the proof strip — and Plex reads
+   as a typeface where JetBrains reads as an IDE, which is the cockpit-costume
+   failure the direction warns about. Two real weights, no synthetic bold. */
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal; font-weight: 400; font-display: swap;
+  src: url('assets/ibm-plex-mono-400.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+                 U+02DC, U+2000-206F, U+2122, U+2212, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal; font-weight: 600; font-display: swap;
+  src: url('assets/ibm-plex-mono-600.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+                 U+02DC, U+2000-206F, U+2122, U+2212, U+FEFF, U+FFFD;
+}
+
 /* Metric-matched fallback so the swap does not shift layout (CLS ~0). */
 @font-face {
   font-family: 'Instrument Fallback';
@@ -55,14 +74,21 @@
 
   --d1: clamp(3.5rem, 11vw, 8.875rem);        /* hero name */
   --d2: clamp(1.875rem, 3.6vw, 3.25rem);      /* section openers, contact */
-  --t1: clamp(1.375rem, 1.8vw, 1.75rem);      /* hero deck, h3 */
+  --deck: clamp(2rem, 4vw, 3.5rem);           /* the thesis — it is the claim,
+                                                 so it outranks the navigational
+                                                 section headings. Floor raised
+                                                 from the specced 1.75rem: at
+                                                 1.75 it fell under --d2's 1.875
+                                                 floor below ~430px and the
+                                                 inversion came back. */
+  --t1: clamp(1.375rem, 1.8vw, 1.75rem);      /* h3, entry titles */
   --t0: 1.0625rem;
   --lede: 1.1875rem;
   --mono: 0.8125rem;
 
   --serif: 'Instrument Serif', 'Instrument Fallback', Georgia, 'Times New Roman', serif;
   --sans: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  --code: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
+  --code: 'IBM Plex Mono', ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
 
   color-scheme: dark;
 }
@@ -284,11 +310,11 @@ a:hover { color: var(--accent); }        /* link affordance = AUTHORISED */
 }
 .hero-deck {
   font-family: var(--serif);
-  font-size: var(--t1);
-  line-height: 1.25;
-  letter-spacing: -.015em;
-  max-width: 24ch;
-  margin: 0 0 1.1rem;
+  font-size: var(--deck);
+  line-height: 1.1;
+  letter-spacing: -.028em;
+  max-width: 22ch;
+  margin: 0 0 1.4rem;
 }
 .hero-sub { color: var(--muted); font-size: var(--lede); max-width: 54ch; margin-bottom: 2rem; }
 
@@ -345,26 +371,34 @@ a:hover { color: var(--accent); }        /* link affordance = AUTHORISED */
   border-top: 1px solid var(--rule);
 }
 .entry:last-child { border-bottom: 1px solid var(--rule); }
-@media (min-width: 760px) {
-  .entry { grid-template-columns: 180px minmax(0, 1fr); }
+@media (min-width: 900px) {
+  .entry { grid-template-columns: minmax(0, 1fr) 260px; }
 }
-.entry-k { display: flex; flex-wrap: wrap; align-items: baseline; gap: 10px; }
-.entry-num {
-  font-family: var(--code); font-size: 1.5rem; font-weight: 600;
-  color: var(--text); letter-spacing: -.02em; line-height: 1;
+.entry-name {
+  display: flex; align-items: baseline; gap: 12px;
+  font-family: var(--code); font-size: var(--mono); font-weight: 400;
+  letter-spacing: .09em; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 1rem;
 }
+.entry-num { color: var(--text); font-weight: 600; }
+.entry-pull {
+  font-family: var(--serif);
+  font-size: clamp(1.5rem, 2.8vw, 2.5rem);
+  line-height: 1.12; letter-spacing: -.028em;
+  max-width: 26ch; margin: 0 0 .9rem;
+}
+.entry-desc { color: var(--muted); max-width: 52ch; margin: 0; }
 .badge {
+  display: inline-block;
   font-family: var(--code); font-size: .6875rem;
   letter-spacing: .07em; text-transform: uppercase;
   color: var(--muted); border: 1px solid var(--rule);
   border-radius: 999px; padding: 3px 9px; white-space: nowrap;
 }
-.entry-main h3 {
-  font-size: var(--t1); font-weight: 600; letter-spacing: -.015em; margin-bottom: .4em;
-}
+.entry-aside { display: flex; flex-direction: column; align-items: flex-start; gap: 14px; }
 .stack {
   display: flex; flex-wrap: wrap; gap: 7px;
-  list-style: none; margin: 14px 0 0; padding: 0;
+  list-style: none; margin: 0; padding: 0;
   font-family: var(--code); font-size: var(--mono); color: var(--muted);
 }
 .stack li { border: 1px solid var(--rule-soft); border-radius: 4px; padding: 3px 8px; }
@@ -498,14 +532,15 @@ a:hover { color: var(--accent); }        /* link affordance = AUTHORISED */
 
 /* ───────────────── 04 skills — bento, unequal ───────────────── */
 
-.bento { display: grid; gap: 14px; grid-template-columns: minmax(0, 1fr); }
+.bento { display: grid; gap: 14px; grid-template-columns: minmax(0, 1fr); align-items: start; }
 @media (min-width: 720px) {
   .bento { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .cell-primary { grid-column: span 2; }
 }
 @media (min-width: 1024px) {
   .bento { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  .cell-primary { grid-column: span 2; grid-row: span 2; }
+  .cell-primary { grid-column: span 2; }   /* weighted by span and type, not by
+                                              stretching to fill a grid row */
   .cell-wide { grid-column: span 1; }
 }
 .cell {
