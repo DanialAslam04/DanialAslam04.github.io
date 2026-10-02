@@ -501,3 +501,8 @@ a:hover { text-decoration-thickness: 2px; }
   .hero .proof { margin-top: 14px; gap: 4px 18px; }
   .hero .cta-row { margin-top: 16px; }
 }
+
+/* The shortened sub drops a two-word orphan at desktop measures. Balance is a
+   progressive enhancement: engines without it fall back to normal wrapping,
+   which is the behaviour that ships today. */
+.hero-sub { text-wrap: balance; }
