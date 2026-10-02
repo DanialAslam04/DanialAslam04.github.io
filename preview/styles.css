@@ -122,7 +122,13 @@
   --unit-live-bg:rgb(var(--deep-rgb));
   --field-op:.35;
   --field-node:70 82 102;     /* graphite */
-  --field-link-a:.18;         /* lines on white need more alpha to read equal */
+  --field-link-a:.08;         /* NOT parity. An ambient field's job is to be
+                                 barely noticed, so matching perceived strength
+                                 across themes was optimising for the wrong
+                                 thing — it made the field read, which is what
+                                 it must not do. Graphite on white does carry
+                                 further than light on dark, so this sits below
+                                 the dark value rather than above it. */
   --field-node-a:.45;
   --pulse-solid:1;            /* a glow on white paints nothing */
   color-scheme:light;
@@ -151,7 +157,13 @@
   --unit-live-bg:rgb(var(--deep-rgb));
   --field-op:.35;
   --field-node:70 82 102;     /* graphite */
-  --field-link-a:.18;         /* lines on white need more alpha to read equal */
+  --field-link-a:.08;         /* NOT parity. An ambient field's job is to be
+                                 barely noticed, so matching perceived strength
+                                 across themes was optimising for the wrong
+                                 thing — it made the field read, which is what
+                                 it must not do. Graphite on white does carry
+                                 further than light on dark, so this sits below
+                                 the dark value rather than above it. */
   --field-node-a:.45;
   --pulse-solid:1;            /* a glow on white paints nothing */
   color-scheme:light;
