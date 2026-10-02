@@ -217,6 +217,12 @@ a:hover { text-decoration-thickness: 2px; }
   .site-nav ul::-webkit-scrollbar { display: none; }  /* Chrome, Safari */
   .site-nav li { flex: none; }
 
+  /* Hint that the row scrolls. Decorative: no fade if unsupported, nothing lost. */
+  .site-nav ul {
+    -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 24px), transparent 100%);
+            mask-image: linear-gradient(to right, #000 calc(100% - 24px), transparent 100%);
+  }
+
   /* The header is two rows tall here, so anchors need more clearance. */
   #top, .section { scroll-margin-top: 118px; }
 }
@@ -381,8 +387,9 @@ a:hover { text-decoration-thickness: 2px; }
 .contact-list li {
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
   gap: 4px 16px;
-  padding: 12px 0;
+  padding: 3px 0;
   border-bottom: 1px solid var(--border);
 }
 .contact-k {
@@ -392,7 +399,11 @@ a:hover { text-decoration-thickness: 2px; }
   text-transform: uppercase;
   letter-spacing: .05em;
 }
-.contact-list a { min-height: 24px; display: inline-flex; align-items: center; }
+.contact-list a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+}
 
 /* ---------- footer ---------- */
 
