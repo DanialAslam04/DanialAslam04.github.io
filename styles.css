@@ -73,14 +73,16 @@
   --pad: 24px;          /* 16px below 768 — see the narrow block */
 
   --d1: clamp(3.5rem, 11vw, 8.875rem);        /* hero name */
-  --d2: clamp(1.875rem, 3.6vw, 3.25rem);      /* section openers, contact */
-  --deck: clamp(2rem, 4vw, 3.5rem);           /* the thesis — it is the claim,
+  /* The display ladder. Solved against the rule "every adjacent step differs by
+     >=6px at every width 320-1920", swept over all 1601 widths rather than
+     checked at a few — the failures are at the crossovers where one token
+     leaves its floor before the next does, around 722px and 765px, which
+     spot-checking at round numbers misses entirely. */
+  --d2:   clamp(1.6875rem, 3.4vw, 3.125rem);  /* section openers, contact */
+  --pull: clamp(1.3125rem, 2.6vw, 2.375rem);  /* work entry pull-lines */
+  --deck: clamp(2.125rem, 4.4vw, 4rem);       /* the thesis — it is the claim,
                                                  so it outranks the navigational
-                                                 section headings. Floor raised
-                                                 from the specced 1.75rem: at
-                                                 1.75 it fell under --d2's 1.875
-                                                 floor below ~430px and the
-                                                 inversion came back. */
+                                                 section headings */
   --t1: clamp(1.375rem, 1.8vw, 1.75rem);      /* h3, entry titles */
   --t0: 1.0625rem;
   --lede: 1.1875rem;
@@ -383,17 +385,21 @@ a:hover { color: var(--accent); }        /* link affordance = AUTHORISED */
 .entry-num { color: var(--text); font-weight: 600; }
 .entry-pull {
   font-family: var(--serif);
-  font-size: clamp(1.5rem, 2.8vw, 2.5rem);
+  font-size: var(--pull);
   line-height: 1.12; letter-spacing: -.028em;
   max-width: 26ch; margin: 0 0 .9rem;
 }
 .entry-desc { color: var(--muted); max-width: 52ch; margin: 0; }
+/* Not a chip. It stands in for the demo link that cannot exist, so it has to
+   read as a different class of object rather than a differently-worded one:
+   squared, filled, ruled on its leading edge, and set apart from the stack. */
 .badge {
   display: inline-block;
-  font-family: var(--code); font-size: .6875rem;
-  letter-spacing: .07em; text-transform: uppercase;
-  color: var(--muted); border: 1px solid var(--rule);
-  border-radius: 999px; padding: 3px 9px; white-space: nowrap;
+  font-family: var(--code); font-size: .6875rem; font-weight: 600;
+  letter-spacing: .1em; text-transform: uppercase;
+  color: var(--text); background: var(--surface-2);
+  border: 1px solid var(--rule); border-left-width: 3px;
+  border-radius: 2px; padding: 5px 10px; white-space: nowrap;
 }
 .entry-aside { display: flex; flex-direction: column; align-items: flex-start; gap: 14px; }
 .stack {
@@ -559,7 +565,7 @@ a:hover { color: var(--accent); }        /* link affordance = AUTHORISED */
 
 .chips { display: flex; flex-wrap: wrap; gap: 7px; list-style: none; margin: 0; padding: 0; }
 .chips li {
-  border: 1px solid var(--rule-soft); border-radius: 999px;
+  border: 1px solid var(--rule-soft); border-radius: 4px;
   padding: 4px 11px; font-size: .875rem; color: var(--text);
 }
 
