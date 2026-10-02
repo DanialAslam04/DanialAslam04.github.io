@@ -4,14 +4,14 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>Muhammad Danial Aslam — Backend &amp; Agentic AI Engineer</title>
-<meta name="description" content="Backend and agentic AI engineer. Agents that run unattended in production, and the deterministic boundary that decides when they can't. Java/Spring Boot, Python/FastAPI, Google ADK, MCP, Vertex AI."/>
+<meta name="description" content="Backend and agentic AI engineer with three years building production systems on Google Cloud — Java/Spring Boot, Python/FastAPI, Google ADK, MCP and Vertex AI."/>
 <link rel="canonical" href="https://danialaslam04.github.io/"/>
 <link rel="icon" href="favicon.svg" type="image/svg+xml"/>
 
 <meta property="og:type" content="website"/>
 <meta property="og:url" content="https://danialaslam04.github.io/"/>
 <meta property="og:title" content="Muhammad Danial Aslam — Backend &amp; Agentic AI Engineer"/>
-<meta property="og:description" content="Agents that run unattended in production — and the deterministic boundary that decides when they can't."/>
+<meta property="og:description" content="Three years building production backend systems and agentic AI on Google Cloud. Models propose. Deterministic code executes."/>
 <meta property="og:image" content="https://danialaslam04.github.io/assets/og-image.png"/>
 <meta property="og:image:width" content="1200"/>
 <meta property="og:image:height" content="630"/>
@@ -19,45 +19,23 @@
 
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:title" content="Muhammad Danial Aslam — Backend &amp; Agentic AI Engineer"/>
-<meta name="twitter:description" content="Agents that run unattended in production — and the deterministic boundary that decides when they can't."/>
+<meta name="twitter:description" content="Three years building production backend systems and agentic AI on Google Cloud. Models propose. Deterministic code executes."/>
 <meta name="twitter:image" content="https://danialaslam04.github.io/assets/og-image.png"/>
 <meta name="twitter:image:alt" content="Muhammad Danial Aslam — Backend and Agentic AI Engineer"/>
 
-<meta name="theme-color" content="#0B0D10"/>
-
-<link rel="preload" href="assets/instrument-serif-latin.woff2" as="font" type="font/woff2" crossorigin/>
-<link rel="preload" href="assets/ibm-plex-mono-400.woff2" as="font" type="font/woff2" crossorigin/>
+<meta name="theme-color" content="#0D1117"/>
 <link rel="stylesheet" href="styles.css"/>
 
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "Person",
-  "name": "Muhammad Danial Aslam",
-  "url": "https://danialaslam04.github.io/",
-  "jobTitle": "Backend & Agentic AI Engineer",
-  "email": "mailto:danialaslam04@gmail.com",
-  "sameAs": [
-    "https://github.com/DanialAslam04",
-    "https://www.linkedin.com/in/danial04/"
-  ],
-  "alumniOf": {
-    "@type": "CollegeOrUniversity",
-    "name": "International Islamic University Islamabad"
-  },
-  "knowsAbout": [
-    "Agentic AI", "Model Context Protocol", "Google ADK", "Vertex AI",
-    "Java", "Spring Boot", "Python", "FastAPI", "Kubernetes", "PostgreSQL"
-  ]
-}
-</script>
-
 <script>
-/* Pre-paint: apply the stored theme before the first frame so it never flashes. */
+/* Pre-paint: apply the stored theme and opt into the reveal animation before the
+   first frame, so neither flashes. The rest of the behaviour is in script.js. */
 (function(){
   try { var t = localStorage.getItem('theme');
         if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t);
   } catch (e) {}
+  if (!window.matchMedia || !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    document.documentElement.classList.add('js-reveal');
+  }
 })();
 </script>
 </head>
@@ -65,8 +43,8 @@
 <a class="skip-link" href="#main">Skip to main content</a>
 
 <header class="site-header">
-  <div class="shell header-inner">
-    <a class="brand" href="#top"><span class="brand-mark" aria-hidden="true">DA</span><span class="brand-name">Danial&nbsp;Aslam</span></a>
+  <div class="wrap header-inner">
+    <a class="brand" href="#top"><span class="brand-mark" aria-hidden="true">DA</span><span class="brand-name">Danial Aslam</span></a>
     <nav class="site-nav" aria-label="Primary">
       <ul>
         <li><a href="#work">Work</a></li>
@@ -84,233 +62,179 @@
 
 <main id="main">
 
-  <!-- HERO — tall, airy -->
   <section class="hero" id="top">
-    <div class="shell sec-grid">
-      <div class="rail" aria-hidden="true"><span class="rail-num">00</span><span class="rail-label">Index</span></div>
-      <div class="sec-body">
-        <h1 class="hero-name"><span class="l">Muhammad</span> <span class="l">Danial&nbsp;Aslam</span></h1>
-        <p class="hero-role">Backend &amp; Agentic AI Engineer</p>
-        <p class="hero-deck"><span class="l">Autonomous by default.</span> <span class="l">Gated where it counts.</span></p>
-        <p class="hero-sub">Agents that run unattended in production — and the deterministic boundary that decides when they can't.</p>
-        <div class="cta-row">
-          <a class="btn btn-primary" href="assets/Muhammad-Danial-Aslam-Resume.pdf" target="_blank" rel="noopener noreferrer">Resume (PDF)</a>
-          <a class="btn" href="mailto:danialaslam04@gmail.com">Email</a>
-          <a class="btn" href="https://www.linkedin.com/in/danial04/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
-          <a class="btn" href="https://github.com/DanialAslam04" target="_blank" rel="noopener noreferrer">GitHub</a>
-        </div>
+    <div class="wrap">
+      <h1 class="reveal">Muhammad Danial Aslam</h1>
+      <p class="role reveal">Backend &amp; Agentic AI Engineer</p>
+      <p class="tagline reveal">Models propose. Deterministic code executes.</p>
+      <p class="hero-sub reveal">Three years building production backend systems and agentic AI on Google Cloud.</p>
+      <ul class="proof reveal" aria-label="At a glance">
+        <li>3 production client platforms</li>
+        <li>5 LLM agents on Google ADK</li>
+        <li>Stripe, Plaid, Gusto and Checkr integrations</li>
+      </ul>
+      <div class="cta-row reveal">
+        <a class="btn btn-primary" href="assets/Muhammad-Danial-Aslam-Resume.pdf" target="_blank" rel="noopener noreferrer">Resume (PDF)</a>
+        <a class="btn" href="mailto:danialaslam04@gmail.com">Email</a>
+        <a class="btn" href="https://www.linkedin.com/in/danial04/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+        <a class="btn" href="https://github.com/DanialAslam04" target="_blank" rel="noopener noreferrer">GitHub</a>
       </div>
     </div>
-    <div class="shell hero-foot">
-      <ul class="proof" aria-label="At a glance">
-        <li>Unattended order-to-load pipeline</li>
-        <li>5 LLM agents on Google ADK</li>
-        <li>Risk-tiered write gate</li>
+  </section>
+
+  <section class="section" id="about" aria-labelledby="about-h">
+    <div class="wrap narrow">
+      <h2 id="about-h" class="reveal">About</h2>
+      <p class="lede reveal">I translate complex business requirements into production-grade software — working across Java/Spring Boot, Trillo Workbench and Python/FastAPI to build REST APIs, async workflows and third-party integrations.</p>
+      <p class="reveal">I currently specialise in agentic AI engineering: Google ADK, Model Context Protocol and Vertex AI. I work directly with clients, turning raw operational requirements into domain models and shipped software.</p>
+    </div>
+  </section>
+
+  <section class="section" id="work" aria-labelledby="work-h">
+    <div class="wrap">
+      <h2 id="work-h" class="reveal">Selected Work</h2>
+      <p class="section-note reveal">Client platforms under NDA. The engineering is described; the clients are not named.</p>
+
+      <article class="case reveal">
+        <div class="case-head">
+          <h3>Business-Acquisition Marketplace</h3>
+          <span class="badge">Private client platform</span>
+        </div>
+        <p>A Spring Boot domain backend paired with a Python/FastAPI agentic service running <strong>five LLM agents on Google ADK</strong>. Three roles — buyers, brokers and admins — each see a different slice of the system.</p>
+        <ul class="chips">
+          <li>Spring Boot</li><li>FastAPI</li><li>Google ADK</li><li>Stripe billing</li><li>Plaid verification</li>
+        </ul>
+      </article>
+
+      <article class="case reveal">
+        <div class="case-head">
+          <h3>Concierge Care Platform</h3>
+          <span class="badge">Private client platform</span>
+        </div>
+        <p>Connects aging-adult clients with field staff through an <strong>onboarding agent</strong>, a <strong>task-planning agent</strong> and a <strong>pod matching engine</strong>.</p>
+        <ul class="chips">
+          <li>Multi-agent orchestration</li><li>Gusto Embedded Payroll</li><li>Checkr</li>
+        </ul>
+      </article>
+
+      <article class="case reveal">
+        <div class="case-head">
+          <h3>Multi-Tenant Drayage TMS</h3>
+          <span class="badge">Private client platform</span>
+        </div>
+        <p>Automates the order-to-delivery lifecycle, including an <strong>LLM pipeline that ingests delivery orders straight from email</strong> — extracting and validating the structured data, running credit checks and creating loads automatically.</p>
+        <ul class="chips">
+          <li>LLM extraction</li><li>Multi-tenancy</li><li>Workflow automation</li>
+        </ul>
+      </article>
+    </div>
+  </section>
+
+  <section class="section" id="approach" aria-labelledby="approach-h">
+    <div class="wrap narrow">
+      <h2 id="approach-h" class="reveal">How I Build Agents</h2>
+      <p class="lede reveal">An agent reasons freely — but it can never reach past the boundary its caller was given. Low-risk writes commit autonomously; high-risk ones stop at a gate. The same pattern runs across all three platforms.</p>
+
+      <figure class="diagram reveal">
+        <svg viewBox="0 0 440 620" role="img" aria-labelledby="diagram-title diagram-desc" class="flow">
+          <title id="diagram-title">The agent execution pattern</title>
+          <desc id="diagram-desc">A five-stage vertical pipeline. The caller carries identity. The agent proposes an action. A role-filtered toolset bounds what the agent can see. An MCP tool server propagates the caller's identity on every call. A policy gate holds high-risk state changes until they are approved, while lower-risk changes commit autonomously.</desc>
+          <g class="flow-line" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+            <path d="M220 86 V110"/><path d="M220 196 V220"/><path d="M220 306 V330"/><path d="M220 416 V440"/><path d="M220 526 V550"/>
+          </g>
+          <g class="flow-arrow" fill="currentColor">
+            <path d="M220 114 l5 -9 h-10 Z"/><path d="M220 224 l5 -9 h-10 Z"/><path d="M220 334 l5 -9 h-10 Z"/><path d="M220 444 l5 -9 h-10 Z"/><path d="M220 554 l5 -9 h-10 Z"/>
+          </g>
+          <g class="flow-step">
+            <rect x="40" y="20" width="360" height="66" rx="10"/>
+            <text x="220" y="48" class="flow-t">Caller</text>
+            <text x="220" y="70" class="flow-s">carries identity</text>
+          </g>
+          <g class="flow-step">
+            <rect x="40" y="130" width="360" height="66" rx="10"/>
+            <text x="220" y="158" class="flow-t">Agent</text>
+            <text x="220" y="180" class="flow-s">proposes an action</text>
+          </g>
+          <g class="flow-step">
+            <rect x="40" y="240" width="360" height="66" rx="10"/>
+            <text x="220" y="268" class="flow-t">Role-filtered toolset</text>
+            <text x="220" y="290" class="flow-s">bounds what it can see</text>
+          </g>
+          <g class="flow-step">
+            <rect x="40" y="350" width="360" height="66" rx="10"/>
+            <text x="220" y="378" class="flow-t">MCP tool server</text>
+            <text x="220" y="400" class="flow-s">propagates identity per call</text>
+          </g>
+          <g class="flow-step flow-gate">
+            <rect x="40" y="460" width="360" height="66" rx="10"/>
+            <text x="220" y="488" class="flow-t">Preview-then-confirm gate</text>
+            <text x="220" y="510" class="flow-s">high-risk writes only</text>
+          </g>
+          <g class="flow-step flow-end">
+            <rect x="40" y="570" width="360" height="40" rx="10"/>
+            <text x="220" y="595" class="flow-t">State change</text>
+          </g>
+        </svg>
+        <figcaption>The caller's identity travels the whole way down; the gate stops only what policy says needs a human.</figcaption>
+      </figure>
+
+      <p class="reveal">Underneath: <strong>Vertex AI</strong> and <strong>Gemini</strong> for inference, routed through <strong>LiteLLM</strong>; <strong>BigQuery vector search</strong> backing RAG and semantic discovery; <strong>GKE</strong> for orchestration and <strong>Redis</strong> for caching and rate limiting.</p>
+    </div>
+  </section>
+
+  <section class="section" id="skills" aria-labelledby="skills-h">
+    <div class="wrap">
+      <h2 id="skills-h" class="reveal">Skills</h2>
+      <div class="skill-grid">
+        <div class="skill-group reveal"><h3>Agentic AI</h3><ul class="chips"><li>Google ADK</li><li>MCP</li><li>Multi-Agent Systems</li><li>Agent Orchestration</li><li>Tool Calling</li></ul></div>
+        <div class="skill-group reveal"><h3>LLM &amp; GenAI</h3><ul class="chips"><li>Vertex AI</li><li>Gemini</li><li>Claude</li><li>LiteLLM</li><li>Prompt Engineering</li><li>RAG</li></ul></div>
+        <div class="skill-group reveal"><h3>Languages</h3><ul class="chips"><li>Java</li><li>Python</li><li>SQL</li></ul></div>
+        <div class="skill-group reveal"><h3>Frameworks</h3><ul class="chips"><li>Spring Boot</li><li>FastAPI</li><li>Trillo Workbench</li></ul></div>
+        <div class="skill-group reveal"><h3>Cloud &amp; Infrastructure</h3><ul class="chips"><li>GCP</li><li>GKE</li><li>Docker</li><li>Redis</li><li>PostgreSQL</li><li>MySQL</li></ul></div>
+        <div class="skill-group reveal"><h3>Practice</h3><ul class="chips"><li>Client engagement</li><li>Requirements discovery</li><li>Stakeholder communication</li><li>Ownership</li></ul></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="education" aria-labelledby="education-h">
+    <div class="wrap narrow">
+      <h2 id="education-h" class="reveal">Education &amp; Certifications</h2>
+      <article class="role reveal">
+        <div class="role-head">
+          <h3>BS Computer Science</h3>
+          <p class="role-meta">International Islamic University Islamabad</p>
+        </div>
+      </article>
+      <h3 class="cert-h reveal">Google Cloud certifications</h3>
+      <ul class="chips chips-lg reveal">
+        <li>Introduction to Large Language Models</li>
+        <li>Introduction to Generative AI</li>
+        <li>Introduction to Responsible AI</li>
+        <li>Computer Vision Fundamentals</li>
+        <li>Recommendation Systems</li>
       </ul>
     </div>
   </section>
 
-  <!-- 01 ABOUT — asymmetric split -->
-  <section class="section section-about" id="about" aria-labelledby="about-h">
-    <div class="shell sec-grid">
-      <div class="rail"><span class="rail-num">01</span><span class="rail-label">About</span></div>
-      <div class="sec-body about-split">
-        <div class="about-lede">
-          <h2 id="about-h">About</h2>
-          <p class="lede">I build production backend systems and the agentic services that run on top of them — Java/Spring Boot, Trillo Workbench and Python/FastAPI, on Google Cloud.</p>
-          <p>Three years turning raw operational requirements into domain models and shipped software, working directly with clients. Currently specialising in agentic AI: Google ADK, Model Context Protocol and Vertex AI.</p>
-        </div>
-        <blockquote class="pull">
-          <p>An agent reasons freely. What it can reach, and what it can commit without asking, is decided before it ever runs.</p>
-        </blockquote>
-      </div>
-    </div>
-  </section>
-
-  <!-- 02 SELECTED WORK — full-width numbered entries -->
-  <section class="section section-work" id="work" aria-labelledby="work-h">
-    <div class="shell sec-grid">
-      <div class="rail"><span class="rail-num">02</span><span class="rail-label">Work</span></div>
-      <div class="sec-body">
-        <h2 id="work-h">Selected Work</h2>
-        <p class="sec-note">Client platforms under NDA. The engineering is described; the clients are not named.</p>
-
-        <ol class="entries">
-          <li class="entry">
-            <div class="entry-main">
-              <h3 class="entry-name"><span class="entry-num">01</span>Multi-Tenant Drayage TMS</h3>
-              <p class="entry-pull">Email in. Loads out. No human in the flow.</p>
-              <p class="entry-desc">An LLM pipeline ingests delivery orders straight from email, extracts and validates the structured data, runs credit checks and creates loads. The order-to-delivery lifecycle runs unattended.</p>
-            </div>
-            <div class="entry-aside">
-              <span class="badge">Private client platform</span>
-              <ul class="stack"><li>LLM extraction</li><li>Multi-tenancy</li><li>Workflow automation</li></ul>
-            </div>
-          </li>
-
-          <li class="entry">
-            <div class="entry-main">
-              <h3 class="entry-name"><span class="entry-num">02</span>Business-Acquisition Marketplace</h3>
-              <p class="entry-pull">Five LLM agents on Google ADK. Three roles, each seeing a different slice.</p>
-              <p class="entry-desc">A Spring Boot domain backend paired with a Python/FastAPI agentic service. Buyers, brokers and admins each see a different projection of the same system.</p>
-            </div>
-            <div class="entry-aside">
-              <span class="badge">Private client platform</span>
-              <ul class="stack"><li>Spring Boot</li><li>FastAPI</li><li>Google ADK</li><li>Stripe</li><li>Plaid</li></ul>
-            </div>
-          </li>
-
-          <li class="entry">
-            <div class="entry-main">
-              <h3 class="entry-name"><span class="entry-num">03</span>Concierge Care Platform</h3>
-              <p class="entry-pull">An onboarding agent, a task-planning agent, and a pod matching engine.</p>
-              <p class="entry-desc">Connects aging-adult clients with field staff. A different control pattern from the risk-tiered gate: the planning agent runs autonomously and a coordinator reviews and adjusts the plan afterwards.</p>
-            </div>
-            <div class="entry-aside">
-              <span class="badge">Private client platform</span>
-              <ul class="stack"><li>Multi-agent orchestration</li><li>Gusto Embedded Payroll</li><li>Checkr</li></ul>
-            </div>
-          </li>
-        </ol>
-      </div>
-    </div>
-  </section>
-
-  <!-- 03 HOW I BUILD AGENTS — full-bleed, the loud one -->
-  <section class="section section-approach" id="approach" aria-labelledby="approach-h">
-    <div class="shell sec-grid">
-      <div class="rail"><span class="rail-num">03</span><span class="rail-label">Approach</span></div>
-      <div class="sec-body">
-        <h2 id="approach-h">How I Build Agents</h2>
-        <p class="lede">The agent reasons freely inside a boundary it cannot widen. Policy decides what commits on its own and what waits for a person — so routine writes are never slowed down, and the ones that matter are never silent.</p>
-        <p>Underneath: <strong>Vertex AI</strong> and <strong>Gemini</strong> for inference, routed through <strong>LiteLLM</strong>; <strong>BigQuery vector search</strong> backing RAG and semantic discovery; <strong>GKE</strong> for orchestration and <strong>Redis</strong> for caching and rate limiting.</p>
-      </div>
-    </div>
-
-    <div class="bleed">
-      <div class="shell">
-        <div class="flow" role="group" aria-labelledby="flow-cap">
-          <ol class="flow-spine">
-            <li class="fnode"><span class="fnode-t">Caller</span><span class="fnode-s">carries identity</span><span class="idchip">identity</span></li>
-            <li class="fnode"><span class="fnode-t">Agent</span><span class="fnode-s">proposes an action</span><span class="idchip">identity</span></li>
-            <li class="fnode"><span class="fnode-t">Role-filtered toolset</span><span class="fnode-s">bounds what it can see</span><span class="idchip">identity</span></li>
-            <li class="fnode"><span class="fnode-t">MCP tool server</span><span class="fnode-s">propagates identity per call</span><span class="idchip">identity</span></li>
-            <li class="fnode fnode-policy"><span class="fnode-t">Policy</span><span class="fnode-s">classifies the write</span><span class="idchip">identity</span></li>
-          </ol>
-
-          <div class="flow-branches">
-            <div class="branch branch-low">
-              <p class="branch-k">Low risk</p>
-              <div class="fnode fnode-out" data-node="low"><span class="fnode-t">Commits</span><span class="fnode-s">no interruption</span></div>
-            </div>
-            <div class="branch branch-high">
-              <p class="branch-k">High risk</p>
-              <div class="fnode fnode-gate"><span class="fnode-t">Gate</span><span class="fnode-s">holds for approval</span></div>
-              <div class="fnode fnode-out fnode-pending" data-node="change"><span class="fnode-t">Commits on approval</span><span class="fnode-s">nothing lands until then</span></div>
-            </div>
-          </div>
-
-          <!-- Stage B. Injected controls stay hidden until script.js removes the
-               attribute, so with JavaScript off there are no dead buttons and
-               the static poster above is the whole explanation. -->
-          <div class="gate-demo" hidden>
-            <p class="gate-demo-k">Send a write through it</p>
-            <div class="gate-controls">
-              <button type="button" class="gbtn" data-send="low">Low-risk write</button>
-              <button type="button" class="gbtn" data-send="high">High-risk write</button>
-            </div>
-            <div class="gate-decision">
-              <span class="gate-decision-k">Waiting on you</span>
-              <button type="button" class="gbtn gbtn-go" data-decide="approve" disabled>Approve</button>
-              <button type="button" class="gbtn" data-decide="reject" disabled>Reject</button>
-            </div>
-            <p class="gate-status" role="status" aria-live="polite">Nothing in flight. Both paths are shown above.</p>
-          </div>
-
-          <p class="flow-cap" id="flow-cap">Identity travels the whole way down. Policy decides which writes commit on their own and which stop at the gate.</p>
-        </div>
-      </div>
-    </div>
-
-  </section>
-
-  <!-- 04 SKILLS — bento, unequal -->
-  <section class="section section-skills" id="skills" aria-labelledby="skills-h">
-    <div class="shell sec-grid">
-      <div class="rail"><span class="rail-num">04</span><span class="rail-label">Skills</span></div>
-      <div class="sec-body">
-        <h2 id="skills-h">Skills</h2>
-        <div class="bento">
-          <div class="cell cell-primary">
-            <h3>Agentic AI</h3>
-            <ul class="chips"><li>Google ADK</li><li>MCP</li><li>Multi-Agent Systems</li><li>Agent Orchestration</li><li>Tool Calling</li></ul>
-          </div>
-          <div class="cell cell-wide">
-            <h3>LLM &amp; GenAI</h3>
-            <ul class="chips"><li>Vertex AI</li><li>Gemini</li><li>Claude</li><li>LiteLLM</li><li>RAG</li><li>Prompt Engineering</li></ul>
-          </div>
-          <div class="cell">
-            <h3>Languages</h3>
-            <ul class="chips"><li>Java</li><li>Python</li><li>SQL</li></ul>
-          </div>
-          <div class="cell">
-            <h3>Frameworks</h3>
-            <ul class="chips"><li>Spring Boot</li><li>FastAPI</li><li>Trillo Workbench</li></ul>
-          </div>
-          <div class="cell cell-wide">
-            <h3>Cloud &amp; Infrastructure</h3>
-            <ul class="chips"><li>GCP</li><li>GKE</li><li>Docker</li><li>Redis</li><li>PostgreSQL</li><li>MySQL</li></ul>
-          </div>
-          <div class="cell">
-            <h3>Practice</h3>
-            <ul class="chips"><li>Client engagement</li><li>Requirements discovery</li><li>Ownership</li></ul>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- 05 EDUCATION — deliberately the quietest block -->
-  <section class="section section-edu" id="education" aria-labelledby="edu-h">
-    <div class="shell sec-grid">
-      <div class="rail"><span class="rail-num">05</span><span class="rail-label">Education</span></div>
-      <div class="sec-body">
-        <h2 id="edu-h">Education &amp; Certifications</h2>
-        <div class="edu-entry">
-          <h3>BS Computer Science</h3>
-          <p class="edu-meta">International Islamic University Islamabad</p>
-        </div>
-        <p class="certs"><span class="certs-k">Google Cloud</span> Large Language Models · Generative AI · Responsible AI · Computer Vision Fundamentals · Recommendation Systems</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- 06 CONTACT — airy and loud -->
   <section class="section section-contact" id="contact" aria-labelledby="contact-h">
-    <div class="shell sec-grid">
-      <div class="rail"><span class="rail-num">06</span><span class="rail-label">Contact</span></div>
-      <div class="sec-body">
-        <h2 id="contact-h" class="contact-statement">Open to backend and agentic-AI engineering roles.</h2>
-        <p class="contact-email"><a href="mailto:danialaslam04@gmail.com">danialaslam04@gmail.com</a></p>
-        <ul class="contact-meta">
-          <li><span class="k">LinkedIn</span><a href="https://www.linkedin.com/in/danial04/" target="_blank" rel="noopener noreferrer">linkedin.com/in/danial04</a></li>
-          <li><span class="k">GitHub</span><a href="https://github.com/DanialAslam04" target="_blank" rel="noopener noreferrer">github.com/DanialAslam04</a></li>
-          <li><span class="k">Resume</span><a href="assets/Muhammad-Danial-Aslam-Resume.pdf" target="_blank" rel="noopener noreferrer">Download PDF</a></li>
-          <li><span class="k">Availability</span><span>Remote, hybrid or onsite</span></li>
-        </ul>
-      </div>
+    <div class="wrap narrow">
+      <h2 id="contact-h" class="reveal">Contact</h2>
+      <p class="lede reveal">Open to backend and agentic-AI engineering roles — remote, hybrid or onsite.</p>
+      <ul class="contact-list reveal">
+        <li><span class="contact-k">Email</span><a href="mailto:danialaslam04@gmail.com">danialaslam04@gmail.com</a></li>
+        <li><span class="contact-k">LinkedIn</span><a href="https://www.linkedin.com/in/danial04/" target="_blank" rel="noopener noreferrer">linkedin.com/in/danial04</a></li>
+        <li><span class="contact-k">GitHub</span><a href="https://github.com/DanialAslam04" target="_blank" rel="noopener noreferrer">github.com/DanialAslam04</a></li>
+        <li><span class="contact-k">Resume</span><a href="assets/Muhammad-Danial-Aslam-Resume.pdf" target="_blank" rel="noopener noreferrer">Download PDF</a></li>
+      </ul>
     </div>
   </section>
 
 </main>
 
 <footer class="site-footer">
-  <div class="shell sec-grid">
-    <div class="rail" aria-hidden="true"></div>
-    <div class="sec-body">
-      <p>Muhammad Danial Aslam — Backend &amp; Agentic AI Engineer</p>
-      <p class="muted">Hand-written HTML, CSS and vanilla JavaScript. No frameworks, no trackers, no third-party requests.</p>
-    </div>
+  <div class="wrap">
+    <p>Muhammad Danial Aslam — Backend &amp; Agentic AI Engineer</p>
+    <p class="muted">Hand-written HTML, CSS and vanilla JavaScript. No frameworks, no trackers.</p>
   </div>
 </footer>
 
