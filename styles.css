@@ -1,512 +1,346 @@
-/* Muhammad Danial Aslam — portfolio
-   Dark-first. Light theme via prefers-color-scheme, overridable by the toggle.
-   No :has(), no container queries, no backdrop-filter — Safari/Firefox are not
-   automated in QA, so nothing here needs a fallback. */
+/* ============================================================================
+   Muhammad Danial Aslam — the page is the pipeline.
+   A rail down the left carries a signal whose position is scroll position.
+   Each section is a stage the request passes through; at the bottom it reaches
+   the policy, branches, and holds.
 
-:root {
-  --bg:        #0D1117;
-  --surface:   #161B22;
-  --surface-2: #1C232C;
-  --border:    #30363D;
-  --text:      #E6EDF3;
-  --muted:     #9FB0C0;
-  --accent:    #58A6FF;
-  --accent-2:  #3FB9A5;
-  --on-accent: #0D1117;
-  --badge-bg:  #10302C;
-  --badge-fg:  #6FD9C6;
-  --shadow:    0 1px 2px rgba(0,0,0,.4);
+   Dark only, by decision: the accent is emissive, and a light counterpart
+   would be a second visual system rather than a re-tokenisation.
 
-  --measure: 68ch;
-  --wrap: 1100px;
-  --wrap-narrow: 760px;
-  --r: 12px;
+   NOTHING ON THIS PAGE IS HIDDEN IN CSS. Every reveal's from-state is set by
+   JavaScript at runtime, so with JS off or motion reduced every word is simply
+   present. An element hidden here and revealed only by script is invisible
+   forever in two of three engines — that has cost this project three rounds.
+   ========================================================================== */
 
-  --step-0: 1rem;
-  --step-1: 1.125rem;
-  --step-2: 1.375rem;
-  --step-3: 1.75rem;
-  --step-4: 2.25rem;
-  --step-5: clamp(2.25rem, 1.4rem + 4.2vw, 3.75rem);
+@font-face{font-family:'Instrument Serif';font-style:normal;font-weight:400;font-display:swap;
+  src:url('assets/instrument-serif-latin.woff2') format('woff2');
+  unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+2122,U+2212,U+FEFF,U+FFFD}
+@font-face{font-family:'Instrument Sans';font-style:normal;font-weight:400 500;font-display:swap;
+  src:url('assets/instrument-sans-latin.woff2') format('woff2');
+  unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+2122,U+2212,U+FEFF,U+FFFD}
+@font-face{font-family:'IBM Plex Mono';font-style:normal;font-weight:400;font-display:swap;
+  src:url('assets/ibm-plex-mono-400.woff2') format('woff2');
+  unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+2122,U+2212,U+FEFF,U+FFFD}
+@font-face{font-family:'IBM Plex Mono';font-style:normal;font-weight:500;font-display:swap;
+  src:url('assets/ibm-plex-mono-500.woff2') format('woff2');
+  unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+2122,U+2212,U+FEFF,U+FFFD}
 
-  color-scheme: dark;
+:root{
+  /* Component tokens first. Every derived colour below is expressed through
+     these, so changing the signal or the ground is one value rather than a
+     hunt through fourteen rgba() literals — which is what it was. The canvas
+     reads --sig-rgb at runtime for the same reason. */
+  --void-rgb: 5 6 10;
+  --deep-rgb: 8 10 16;
+  --sig-rgb:  255 84 54;
+  --cool-rgb: 77 163 255;
+  --faint-rgb:58 66 82;
+
+  --void:rgb(var(--void-rgb));
+  --deep:rgb(var(--deep-rgb));
+  --ink:#EEF1F6;
+  --dim:#8891A3;
+  --faint:rgb(var(--faint-rgb));
+  --sig:rgb(var(--sig-rgb));
+  --sig-soft:rgb(var(--sig-rgb) / .14);
+  --cool:rgb(var(--cool-rgb));
+
+  --serif:'Instrument Serif',Georgia,'Times New Roman',serif;
+  --sans:'Instrument Sans',ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --mono:'IBM Plex Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --rail:72px;
+
+  /* One page ladder, swept across 320–1920: minimum adjacent gap 6.0px.
+     Floors are separated deliberately — both earlier inversions happened
+     where clamps bottom out, not at the ceiling. */
+  --t-name : clamp(3rem,     9.5vw, 8.25rem);
+  --t-claim: clamp(2.125rem, 5.6vw, 5rem);
+  --t-head : clamp(1.75rem,  4.6vw, 4rem);
+  --t-value: clamp(1.375rem, 2.3vw, 2rem);
+  --t-body : clamp(1rem,     1.5vw, 1.3125rem);
+  --m-lg   : .8125rem;
+  --m-sm   : .6875rem;
+
+  color-scheme:dark;
 }
 
-/* OS prefers light, and the visitor has not overridden it */
-@media (prefers-color-scheme: light) {
-  :root:not([data-theme="dark"]) {
-    --bg:        #FFFFFF;
-    --surface:   #F6F8FA;
-    --surface-2: #EEF1F5;
-    --border:    #D0D7DE;
-    --text:      #1F2328;
-    --muted:     #57606A;
-    --accent:    #0969DA;
-    --accent-2:  #0F766E;
-    --on-accent: #FFFFFF;
-    --badge-bg:  #E4F3F0;
-    --badge-fg:  #0B5F57;
-    --shadow:    0 1px 2px rgba(31,35,40,.08);
-    color-scheme: light;
-  }
+*,*::before,*::after{box-sizing:border-box}
+html{scrollbar-width:none;scroll-behavior:smooth}
+html::-webkit-scrollbar{display:none}
+body{margin:0;background:var(--void);color:var(--ink);
+  font-family:var(--sans);font-size:1.0625rem;line-height:1.6;
+  -webkit-font-smoothing:antialiased;overflow-x:hidden}
+
+.skip-link{position:absolute;left:16px;top:-100px;z-index:100;
+  background:var(--sig);color:var(--void);padding:12px 18px;
+  font-family:var(--mono);font-size:var(--m-lg);font-weight:500;
+  letter-spacing:.14em;text-transform:uppercase;text-decoration:none}
+.skip-link:focus{top:16px}
+
+/* ambient field — a system idling behind everything */
+#field{position:fixed;inset:0;width:100%;height:100%;z-index:0;opacity:.55;pointer-events:none}
+.glow{position:fixed;z-index:0;pointer-events:none;border-radius:50%;filter:blur(90px);opacity:.5}
+.glow-a{width:60vw;height:60vw;left:-15vw;top:-10vw;background:radial-gradient(circle,rgb(var(--cool-rgb) / .20),transparent 68%)}
+.glow-b{width:55vw;height:55vw;right:-18vw;top:45vh;background:radial-gradient(circle,var(--sig-soft),transparent 68%)}
+
+main{position:relative;z-index:2}
+.wrap{max-width:1180px;margin-inline:auto;padding-inline:24px}
+@media(max-width:767px){.wrap{padding-inline:16px}}
+
+
+/* ---------- persistent bar: a recruiter must be able to jump ---------- */
+.bar{position:sticky;top:0;z-index:40;background:rgb(var(--void-rgb) / .86);
+  border-bottom:1px solid var(--faint)}
+.bar-in{max-width:1180px;margin-inline:auto;padding:0 24px 0 calc(24px + var(--rail));
+  display:flex;align-items:center;gap:16px;min-height:56px}
+@media(max-width:860px){.bar-in{padding-left:calc(16px + 34px);padding-right:16px}}
+.bar-id{display:inline-flex;align-items:center;gap:9px;min-height:44px;margin-right:auto;
+  font-family:var(--mono);font-size:var(--m-lg);font-weight:500;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ink);text-decoration:none;white-space:nowrap}
+.bar-dot{width:7px;height:7px;border-radius:50%;background:var(--sig);
+  box-shadow:0 0 10px var(--sig);flex:none}
+.bar-nav ul{display:flex;gap:2px;list-style:none;margin:0;padding:0}
+.bar-nav a{display:inline-flex;align-items:center;min-height:44px;padding:10px 12px;
+  font-family:var(--mono);font-size:var(--m-sm);letter-spacing:.12em;text-transform:uppercase;
+  color:var(--dim);text-decoration:none;white-space:nowrap;transition:color .25s}
+.bar-nav a:hover{color:var(--ink)}
+.bar-cta{display:inline-flex;align-items:center;min-height:44px;padding:10px 16px;flex:none;
+  border:1px solid var(--sig);color:var(--sig);text-decoration:none;
+  font-family:var(--mono);font-size:var(--m-sm);font-weight:500;letter-spacing:.12em;
+  text-transform:uppercase;transition:background .25s,color .25s}
+.bar-cta:hover{background:var(--sig);color:var(--void)}
+/* The bar scrolls away with the page below 860 — a 56px band is too much of a
+   short viewport to spend permanently, and the rail still carries position. */
+@media(max-width:860px){
+  .bar{position:relative}
+  .bar-nav{order:3;flex-basis:100%;min-width:0;border-top:1px solid var(--faint);
+    margin-inline:calc(-16px - 34px) -16px;padding-inline:calc(16px + 34px) 16px}
+  .bar-in{flex-wrap:wrap;padding-bottom:0}
+  .bar-nav ul{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none}
+  .bar-nav ul::-webkit-scrollbar{display:none}
+  .bar-nav li{flex:none}
 }
+/* Anchor jumps must clear the sticky bar. */
+section[id]{scroll-margin-top:72px}
+@media(max-width:860px){section[id]{scroll-margin-top:16px}}
 
-/* Explicit toggle wins over the OS preference, both directions */
-:root[data-theme="light"] {
-  --bg:        #FFFFFF;
-  --surface:   #F6F8FA;
-  --surface-2: #EEF1F5;
-  --border:    #D0D7DE;
-  --text:      #1F2328;
-  --muted:     #57606A;
-  --accent:    #0969DA;
-  --accent-2:  #0F766E;
-  --on-accent: #FFFFFF;
-  --badge-bg:  #E4F3F0;
-  --badge-fg:  #0B5F57;
-  --shadow:    0 1px 2px rgba(31,35,40,.08);
-  color-scheme: light;
+/* ---------- hero: argument left, proof right ---------- */
+.hero-grid{display:grid;gap:clamp(40px,5vw,72px);align-items:center}
+@media(min-width:1024px){.hero-grid{grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr)}}
+
+/* Dense and card-based against an otherwise airy page, deliberately: the hero
+   proves, the rest argues. This treatment does not propagate downward. */
+.brief{border:1px solid var(--faint);background:rgb(var(--deep-rgb) / .55);padding:clamp(20px,2.2vw,28px)}
+.metrics{list-style:none;display:flex;flex-wrap:wrap;gap:1.25rem 2rem;margin:0 0 1.75rem;padding:0 0 1.5rem;
+  border-bottom:1px solid var(--faint)}
+.metrics li{display:flex;flex-direction:column;gap:.15rem;min-width:0}
+.metrics b{font-family:var(--serif);font-weight:400;font-size:var(--t-value);
+  line-height:1;color:var(--sig)}
+.metrics span{font-family:var(--mono);font-size:var(--m-sm);letter-spacing:.1em;
+  text-transform:uppercase;color:var(--dim);max-width:16ch}
+.caps{list-style:none;margin:0;padding:0;display:grid;gap:1.1rem}
+.cap-t{font-family:var(--mono);font-size:var(--m-lg);font-weight:500;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ink);margin:0 0 .3rem}
+.cap-d{font-size:.9375rem;color:var(--dim);margin:0;max-width:42ch}
+
+/* ---------- the rail: the request's trace ---------- */
+#rail{position:fixed;left:28px;top:0;bottom:0;width:2px;z-index:3;pointer-events:none}
+#rail .track{position:absolute;inset:0;background:linear-gradient(to bottom,transparent,var(--faint) 12%,var(--faint) 88%,transparent)}
+/* The trace scales and the head translates — never height/top. Animating
+   geometry forces a layout every frame; on a page that moves continuously
+   that is the difference between zero layouts and one per frame. */
+#rail .trace{position:absolute;left:0;top:0;width:2px;height:100vh;
+  transform-origin:0 0;transform:scaleY(0);will-change:transform;
+  background:linear-gradient(to bottom,transparent,var(--sig));box-shadow:0 0 12px var(--sig)}
+#rail .head{position:absolute;left:-4px;top:0;width:10px;height:10px;border-radius:50%;
+  transform:translateY(0);will-change:transform;
+  background:var(--sig);box-shadow:0 0 18px 4px rgb(var(--sig-rgb) / .55)}
+#rail .tick{position:absolute;left:-5px;width:12px;height:1px;background:var(--faint);
+  transition:background .4s,box-shadow .4s}
+#rail .tick.lit{background:var(--sig);box-shadow:0 0 10px var(--sig)}
+@media(max-width:860px){#rail{left:12px}}
+
+/* ---------- type ---------- */
+.eyebrow{font-family:var(--mono);font-size:var(--m-lg);font-weight:500;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--dim);margin:0 0 1.5rem}
+.eyebrow b{color:var(--sig);font-weight:500}
+h1{font-family:var(--serif);font-weight:400;font-size:var(--t-name);
+  line-height:.9;letter-spacing:-.03em;margin:0 0 1.75rem}
+.claim{font-family:var(--serif);font-size:var(--t-claim);line-height:1.04;
+  letter-spacing:-.02em;margin:0;max-width:17ch}
+.claim .two{color:var(--sig)}
+h2{font-family:var(--serif);font-weight:400;font-size:var(--t-head);
+  line-height:1;letter-spacing:-.025em;margin:0 0 1.5rem;max-width:18ch}
+p.lede{font-size:var(--t-body);color:var(--dim);max-width:46ch;margin:0}
+.lede-2{margin-top:1.25rem}
+.note{font-family:var(--mono);font-size:var(--m-sm);letter-spacing:.12em;
+  text-transform:uppercase;color:var(--dim);margin-top:4rem}
+
+/* line-reveal mask. The span's from-state is set in JS, never here. */
+.rv{display:block;overflow:hidden}
+.rv > span{display:block;will-change:transform,opacity}
+
+section{position:relative;padding-block:clamp(96px,16vh,200px);padding-left:var(--rail)}
+@media(max-width:860px){section{padding-left:34px}}
+#hero{min-height:100svh;display:flex;flex-direction:column;justify-content:center;padding-block:0}
+
+/* ---------- hero proof strip ---------- */
+.proof{list-style:none;margin:2.5rem 0 0;padding:0;display:flex;flex-wrap:wrap;gap:.5rem 2rem;
+  font-family:var(--mono);font-size:var(--m-sm);letter-spacing:.12em;
+  text-transform:uppercase;color:var(--dim)}
+.proof li{overflow:hidden}
+.proof li > span{display:block}
+
+/* ---------- stages ---------- */
+.stage{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,.85fr);gap:clamp(32px,6vw,96px);align-items:center}
+@media(max-width:900px){.stage{grid-template-columns:1fr;gap:2rem}}
+.unit{display:flex;flex-direction:column;align-items:flex-start;
+  border:1px solid var(--faint);background:linear-gradient(180deg,rgba(255,255,255,.028),transparent);
+  padding:1.75rem;position:relative;transition:border-color .5s,box-shadow .5s,background .5s}
+.unit.live{border-color:var(--sig);box-shadow:0 0 0 1px rgb(var(--sig-rgb) / .28),0 18px 60px -22px rgb(var(--sig-rgb) / .5)}
+.unit .k{font-family:var(--mono);font-size:var(--m-lg);font-weight:500;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--dim);display:block;margin-bottom:.5rem}
+.unit .v{display:block;font-family:var(--serif);font-size:var(--t-value);color:var(--ink);line-height:1.15}
+.chip{display:inline-flex;align-items:center;gap:.5rem;margin-top:1.25rem;
+  font-family:var(--mono);font-size:var(--m-sm);letter-spacing:.12em;text-transform:uppercase;
+  color:var(--faint);border:1px solid var(--faint);padding:.3rem .55rem;
+  transition:color .5s,border-color .5s,opacity .5s;opacity:.45}
+.unit.live .chip,.chip.lit{color:var(--sig);border-color:var(--sig);opacity:1}
+.chip i{width:5px;height:5px;background:currentColor;border-radius:50%;font-style:normal;flex:none}
+
+/* ---------- 3 · selected work: one full-bleed band, three stacked panels ----------
+   No pin, no horizontal travel. The distinct rhythm comes from treatment —
+   this is the only multi-panel full-bleed band on the page — not from taking
+   the scroll hostage. Selected Work is the hiring content and a recruiter
+   scans it; a mechanism that makes it harder to skim is the conceit beating
+   the content. Panels are sized to their content, roughly half a screen, so
+   more than one is visible at a time. */
+.work-view{
+  position:relative;left:50%;margin-left:-50vw;width:100vw;
+  margin-top:3.5rem;background:var(--deep);
+  border-block:1px solid var(--faint);
 }
+.work-track{list-style:none;margin:0;padding:0}
+.panel{padding-block:clamp(40px,6vw,72px)}
+.panel + .panel{border-top:1px solid var(--faint)}
+/* Inner alignment matches .wrap plus the rail gutter, so the band bleeds to
+   the edges while its text stays on the page's content edge. */
+.panel-in{max-width:1180px;margin-inline:auto;padding-inline:24px;padding-left:calc(24px + var(--rail))}
+@media(max-width:860px){.panel-in{padding-left:calc(16px + 34px);padding-right:16px}}
+.panel-k{font-family:var(--mono);font-size:var(--m-lg);font-weight:500;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--dim);margin:0 0 1.25rem}
+.panel-pull{font-family:var(--serif);font-size:var(--t-head);line-height:1.02;letter-spacing:-.025em;
+  margin:0 0 1.25rem;max-width:30ch}   /* the breaks are authored as spans; an
+  18ch cap re-wrapped them into orphans ("ADK." alone on a line) */
+.panel-desc{font-size:var(--t-body);color:var(--dim);max-width:48ch;margin:0}
+.marker{font-family:var(--mono);font-size:var(--m-sm);letter-spacing:.14em;text-transform:uppercase;
+  color:var(--dim);margin:1.75rem 0 0;padding-top:.75rem;border-top:1px solid var(--faint);max-width:18ch}
+.stack{list-style:none;display:flex;flex-wrap:wrap;gap:.5rem;margin:1.5rem 0 0;padding:0;
+  font-family:var(--mono);font-size:var(--m-sm);letter-spacing:.1em;text-transform:uppercase;color:var(--dim)}
+.stack li{border:1px solid var(--faint);padding:.3rem .6rem}
 
-*, *::before, *::after { box-sizing: border-box; }
+/* ---------- the gate ---------- */
+#gate{min-height:100svh;display:flex;flex-direction:column;justify-content:center}
+.verdict{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--faint);
+  border:1px solid var(--faint);margin-top:2.5rem}
+@media(max-width:860px){.verdict{grid-template-columns:1fr}}
+.path{background:var(--deep);padding:1.75rem;transition:opacity .5s,background .5s}
+.path .pk{font-family:var(--mono);font-size:var(--m-lg);font-weight:500;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--dim);display:block;margin-bottom:.75rem}
+.path .pv{display:block;font-family:var(--serif);font-size:var(--t-value);line-height:1.1}
+.path .ps{display:block;font-size:.9375rem;color:var(--dim);margin-top:.5rem}
+[data-state="held"] .path-low{opacity:.32}
+[data-state="held"] .path-high{background:rgb(var(--sig-rgb) / .06)}
+[data-state="low"] .path-high{opacity:.32}
+[data-state="approved"] .path-high .pv{color:var(--sig)}
+[data-state="approved"] .path-high{background:linear-gradient(180deg,rgb(var(--sig-rgb) / .16),rgb(var(--sig-rgb) / .04));
+  box-shadow:inset 0 0 60px -10px rgb(var(--sig-rgb) / .45)}
 
-html { scroll-behavior: smooth; }
+.controls{display:flex;flex-wrap:wrap;gap:.75rem;margin-top:2rem;align-items:center}
+.ctl{font-family:var(--mono);font-size:var(--m-lg);font-weight:500;letter-spacing:.14em;
+  text-transform:uppercase;background:transparent;color:var(--ink);border:1px solid var(--faint);
+  padding:.85rem 1.25rem;min-height:46px;cursor:pointer;
+  transition:border-color .25s,color .25s,background .25s}
+.ctl:not(:disabled):hover{border-color:var(--ink)}
+.ctl-go:not(:disabled){border-color:var(--sig);color:var(--sig)}
+.ctl-go:not(:disabled):hover{background:var(--sig);color:var(--void)}
+.ctl:disabled{color:var(--faint);border-color:rgb(var(--faint-rgb) / .5);cursor:not-allowed}
+.ctl-sep{font-family:var(--mono);font-size:var(--m-sm);letter-spacing:.12em;
+  text-transform:uppercase;color:var(--dim);margin-right:.25rem}
+.ctl-sep-2{margin-left:1rem}
+.status{font-family:var(--mono);font-size:var(--m-sm);color:var(--dim);margin-top:1.5rem;min-height:1.4em}
+.status b{color:var(--sig);font-weight:400}
 
-body {
-  margin: 0;
-  background: var(--bg);
-  color: var(--text);
-  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  font-size: var(--step-0);
-  line-height: 1.65;
-  -webkit-font-smoothing: antialiased;
-  overflow-wrap: break-word;
+/* ---------- 4 · skills: a field, lit and dim ---------- */
+.field{margin:3rem 0 0;display:grid;gap:clamp(28px,3.5vw,48px);
+  grid-template-columns:repeat(auto-fit,minmax(248px,1fr))}
+.grp dt{font-family:var(--mono);font-size:var(--m-lg);font-weight:500;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--dim);margin-bottom:1rem}
+.grp dd{margin:0}
+.grp ul{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:.5rem}
+.grp li{font-family:var(--mono);font-size:var(--m-sm);letter-spacing:.1em;text-transform:uppercase;
+  color:var(--dim);border:1px solid var(--faint);padding:.35rem .65rem}
+/* What this caller can reach is brighter than what it cannot — the field is
+   the role-filtered toolset, stated as type rather than as a diagram. */
+.grp-lit dt{color:var(--sig)}
+.grp-lit li{color:var(--ink);border-color:rgb(var(--sig-rgb) / .38)}
+
+/* ---------- 5 · the toolset filter: the one informational motion ---------- */
+.tools{list-style:none;margin:1.25rem 0 0;padding:0;display:flex;flex-wrap:wrap;gap:.4rem}
+.tools li{font-family:var(--mono);font-size:var(--m-sm);letter-spacing:.1em;
+  color:var(--dim);border:1px solid var(--faint);padding:.28rem .55rem;
+  transition:opacity .6s ease,color .6s ease,border-color .6s ease}
+.unit.filtered .tools .deny{opacity:.22}
+.unit.filtered .tools .allow{color:var(--sig);border-color:rgb(var(--sig-rgb) / .45)}
+.sr{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;
+  clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0}
+
+/* ---------- 7 · education: the quiet beat. Resist making it interesting. ---------- */
+.quiet{padding-block:clamp(64px,9vh,120px)}
+.quiet h2{font-family:var(--mono);font-size:var(--m-lg);font-weight:500;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--dim);margin-bottom:1.5rem;max-width:none}
+.edu-degree{font-family:var(--serif);font-size:var(--t-value);color:var(--ink);margin:0;line-height:1.2}
+.edu-inst{font-size:var(--t-body);color:var(--dim);margin:.35rem 0 0;max-width:none}
+.certs{font-family:var(--mono);font-size:var(--m-sm);letter-spacing:.1em;text-transform:uppercase;
+  color:var(--dim);margin:1.75rem 0 0;max-width:none;line-height:2}
+
+/* ---------- 8 · contact: arrival ---------- */
+#contact{position:relative}
+.terminal{position:absolute;left:calc(var(--rail) * -1 + 22px);top:clamp(96px,16vh,200px);
+  width:14px;height:14px;pointer-events:none}
+@media(max-width:860px){.terminal{left:-28px}}
+.terminal .dot{display:block;width:100%;height:100%;border-radius:50%;
+  background:var(--faint);transition:background .5s}
+.terminal.landed .dot{background:var(--sig);animation:land .9s ease-out 1}
+@keyframes land{
+  0%{box-shadow:0 0 0 0 rgb(var(--sig-rgb) / .55)}
+  70%{box-shadow:0 0 0 18px rgb(var(--sig-rgb) / 0)}
+  100%{box-shadow:0 0 18px 4px rgb(var(--sig-rgb) / .45)}
 }
+.mail{margin:0 0 2.5rem}
+.mail a{font-family:var(--serif);font-size:var(--t-claim);line-height:1.05;letter-spacing:-.02em;
+  color:var(--ink);text-decoration:none;border-bottom:1px solid var(--faint);
+  /* inline-flex with a floor rather than inline-block: at 375 the claim size
+     renders 36.7px tall, under the 44px target. Moot at desktop sizes. */
+  display:inline-flex;align-items:center;min-height:44px;
+  transition:color .25s,border-color .25s}
+.mail a:hover{color:var(--sig);border-color:var(--sig)}
+.links{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:.75rem 2.5rem}
+.links a{display:inline-flex;align-items:center;gap:.6rem;min-height:46px;
+  font-family:var(--mono);font-size:var(--m-lg);font-weight:500;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ink);text-decoration:none;transition:color .25s}
+.links a em{font-style:normal;color:var(--dim);letter-spacing:.1em}
+.links a:hover,.links a:hover em{color:var(--sig)}
+.note-foot{margin-top:4rem;line-height:2}
+.chip-loose{margin-top:2.5rem}
 
-h1, h2, h3 { line-height: 1.2; margin: 0 0 .5em; letter-spacing: -.02em; }
-h1 { font-size: var(--step-5); font-weight: 700; }
-h2 { font-size: var(--step-4); font-weight: 650; }
-h3 { font-size: var(--step-2); font-weight: 620; }
-p  { margin: 0 0 1rem; max-width: var(--measure); }
+:focus-visible{outline:2px solid var(--sig);outline-offset:3px}
 
-a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 3px; }
-a:hover { text-decoration-thickness: 2px; }
-
-:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 3px;
-  border-radius: 4px;
+/* Reduced motion is a complete page, not a stripped one: the field renders
+   once and still, native scroll, no reveals, gate fully operable. */
+@media(prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .rv > span{transform:none!important;opacity:1!important}
+  *,*::before,*::after{transition-duration:.001ms!important;animation-duration:.001ms!important}
 }
-
-.wrap { width: 100%; max-width: var(--wrap); margin-inline: auto; padding-inline: 16px; }
-
-/* Narrow sections share the wide sections' left rail instead of being centred
-   independently — two centred wrappers of different widths put section headings
-   on two different left edges (170px apart at 1440, a 4px near-miss at 768).
-   The container keeps the wide rail; its children carry the narrow measure. */
-.wrap.narrow { max-width: var(--wrap); }
-.wrap.narrow > * { max-width: var(--wrap-narrow); }
-.wrap.narrow > p { max-width: var(--measure); }  /* keep the reading measure */
-
-.skip-link {
-  position: absolute;
-  left: 16px;
-  top: -100px;
-  z-index: 100;
-  background: var(--accent);
-  color: var(--on-accent);
-  padding: 12px 16px;
-  border-radius: 8px;
-  font-weight: 600;
-  text-decoration: none;
-  transition: top .15s ease;
-}
-.skip-link:focus { top: 16px; }
-
-/* ---------- header ---------- */
-
-.site-header {
-  position: sticky;
-  top: 0;
-  z-index: 50;
-  background: var(--bg);
-  border-bottom: 1px solid var(--border);
-}
-.header-inner {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  min-height: 60px;
-}
-.brand {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  color: var(--text);
-  text-decoration: none;
-  font-weight: 650;
-  margin-right: auto;
-  padding: 8px 0;
-}
-.brand-mark {
-  display: grid;
-  place-items: center;
-  width: 30px; height: 30px;
-  border-radius: 8px;
-  background: var(--accent);
-  color: var(--on-accent);
-  font-size: .8rem;
-  font-weight: 700;
-  letter-spacing: .02em;
-}
-.site-nav ul {
-  display: flex;
-  gap: 4px;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-.site-nav a {
-  display: flex;
-  align-items: center;
-  min-height: 44px;
-  padding: 10px 12px;
-  color: var(--muted);
-  text-decoration: none;
-  border-radius: 8px;
-  font-size: .95rem;
-  white-space: nowrap;
-}
-.site-nav a:hover { color: var(--text); background: var(--surface); }
-
-.theme-toggle {
-  display: grid;
-  place-items: center;
-  width: 44px; height: 44px;
-  flex: none;
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  background: var(--surface);
-  color: var(--text);
-  cursor: pointer;
-}
-.theme-toggle:hover { background: var(--surface-2); }
-.icon-sun { display: none; }
-:root[data-theme="light"] .icon-sun { display: block; }
-:root[data-theme="light"] .icon-moon { display: none; }
-@media (prefers-color-scheme: light) {
-  :root:not([data-theme="dark"]) .icon-sun  { display: block; }
-  :root:not([data-theme="dark"]) .icon-moon { display: none; }
-}
-
-@media (max-width: 720px) {
-  .header-inner { flex-wrap: wrap; padding-bottom: 0; }
-
-  /* Full-width second row. min-width:0 lets the flex item shrink so the
-     overflow is contained here and never reaches <body> (criterion 11). */
-  .site-nav {
-    order: 3;
-    flex-basis: 100%;
-    min-width: 0;
-    border-top: 1px solid var(--border);
-    margin-inline: -16px;
-    padding-inline: 16px;
-  }
-  .site-nav ul {
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    overscroll-behavior-x: contain;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;           /* Firefox */
-    -ms-overflow-style: none;        /* old Edge */
-    padding: 4px 0 6px;
-  }
-  .site-nav ul::-webkit-scrollbar { display: none; }  /* Chrome, Safari */
-  .site-nav li { flex: none; }
-
-  /* Hint that the row scrolls. Decorative: no fade if unsupported, nothing lost. */
-  .site-nav ul {
-    -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 24px), transparent 100%);
-            mask-image: linear-gradient(to right, #000 calc(100% - 24px), transparent 100%);
-  }
-
-  /* Once a focused link scrolls flush to the right edge, the fade would dissolve
-     its focus indicator. Drop the mask entirely while the nav holds focus — the
-     affordance is for pointer users, who are not the ones at risk here. */
-  .site-nav ul:focus-within {
-    -webkit-mask-image: none;
-            mask-image: none;
-  }
-
-  /* The header is two rows tall here, so anchors need more clearance. */
-  #top, .section { scroll-margin-top: 118px; }
-
-  /* R4. Four links fit the row without scrolling on common phones; the
-     overflow machinery below stays as a safety net rather than the norm. */
-  .site-nav ul { gap: 2px; }
-  .site-nav a { padding: 10px 8px; }
-}
-
-/* Narrowest phones: shave the gutters so the row still fits without scrolling. */
-@media (max-width: 360px) {
-  .site-nav a { padding: 10px 7px; font-size: .9rem; }
-}
-
-/* ---------- hero ---------- */
-
-.hero { padding: clamp(56px, 10vw, 112px) 0 clamp(40px, 6vw, 72px); }
-.hero h1 { margin-bottom: 8px; }
-.role {
-  font-size: var(--step-3);
-  color: var(--text);
-  font-weight: 600;
-  margin-bottom: 16px;
-}
-.tagline {
-  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
-  font-size: var(--step-1);
-  color: var(--accent);
-  margin-bottom: 16px;
-}
-.hero-sub { font-size: var(--step-1); color: var(--muted); max-width: 56ch; }
-
-/* R13. Scoped to .hero deliberately: `.role` also matches the Education
-   <article class="role">, which inherits this block's 28px/600 and only escapes
-   looking wrong because each of its children sets its own size. An unscoped
-   `.role` here would resize that block too. */
-@media (max-width: 420px) {
-  .hero .role { font-size: var(--step-2); }
-}
-
-/* ---------- hero proof strip (R1) ---------- */
-
-.proof {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px 20px;
-  list-style: none;
-  margin: 20px 0 0;
-  padding: 0;
-  color: var(--muted);
-  font-size: .95rem;
-}
-.proof li { display: flex; align-items: center; gap: 9px; }
-.proof li::before {
-  content: "";
-  width: 6px; height: 6px;
-  border-radius: 50%;
-  background: var(--accent-2);
-  flex: none;
-}
-
-.cta-row { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 24px; }
-.btn {
-  display: inline-flex;
-  align-items: center;
-  min-height: 44px;
-  padding: 10px 18px;
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  background: var(--surface);
-  color: var(--text);
-  text-decoration: none;
-  font-weight: 560;
-  box-shadow: var(--shadow);
-  transition: transform .14s ease, background .14s ease, border-color .14s ease;
-}
-.btn:hover { background: var(--surface-2); border-color: var(--accent); transform: translateY(-1px); }
-.btn-primary { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
-.btn-primary:hover { background: var(--accent); filter: brightness(1.08); }
-
-/* ---------- sections ---------- */
-
-.section { padding: clamp(48px, 7vw, 88px) 0; border-top: 1px solid var(--border); }
-
-/* Clear the sticky header when jumping to an in-page anchor. */
-#top, .section { scroll-margin-top: 72px; }
-.section-note { color: var(--muted); margin-top: -4px; margin-bottom: 32px; }
-.lede { font-size: var(--step-1); }
-.muted { color: var(--muted); }
-
-/* ---------- case studies ---------- */
-
-.case {
-  border: 1px solid var(--border);
-  border-radius: var(--r);
-  background: var(--surface);
-  padding: 24px;
-  margin-bottom: 16px;
-}
-.case:last-child { margin-bottom: 0; }
-.case-head {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 8px;
-}
-.case-head h3 { margin: 0; }
-.badge {
-  display: inline-block;
-  padding: 4px 10px;
-  border-radius: 999px;
-  background: var(--badge-bg);
-  color: var(--badge-fg);
-  font-size: .78rem;
-  font-weight: 650;
-  letter-spacing: .01em;
-  white-space: nowrap;
-}
-
-.chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  list-style: none;
-  margin: 16px 0 0;
-  padding: 0;
-}
-.chips li {
-  padding: 5px 11px;
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  background: var(--bg);
-  color: var(--muted);
-  font-size: .85rem;
-}
-.chips-lg li { font-size: .9rem; padding: 7px 13px; }
-
-/* ---------- diagram ---------- */
-
-.diagram { margin: 32px 0; }
-.flow {
-  display: block;
-  width: 100%;
-  max-width: 440px;
-  height: auto;
-  margin-inline: auto;
-  color: var(--border);
-}
-.flow-step rect { fill: var(--surface); stroke: var(--border); stroke-width: 1.5; }
-.flow-gate rect { stroke: var(--accent-2); }
-.flow-end  rect { fill: var(--surface-2); stroke-dasharray: 4 4; }
-.flow-t {
-  fill: var(--text);
-  /* 20/17 rather than 15/12.5: inside a viewBox these are coordinate units, not
-     rendered pixels. At 320px the diagram scales to 0.655, so 15 rendered at
-     9.8px and 12.5 at 8.2px. 20/17 clears an 11px floor at the worst width and
-     keeps the ratio the design had. */
-  font-size: 20px;
-  font-weight: 620;
-  text-anchor: middle;
-  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-}
-.flow-s {
-  fill: var(--muted);
-  font-size: 17px;
-  text-anchor: middle;
-  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-}
-.diagram figcaption {
-  color: var(--muted);
-  font-size: .9rem;
-  text-align: center;
-  margin-top: 12px;
-  max-width: var(--measure);
-  margin-inline: auto;
-}
-
-/* ---------- skills ---------- */
-
-.skill-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 16px;
-}
-.skill-group {
-  border: 1px solid var(--border);
-  border-radius: var(--r);
-  background: var(--surface);
-  padding: 20px;
-}
-.skill-group h3 { font-size: var(--step-0); text-transform: uppercase; letter-spacing: .06em; color: var(--muted); font-weight: 650; }
-.skill-group .chips { margin-top: 12px; }
-
-/* ---------- education ---------- */
-
-.role { margin-bottom: 24px; }
-.role-head h3 { margin-bottom: 2px; }
-.role-meta { color: var(--muted); margin: 0 0 8px; font-size: .95rem; }
-.cert-h { font-size: var(--step-0); text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin-top: 32px; }
-
-/* ---------- contact ---------- */
-
-.contact-list { list-style: none; margin: 24px 0 0; padding: 0; }
-.contact-list li {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 4px 16px;
-  padding: 3px 0;
-  border-bottom: 1px solid var(--border);
-}
-.contact-k {
-  flex: 0 0 110px;
-  color: var(--muted);
-  font-size: .9rem;
-  text-transform: uppercase;
-  letter-spacing: .05em;
-}
-.contact-list a {
-  display: inline-flex;
-  align-items: center;
-  min-height: 44px;
-}
-
-/* ---------- footer ---------- */
-
-.site-footer {
-  border-top: 1px solid var(--border);
-  padding: 32px 0 48px;
-  color: var(--muted);
-  font-size: .92rem;
-}
-.site-footer p { margin: 0 0 4px; }
-
-/* ---------- reveal ---------- */
-
-.reveal { opacity: 1; }
-
-.js-reveal .reveal {
-  opacity: 0;
-  transform: translateY(12px);
-  transition: opacity .5s ease, transform .5s ease;
-}
-.js-reveal .reveal.is-visible { opacity: 1; transform: none; }
-
-@media (prefers-reduced-motion: reduce) {
-  html { scroll-behavior: auto; }
-  *, *::before, *::after {
-    animation-duration: .001ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: .001ms !important;
-  }
-  .js-reveal .reveal { opacity: 1; transform: none; }
-}
-
-/* Hero rhythm compresses on phones: vertical space is the scarce resource there,
-   and the proof strip has to earn its place without pushing the CTAs under the
-   fold on a 667px-tall screen. Desktop rhythm is untouched. */
-@media (max-width: 420px) {
-  .hero { padding-top: 32px; }
-  .hero .role { margin-bottom: 10px; }
-  .hero .tagline { margin-bottom: 10px; }
-  .hero .hero-sub { margin-bottom: 0; }
-  .hero .proof { margin-top: 14px; gap: 4px 18px; }
-  .hero .cta-row { margin-top: 16px; }
-}
-
-/* The shortened sub drops a two-word orphan at desktop measures. Balance is a
-   progressive enhancement: engines without it fall back to normal wrapping,
-   which is the behaviour that ships today. */
-.hero-sub { text-wrap: balance; }
