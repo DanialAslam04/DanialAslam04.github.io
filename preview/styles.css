@@ -476,3 +476,8 @@ section{position:relative;padding-block:clamp(96px,16vh,200px);padding-left:var(
   :root:not([data-theme="dark"]) .i-sun{display:block}
   :root:not([data-theme="dark"]) .i-moon{display:none}
 }
+
+/* ---------- contentinfo ---------- */
+.site-foot{padding-left:var(--rail);padding-block:0 clamp(48px,7vh,96px);position:relative;z-index:2}
+@media(max-width:860px){.site-foot{padding-left:34px}}
+.site-foot .note{margin-top:0}
