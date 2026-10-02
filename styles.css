@@ -631,3 +631,57 @@ a:hover { color: var(--accent); }        /* link affordance = AUTHORISED */
     transition-duration: .001ms !important;
   }
 }
+
+/* ───────────────── Stage B — the gate that holds ───────────────── */
+
+.gate-demo { margin-top: 36px; padding-top: 24px; border-top: 1px solid var(--rule); }
+.gate-demo-k {
+  font-family: var(--code); font-size: var(--mono);
+  letter-spacing: .09em; text-transform: uppercase;
+  color: var(--muted); margin: 0 0 12px;
+}
+.gate-controls, .gate-decision { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.gate-decision { margin-top: 12px; }
+.gate-decision-k {
+  font-family: var(--code); font-size: var(--mono);
+  letter-spacing: .09em; text-transform: uppercase; color: var(--accent);
+  margin-right: 4px;
+}
+.gbtn {
+  display: inline-flex; align-items: center; min-height: 44px;
+  padding: 10px 16px; border: 1px solid var(--rule); border-radius: 6px;
+  background: transparent; color: var(--text);
+  font-family: var(--sans); font-size: .9375rem; cursor: pointer;
+}
+.gbtn:hover { border-color: var(--text); background: var(--surface); }
+/* Approve is the only button that authorises anything, so it is the only one
+   that may carry the accent. */
+.gbtn-go { border-color: var(--accent); color: var(--accent); }
+.gbtn-go:hover { background: var(--accent); color: var(--on-accent); border-color: var(--accent); }
+.gate-status {
+  margin: 14px 0 0; color: var(--muted); font-size: .9375rem; max-width: 56ch;
+}
+
+/* State. Driven by a data attribute, never by animation — the resting page is
+   the poster, and every state below is reachable with transitions suppressed. */
+.fnode, .branch-k, .gate-status { transition: color .18s ease, border-color .18s ease, background-color .18s ease, opacity .18s ease; }
+
+.flow[data-state] .branch { opacity: .45; }
+.flow[data-state="low"] .branch-low,
+.flow[data-state="held"] .branch-high,
+.flow[data-state="approved"] .branch-high,
+.flow[data-state="rejected"] .branch-high { opacity: 1; }
+
+/* Committed = authorised. This is the accent's reason to exist. */
+.flow[data-state="low"] .branch-low .fnode-out,
+.flow[data-state="approved"] .fnode-pending {
+  border-color: var(--accent); border-style: solid;
+  background: var(--surface); color: var(--text);
+}
+.flow[data-state="low"] .branch-low .branch-k,
+.flow[data-state="approved"] .branch-high .branch-k { color: var(--accent); }
+
+/* Held = proposed, not committed. Nothing has landed. */
+.flow[data-state="held"] .fnode-gate { background: var(--surface-2); }
+.flow[data-state="held"] .fnode-pending { border-color: var(--proposed); color: var(--muted); }
+.flow[data-state="rejected"] .fnode-pending { border-color: var(--rule); opacity: .6; }
