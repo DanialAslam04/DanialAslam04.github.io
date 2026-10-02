@@ -29,6 +29,18 @@
 <link rel="preload" href="assets/ibm-plex-mono-400.woff2" as="font" type="font/woff2" crossorigin/>
 <link rel="stylesheet" href="styles.css"/>
 
+<script>
+/* Pre-paint: apply the stored theme before the first frame. Without this a
+   visitor who chose light gets a dark flash on every load, which is worse
+   than not offering the toggle. Wrapped because storage can throw in private
+   mode; the page then simply follows the OS preference. */
+(function(){
+  try { var t = localStorage.getItem('theme');
+        if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t);
+  } catch (e) {}
+})();
+</script>
+
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"Person","name":"Muhammad Danial Aslam",
 "url":"https://danialaslam04.github.io/","jobTitle":"Backend & Agentic AI Engineer",
@@ -53,6 +65,10 @@
         <li><a href="#contact">Contact</a></li>
       </ul>
     </nav>
+    <button type="button" id="theme" class="bar-toggle" aria-label="Switch to light theme">
+      <svg class="i-moon" viewBox="0 0 24 24" width="17" height="17" aria-hidden="true" focusable="false"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+      <svg class="i-sun" viewBox="0 0 24 24" width="17" height="17" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="4.2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 2.5v2.2M12 19.3v2.2M4.2 4.2l1.6 1.6M18.2 18.2l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.2 19.8l1.6-1.6M18.2 5.8l1.6-1.6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+    </button>
     <a class="bar-cta" href="assets/Muhammad-Danial-Aslam-Resume.pdf" target="_blank" rel="noopener noreferrer">Resume</a>
   </div>
 </header>
@@ -97,16 +113,16 @@
   <!-- ───────────── 2 · About — the caller. Prose close to the rail. ───────────── -->
   <section id="about" class="wrap" data-sec="About" data-chip aria-labelledby="about-h">
     <p class="eyebrow rv"><span>About</span></p>
-    <h2 id="about-h" class="rv"><span>An agent reasons freely.</span><span>What it can reach, and what it</span><span>can commit without asking, is</span><span>decided before it ever runs.</span></h2>
-    <p class="lede rv"><span>I build production backend systems and the agentic services that</span><span>run on top of them — Java/Spring Boot, Trillo Workbench and</span><span>Python/FastAPI, on Google Cloud.</span></p>
-    <p class="lede lede-2 rv"><span>Three years turning raw operational requirements into domain models</span><span>and shipped software, working directly with clients. Currently</span><span>specialising in agentic AI: Google ADK, Model Context Protocol</span><span>and Vertex AI.</span></p>
+    <h2 id="about-h" class="rv"><span>An agent reasons freely. What it can reach, and what it can commit without asking, is decided before it ever runs.</span></h2>
+    <p class="lede rv"><span>I build production backend systems and the agentic services that run on top of them — Java/Spring Boot, Trillo Workbench and Python/FastAPI, on Google Cloud.</span></p>
+    <p class="lede lede-2 rv"><span>Three years turning raw operational requirements into domain models and shipped software, working directly with clients. Currently specialising in agentic AI: Google ADK, Model Context Protocol and Vertex AI.</span></p>
     <span class="chip chip-loose"><i aria-hidden="true"></i>identity attached</span>
   </section>
 
   <!-- ────────── 3 · Selected Work — pinned horizontal at ≥1024 ────────── -->
   <section id="work" class="wrap" data-sec="Work" aria-labelledby="work-h">
     <p class="eyebrow rv"><span>Selected work</span></p>
-    <h2 id="work-h" class="rv"><span>Three platforms,</span><span>all under NDA.</span></h2>
+    <h2 id="work-h" class="rv"><span>Three platforms, all under NDA.</span></h2>
     <p class="lede rv"><span>The engineering is described. The clients are not named.</span></p>
 
     <div class="work-view">
@@ -114,7 +130,7 @@
         <li class="panel" data-tick>
           <div class="panel-in">
           <p class="panel-k rv"><span>Multi-Tenant Drayage TMS</span></p>
-          <p class="panel-pull rv"><span>Email in. Loads out.</span><span>No human in the flow.</span></p>
+          <p class="panel-pull rv"><span>Email in. Loads out. No human in the flow.</span></p>
           <p class="panel-desc">An LLM pipeline ingests delivery orders straight from email, extracts and validates the structured data, runs credit checks and creates loads. The order-to-delivery lifecycle runs unattended.</p>
           <ul class="stack"><li>LLM extraction</li><li>Multi-tenancy</li><li>Workflow automation</li></ul>
           <p class="marker">Private client platform</p>
@@ -123,7 +139,7 @@
         <li class="panel" data-tick>
           <div class="panel-in">
           <p class="panel-k rv"><span>Business-Acquisition Marketplace</span></p>
-          <p class="panel-pull rv"><span>Five LLM agents on Google ADK.</span><span>Three roles, each seeing a different slice.</span></p>
+          <p class="panel-pull rv"><span>Five LLM agents on Google ADK. Three roles, each seeing a different slice.</span></p>
           <p class="panel-desc">A Spring Boot domain backend paired with a Python/FastAPI agentic service. Buyers, brokers and admins each see a different projection of the same system.</p>
           <ul class="stack"><li>Spring Boot</li><li>FastAPI</li><li>Google ADK</li><li>Stripe</li><li>Plaid</li></ul>
           <p class="marker">Private client platform</p>
@@ -132,7 +148,7 @@
         <li class="panel" data-tick>
           <div class="panel-in">
           <p class="panel-k rv"><span>Concierge Care Platform</span></p>
-          <p class="panel-pull rv"><span>An onboarding agent, a task-planning</span><span>agent, and a pod matching engine.</span></p>
+          <p class="panel-pull rv"><span>An onboarding agent, a task-planning agent, and a pod matching engine.</span></p>
           <p class="panel-desc">Connects aging-adult clients with field staff. A different control pattern from the risk-tiered gate: the planning agent runs autonomously and a coordinator reviews the plan afterwards.</p>
           <ul class="stack"><li>Multi-agent orchestration</li><li>Gusto Embedded Payroll</li><li>Checkr</li></ul>
           <p class="marker">Private client platform</p>
@@ -145,7 +161,7 @@
   <!-- ────────── 4 · Skills — a field, lit and dim. Not a bento. ────────── -->
   <section id="skills" class="wrap" data-sec="Stack" aria-labelledby="skills-h">
     <p class="eyebrow rv"><span>The toolset</span></p>
-    <h2 id="skills-h" class="rv"><span>What it can</span><span>reach for.</span></h2>
+    <h2 id="skills-h" class="rv"><span>What it can reach for.</span></h2>
     <dl class="field">
       <div class="grp grp-lit"><dt>Agentic AI</dt><dd><ul><li>Google ADK</li><li>MCP</li><li>Multi-Agent Systems</li><li>Agent Orchestration</li><li>Tool Calling</li></ul></dd></div>
       <div class="grp"><dt>LLM &amp; GenAI</dt><dd><ul><li>Vertex AI</li><li>Gemini</li><li>Claude</li><li>LiteLLM</li><li>RAG</li></ul></dd></div>
@@ -161,8 +177,8 @@
     <div class="stage">
       <div>
         <p class="eyebrow rv"><span>Approach</span></p>
-        <h2 id="s1-h" class="rv"><span>The caller carries</span><span>identity.</span></h2>
-        <p class="lede rv"><span>Not the agent. The agent never holds credentials it could</span><span>reach past. Everything downstream inherits the boundary</span><span>the caller arrived with.</span></p>
+        <h2 id="s1-h" class="rv"><span>The caller carries identity.</span></h2>
+        <p class="lede rv"><span>Not the agent. The agent never holds credentials it could reach past. Everything downstream inherits the boundary the caller arrived with.</span></p>
       </div>
       <div class="unit">
         <span class="k">Caller</span>
@@ -175,8 +191,8 @@
   <section class="wrap" data-sec="Boundary" data-stage data-filter aria-labelledby="s2-h">
     <div class="stage">
       <div>
-        <h2 id="s2-h" class="rv"><span>A role-filtered</span><span>toolset bounds</span><span>what it can see.</span></h2>
-        <p class="lede rv"><span>The agent reasons freely inside a boundary it cannot widen.</span><span>An MCP tool server stamps the caller's identity onto</span><span>every single call it makes.</span></p>
+        <h2 id="s2-h" class="rv"><span>A role-filtered toolset bounds what it can see.</span></h2>
+        <p class="lede rv"><span>The agent reasons freely inside a boundary it cannot widen. An MCP tool server stamps the caller's identity onto every single call it makes.</span></p>
       </div>
       <div class="unit">
         <span class="k">MCP tool server</span>
@@ -197,8 +213,8 @@
   <section class="wrap" data-sec="Policy" data-stage aria-labelledby="s3-h">
     <div class="stage">
       <div>
-        <h2 id="s3-h" class="rv"><span>Policy decides</span><span>what commits.</span></h2>
-        <p class="lede rv"><span>Not a human rubber-stamping everything. A deterministic</span><span>policy classifies the write — and only the ones that</span><span>matter ever stop.</span></p>
+        <h2 id="s3-h" class="rv"><span>Policy decides what commits.</span></h2>
+        <p class="lede rv"><span>Not a human rubber-stamping everything. A deterministic policy classifies the write — and only the ones that matter ever stop.</span></p>
       </div>
       <div class="unit">
         <span class="k">Policy</span>
@@ -212,7 +228,7 @@
   <section id="gate" class="wrap" data-sec="The gate" data-state="" aria-labelledby="gate-h">
     <p class="eyebrow rv"><span>The gate</span></p>
     <h2 id="gate-h" class="rv"><span>Send one through.</span></h2>
-    <p class="lede rv"><span>Low risk commits on its own. High risk waits for you —</span><span>and nothing lands until it does.</span></p>
+    <p class="lede rv"><span>Low risk commits on its own. High risk waits for you — and nothing lands until it does.</span></p>
 
     <div class="verdict">
       <div class="path path-low">
@@ -250,7 +266,7 @@
   <section id="contact" class="wrap" data-sec="Contact" aria-labelledby="contact-h">
     <div class="terminal" aria-hidden="true"><span class="dot"></span></div>
     <p class="eyebrow rv"><span>Contact</span></p>
-    <h2 id="contact-h" class="claim rv"><span>Open to backend and</span><span>agentic-AI roles.</span></h2>
+    <h2 id="contact-h" class="claim rv"><span>Open to backend and agentic-AI roles.</span></h2>
     <p class="mail rv"><span><a href="mailto:danialaslam04@gmail.com">danialaslam04@gmail.com</a></span></p>
     <ul class="links">
       <li><a href="assets/Muhammad-Danial-Aslam-Resume.pdf" target="_blank" rel="noopener noreferrer">Resume <em>PDF</em></a></li>
