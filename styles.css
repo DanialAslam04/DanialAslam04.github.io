@@ -240,6 +240,16 @@ a:hover { text-decoration-thickness: 2px; }
 
   /* The header is two rows tall here, so anchors need more clearance. */
   #top, .section { scroll-margin-top: 118px; }
+
+  /* R4. Four links fit the row without scrolling on common phones; the
+     overflow machinery below stays as a safety net rather than the norm. */
+  .site-nav ul { gap: 2px; }
+  .site-nav a { padding: 10px 8px; }
+}
+
+/* Narrowest phones: shave the gutters so the row still fits without scrolling. */
+@media (max-width: 360px) {
+  .site-nav a { padding: 10px 7px; font-size: .9rem; }
 }
 
 /* ---------- hero ---------- */
