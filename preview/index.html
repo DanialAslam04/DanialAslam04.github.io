@@ -1,8 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta name="robots" content="noindex, nofollow"/>
-
+<meta name="robots" content="noindex, nofollow">
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
 <title>Muhammad Danial Aslam — Backend &amp; Agentic AI Engineer</title>
@@ -58,8 +57,9 @@
     <nav class="bar-nav" aria-label="Primary">
       <ul>
         <li><a href="#work">Work</a></li>
-        <li><a href="#approach">Approach</a></li>
-        <li><a href="#skills">Stack</a></li>
+        <li><a href="#build">Approach</a></li>
+        <li><a href="#stack">Stack</a></li>
+        <li><a href="#background">Background</a></li>
         <li><a href="#contact">Contact</a></li>
       </ul>
     </nav>
@@ -74,25 +74,41 @@
 <div class="glow glow-a" aria-hidden="true"></div>
 <div class="glow glow-b" aria-hidden="true"></div>
 
+<!-- A second, real orientation device. #rail is aria-hidden and
+     pointer-events:none — decorative by design — so a visitor without a
+     scroll wheel had four links in the bar and nothing else. Real anchors,
+     so middle-click and open-in-new-tab work; labels always visible, because
+     an affordance you have to discover first is not one. -->
+<nav class="sidenav" aria-label="Sections">
+  <ul>
+    <li><a href="#hero"><i aria-hidden="true"></i>Top</a></li>
+    <li><a href="#work"><i aria-hidden="true"></i>Work</a></li>
+    <li><a href="#build"><i aria-hidden="true"></i>Approach</a></li>
+    <li><a href="#stack"><i aria-hidden="true"></i>Stack</a></li>
+    <li><a href="#background"><i aria-hidden="true"></i>Background</a></li>
+    <li><a href="#contact"><i aria-hidden="true"></i>Contact</a></li>
+  </ul>
+</nav>
+
 <div id="rail" aria-hidden="true">
   <div class="track"></div><div class="trace"></div><div class="head"></div>
 </div>
 
 <main id="main">
 
-  <!-- ─────────────────────────── hero ─────────────────────────── -->
-  <section id="hero" class="wrap" data-sec="Index">
+  <!-- ───────────────── 1 · Hero — who, the claim, the proof ─────────────────
+       About's bio sentence folds in here. It was a section of its own saying
+       what this one already implies, a screen before the evidence for it. -->
+  <section id="hero" class="wrap">
     <div class="hero-grid">
       <div class="hero-main">
         <p class="eyebrow rv"><span><b>Backend &amp; Agentic AI Engineer</b></span></p>
         <h1 class="claim rv"><span class="visually-hidden">Muhammad Danial Aslam. </span><span>Autonomous</span> <span>by default.</span> <span class="two">Gated where</span> <span class="two">it counts.</span></h1>
+        <p class="lede hero-bio rv"><span>I build production backend systems and the agentic services that run on top of them — Java/Spring Boot, Trillo Workbench and Python/FastAPI, on Google Cloud.</span></p>
         <p class="hero-meta rv"><span>Software Engineer · 2023 – present · a software consultancy</span><span>Pakistan · working globally</span></p>
         <p class="note rv"><span>Scroll — you are the request</span></p>
       </div>
 
-      <!-- The executive brief. Every figure here is approved and true; the
-           temptation with this shape is to fill it, and the only ways to fill
-           it are to fabricate or to look empty. Neither. -->
       <aside class="brief" aria-label="At a glance">
         <ul class="metrics">
           <li><b>3</b><span>production client platforms</span></li>
@@ -108,50 +124,45 @@
     </div>
   </section>
 
-  <!-- ───────────── 2 · About — the caller. Prose close to the rail. ───────────── -->
-  <section id="about" class="wrap" data-sec="About" data-chip aria-labelledby="about-h">
-    <p class="eyebrow rv"><span>About</span></p>
-    <h2 id="about-h" class="rv"><span>An agent reasons freely. What it can reach, and what it can commit without asking, is decided before it ever runs.</span></h2>
-    <p class="lede rv"><span>I build production backend systems and the agentic services that run on top of them — Java/Spring Boot, Trillo Workbench and Python/FastAPI, on Google Cloud.</span></p>
-    <p class="lede lede-2 rv"><span>Three years turning raw operational requirements into domain models and shipped software, working directly with clients. Currently specialising in agentic AI: Google ADK, Model Context Protocol and Vertex AI.</span></p>
-    <span class="chip chip-loose"><i aria-hidden="true"></i>identity attached</span>
-  </section>
-
-  <!-- ────────── 3 · Selected Work — pinned horizontal at ≥1024 ────────── -->
-  <section id="work" class="wrap" data-sec="Work" aria-labelledby="work-h">
-    <p class="eyebrow rv"><span>Selected work</span></p>
+  <!-- ───────────────── 2 · Selected Work ─────────────────
+       Each entry now has three lines doing three different jobs: the pull is
+       the claim, the ownership line is what he did, the description is what
+       the system is. Before this they said the same thing three times in
+       three registers — 63 words carrying about 25 words of information,
+       which reads as thin and was actually repetition. -->
+  <section id="work" data-rail="Work" class="wrap sec-lg" aria-labelledby="work-h">
+    <p class="sec-mark"><i>01</i><span>Work</span></p>
     <h2 id="work-h" class="rv"><span>Three platforms, all under NDA.</span></h2>
-    <p class="lede rv"><span>The engineering is described. The clients are not named.</span></p>
-    <p class="lede lede-2 lede-lead rv"><span>I established the agent-execution pattern these platforms run on — MCP tool servers, per-call identity propagation, role-filtered toolsets.</span></p>
+    <p class="lede lede-lead rv"><span>I established the agent-execution pattern these platforms run on — MCP tool servers, per-call identity propagation, role-filtered toolsets.</span></p>
 
     <div class="work-view">
       <ol class="work-track">
-        <li class="panel" data-tick>
+        <li class="panel">
           <div class="panel-in">
           <p class="panel-k rv"><span>Multi-Tenant Drayage TMS</span></p>
           <p class="panel-pull rv"><span>Email in. Loads out. No human in the flow.</span></p>
-          <p class="panel-own">I developed the backend services and the LLM ingestion pipeline — the full order-to-delivery lifecycle, running unattended.</p>
-          <p class="panel-desc">An LLM pipeline ingests delivery orders straight from email, extracts and validates the structured data, runs credit checks and creates loads. The order-to-delivery lifecycle runs unattended.</p>
+          <p class="panel-own">I developed the backend services and the LLM ingestion pipeline.</p>
+          <p class="panel-desc">Orders arrive as email; the pipeline extracts and validates the structured data, runs credit checks, and creates loads.</p>
           <ul class="stack"><li>LLM extraction</li><li>Multi-tenancy</li><li>Workflow automation</li></ul>
           <p class="marker">Private client platform</p>
           </div>
         </li>
-        <li class="panel" data-tick>
+        <li class="panel">
           <div class="panel-in">
           <p class="panel-k rv"><span>Business-Acquisition Marketplace</span></p>
           <p class="panel-pull rv"><span>Five LLM agents on Google ADK. Three roles, each seeing a different slice.</span></p>
-          <p class="panel-own">I designed and built the domain backend and the Python/FastAPI agentic service beside it.</p>
-          <p class="panel-desc">A Spring Boot domain backend paired with a Python/FastAPI agentic service. Buyers, brokers and admins each see a different projection of the same system.</p>
+          <p class="panel-own">I designed and built the domain backend and the agentic service beside it.</p>
+          <p class="panel-desc">Spring Boot for the domain, Python/FastAPI for the agents. The three roles are buyers, brokers and administrators.</p>
           <ul class="stack"><li>Spring Boot</li><li>FastAPI</li><li>Google ADK</li><li>Stripe</li><li>Plaid</li></ul>
           <p class="marker">Private client platform</p>
           </div>
         </li>
-        <li class="panel" data-tick>
+        <li class="panel">
           <div class="panel-in">
           <p class="panel-k rv"><span>Concierge Care Platform</span></p>
           <p class="panel-pull rv"><span>An onboarding agent, a task-planning agent, and a pod matching engine.</span></p>
-          <p class="panel-own">I built the backend, the onboarding and task-planning agents, and the pod matching engine.</p>
-          <p class="panel-desc">Connects aging-adult clients with field staff. A different control pattern from the risk-tiered gate: the planning agent runs autonomously and a coordinator reviews the plan afterwards.</p>
+          <p class="panel-own">I built all three, and the backend under them.</p>
+          <p class="panel-desc">Connects aging-adult clients with field staff. A different control pattern from the gate: the planning agent runs autonomously and a coordinator reviews the plan afterwards.</p>
           <ul class="stack"><li>Multi-agent orchestration</li><li>Gusto Embedded Payroll</li><li>Checkr</li></ul>
           <p class="marker">Private client platform</p>
           </div>
@@ -160,119 +171,141 @@
     </div>
   </section>
 
-  <!-- ────────── 4 · Skills — a field, lit and dim. Not a bento. ────────── -->
-  <section id="skills" class="wrap" data-sec="Stack" aria-labelledby="skills-h">
-    <p class="eyebrow rv"><span>The toolset</span></p>
-    <h2 id="skills-h" class="rv"><span>What it can reach for.</span></h2>
+  <!-- ───────────────── 3 · How I build ─────────────────
+       Was four separate blocks — three unnamed stage wrappers and the gate —
+       which is what "scattered" meant literally. One section, one argument,
+       ending in the thing it was always building to. About's pull-quote
+       heads it: it introduces the mechanism here instead of pre-empting it
+       a screen earlier. -->
+  <section id="build" data-rail="Approach" class="wrap sec-lg" aria-labelledby="build-h">
+    <p class="sec-mark"><i>02</i><span>Approach</span></p>
+    <h2 id="build-h" class="build-h rv"><span>An agent reasons freely. What it can reach, and what it can commit without asking, is decided before it ever runs.</span></h2>
+
+    <div class="stage-block" data-live>
+      <div class="stage">
+        <div>
+          <h3 class="stage-h rv"><span>The caller carries identity.</span></h3>
+          <p class="lede rv"><span>Not the agent. The agent never holds credentials it could reach past. Everything downstream inherits the boundary the caller arrived with.</span></p>
+        </div>
+        <div class="unit">
+          <span class="k">Caller</span>
+          <span class="v">carries identity</span>
+          <span class="chip"><i aria-hidden="true"></i>identity attached</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="stage-block" data-live data-filter>
+      <div class="stage">
+        <div>
+          <h3 class="stage-h rv"><span>A role-filtered toolset bounds what it can see.</span></h3>
+          <p class="lede rv"><span>The agent reasons freely inside a boundary it cannot widen. An MCP tool server stamps the caller's identity onto every single call it makes.</span></p>
+        </div>
+        <div class="unit">
+          <span class="k">MCP tool server</span>
+          <span class="v">propagates identity per call</span>
+          <p class="tool-ask" id="tool-ask">Call one.</p>
+          <ul class="tools" aria-labelledby="tool-ask">
+            <li class="allow"><button type="button" class="tool" data-allow="1"><span class="tool-face">read:orders</span></button></li>
+            <li class="deny"><button type="button" class="tool" data-allow="0"><span class="tool-face">write:billing</span><span class="sr"> — outside this role</span></button></li>
+            <li class="allow"><button type="button" class="tool" data-allow="1"><span class="tool-face">read:loads</span></button></li>
+            <li class="deny"><button type="button" class="tool" data-allow="0"><span class="tool-face">admin:tenants</span><span class="sr"> — outside this role</span></button></li>
+            <li class="allow"><button type="button" class="tool" data-allow="1"><span class="tool-face">write:loads</span></button></li>
+            <li class="deny"><button type="button" class="tool" data-allow="0"><span class="tool-face">delete:account</span><span class="sr"> — outside this role</span></button></li>
+          </ul>
+          <!-- Renders complete without JS: the sentence states the rule the
+               buttons go on to demonstrate, so a visitor with no script reads
+               the claim rather than meeting a dead control. -->
+          <p class="tool-out" role="status" aria-live="polite">Four of these six are outside this caller's role.</p>
+          <span class="chip"><i aria-hidden="true"></i>identity propagated</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="stage-block" data-live>
+      <div class="stage">
+        <div>
+          <h3 class="stage-h rv"><span>Policy decides what commits.</span></h3>
+          <p class="lede rv"><span>Not a human rubber-stamping everything. A deterministic policy classifies the write — and only the ones that matter ever stop.</span></p>
+        </div>
+        <div class="unit">
+          <span class="k">Policy</span>
+          <span class="v">classifies the write</span>
+          <span class="chip"><i aria-hidden="true"></i>risk evaluated</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- The gate keeps its id and its data-state: the state machine and every
+         selector hanging off it are descendant-based, so it works unchanged
+         as a block rather than a section. -->
+    <div id="gate" class="gate-block" data-state="" data-live>
+      <h3 class="stage-h gate-h rv"><span>Send one through.</span></h3>
+      <p class="lede rv"><span>Low risk commits on its own. High risk waits for you — and nothing lands until it does.</span></p>
+
+      <div class="verdict">
+        <div class="path path-low">
+          <span class="pk">Low risk</span>
+          <span class="pv" data-low-t>Commits</span>
+          <span class="ps" data-low-s>no interruption</span>
+        </div>
+        <div class="path path-high">
+          <span class="pk">High risk</span>
+          <span class="pv" data-high-t>Holds at the gate</span>
+          <span class="ps" data-high-s>nothing lands until approved</span>
+        </div>
+      </div>
+
+      <div class="controls">
+        <span class="ctl-sep">Send</span>
+        <button type="button" class="ctl" data-send="low">Low-risk write</button>
+        <button type="button" class="ctl" data-send="high">High-risk write</button>
+        <span class="ctl-sep ctl-sep-2">Decide</span>
+        <button type="button" class="ctl ctl-go" data-act="approve" disabled>Approve</button>
+        <button type="button" class="ctl" data-act="reject" disabled>Reject</button>
+      </div>
+      <p class="status" role="status" aria-live="polite">Nothing in flight.</p>
+    </div>
+  </section>
+
+  <!-- ───────────────── 4 · Stack ─────────────────
+       Was "The toolset / What it can reach for" — that "it" is the agent, not
+       him, and a recruiter scanning for technologies will not stop to work
+       that out. The conceit had leaked into the one section that must be
+       plainly legible. -->
+  <section id="stack" data-rail="Stack" class="wrap quiet" aria-labelledby="stack-h">
+    <h2 id="stack-h" class="sec-mark"><i>03</i><span>Stack</span></h2>
     <dl class="field">
-      <div class="grp grp-lit"><dt>Agentic AI</dt><dd><ul><li>Google ADK</li><li>MCP</li><li>Multi-Agent Systems</li><li>Agent Orchestration</li><li>Tool Calling</li></ul></dd></div>
-      <div class="grp"><dt>LLM &amp; GenAI</dt><dd><ul><li>Vertex AI</li><li>Gemini</li><li>Claude</li><li>LiteLLM</li><li>RAG</li></ul></dd></div>
-      <div class="grp"><dt>Languages</dt><dd><ul><li>Java</li><li>Python</li><li>SQL</li></ul></dd></div>
-      <div class="grp"><dt>Frameworks</dt><dd><ul><li>Spring Boot</li><li>FastAPI</li><li>Trillo Workbench</li></ul></dd></div>
-      <div class="grp"><dt>Cloud &amp; Infrastructure</dt><dd><ul><li>GCP</li><li>GKE</li><li>Docker</li><li>Redis</li><li>PostgreSQL</li><li>MySQL</li></ul></dd></div>
-      <div class="grp"><dt>Practice</dt><dd><ul><li>Client engagement</li><li>Requirements discovery</li><li>Ownership</li></ul></dd></div>
+      <div class="grp grp-lit">
+        <dt>Agentic AI &amp; LLM</dt>
+        <dd><ul><li>Google ADK</li><li>MCP</li><li>Multi-Agent Systems</li><li>Agent Orchestration</li><li>Tool Calling</li><li>Vertex AI</li><li>Gemini</li><li>Claude</li><li>LiteLLM</li><li>RAG</li></ul></dd>
+      </div>
+      <div class="grp">
+        <dt>Backend &amp; Infrastructure</dt>
+        <dd><ul><li>Java</li><li>Python</li><li>SQL</li><li>Spring Boot</li><li>FastAPI</li><li>Trillo Workbench</li><li>GCP</li><li>GKE</li><li>Docker</li><li>Redis</li><li>PostgreSQL</li><li>MySQL</li></ul></dd>
+      </div>
+      <div class="grp">
+        <dt>Practice</dt>
+        <dd><ul><li>Client engagement</li><li>Requirements discovery</li><li>Ownership</li></ul></dd>
+      </div>
     </dl>
   </section>
 
-  <!-- ────────── 5 · Approach — the mechanism, three stages ────────── -->
-  <section id="approach" class="wrap" data-sec="Identity" data-stage aria-labelledby="s1-h">
-    <div class="stage">
-      <div>
-        <p class="eyebrow rv"><span>Approach</span></p>
-        <h2 id="s1-h" class="rv"><span>The caller carries identity.</span></h2>
-        <p class="lede rv"><span>Not the agent. The agent never holds credentials it could reach past. Everything downstream inherits the boundary the caller arrived with.</span></p>
-      </div>
-      <div class="unit">
-        <span class="k">Caller</span>
-        <span class="v">carries identity</span>
-        <span class="chip"><i aria-hidden="true"></i>identity attached</span>
-      </div>
-    </div>
-  </section>
-
-  <section class="wrap" data-sec="Boundary" data-stage data-filter aria-labelledby="s2-h">
-    <div class="stage">
-      <div>
-        <h2 id="s2-h" class="rv"><span>A role-filtered toolset bounds what it can see.</span></h2>
-        <p class="lede rv"><span>The agent reasons freely inside a boundary it cannot widen. An MCP tool server stamps the caller's identity onto every single call it makes.</span></p>
-      </div>
-      <div class="unit">
-        <span class="k">MCP tool server</span>
-        <span class="v">propagates identity per call</span>
-        <p class="tool-ask" id="tool-ask">Call one.</p>
-        <ul class="tools" aria-labelledby="tool-ask">
-          <li class="allow"><button type="button" class="tool" data-allow="1"><span class="tool-face">read:orders</span></button></li>
-          <li class="deny"><button type="button" class="tool" data-allow="0"><span class="tool-face">write:billing</span><span class="sr"> — outside this role</span></button></li>
-          <li class="allow"><button type="button" class="tool" data-allow="1"><span class="tool-face">read:loads</span></button></li>
-          <li class="deny"><button type="button" class="tool" data-allow="0"><span class="tool-face">admin:tenants</span><span class="sr"> — outside this role</span></button></li>
-          <li class="allow"><button type="button" class="tool" data-allow="1"><span class="tool-face">write:loads</span></button></li>
-          <li class="deny"><button type="button" class="tool" data-allow="0"><span class="tool-face">delete:account</span><span class="sr"> — outside this role</span></button></li>
-        </ul>
-        <!-- Rendered complete without JS: the sentence below states the rule
-             the buttons go on to demonstrate, so a visitor with no script
-             reads the claim rather than meeting a dead control. -->
-        <p class="tool-out" role="status" aria-live="polite">Four of these six are outside this caller's role.</p>
-        <span class="chip"><i aria-hidden="true"></i>identity propagated</span>
-      </div>
-    </div>
-  </section>
-
-  <section class="wrap" data-sec="Policy" data-stage aria-labelledby="s3-h">
-    <div class="stage">
-      <div>
-        <h2 id="s3-h" class="rv"><span>Policy decides what commits.</span></h2>
-        <p class="lede rv"><span>Not a human rubber-stamping everything. A deterministic policy classifies the write — and only the ones that matter ever stop.</span></p>
-      </div>
-      <div class="unit">
-        <span class="k">Policy</span>
-        <span class="v">classifies the write</span>
-        <span class="chip"><i aria-hidden="true"></i>risk evaluated</span>
-      </div>
-    </div>
-  </section>
-
-  <!-- ──────────────────── 6 · The Gate — the climax ──────────────────── -->
-  <section id="gate" class="wrap" data-sec="The gate" data-state="" aria-labelledby="gate-h">
-    <p class="eyebrow rv"><span>The gate</span></p>
-    <h2 id="gate-h" class="rv"><span>Send one through.</span></h2>
-    <p class="lede rv"><span>Low risk commits on its own. High risk waits for you — and nothing lands until it does.</span></p>
-
-    <div class="verdict">
-      <div class="path path-low">
-        <span class="pk">Low risk</span>
-        <span class="pv" data-low-t>Commits</span>
-        <span class="ps" data-low-s>no interruption</span>
-      </div>
-      <div class="path path-high">
-        <span class="pk">High risk</span>
-        <span class="pv" data-high-t>Holds at the gate</span>
-        <span class="ps" data-high-s>nothing lands until approved</span>
-      </div>
-    </div>
-
-    <div class="controls">
-      <span class="ctl-sep">Send</span>
-      <button type="button" class="ctl" data-send="low">Low-risk write</button>
-      <button type="button" class="ctl" data-send="high">High-risk write</button>
-      <span class="ctl-sep ctl-sep-2">Decide</span>
-      <button type="button" class="ctl ctl-go" data-act="approve" disabled>Approve</button>
-      <button type="button" class="ctl" data-act="reject" disabled>Reject</button>
-    </div>
-    <p class="status" role="status" aria-live="polite">Nothing in flight.</p>
-  </section>
-
-  <!-- ─────────────── 7 · Education — the quiet beat ─────────────── -->
-  <section id="education" class="wrap quiet" data-sec="Education" aria-labelledby="edu-h">
-    <h2 id="edu-h" class="rv visually-plain"><span>Education</span></h2>
+  <!-- ───────────────── 5 · Background ─────────────────
+       Was "Education", sitting after the gate — inside the thesis story's
+       conclusion, belonging to the credentials one. It reads as arriving
+       from nowhere there; here it is among the things it belongs with. -->
+  <section id="background" data-rail="Background" class="wrap quiet" aria-labelledby="bg-h">
+    <h2 id="bg-h" class="sec-mark"><i>04</i><span>Background</span></h2>
     <p class="edu-degree rv"><span>BS Computer Science</span></p>
     <p class="edu-inst rv"><span>International Islamic University Islamabad</span></p>
     <p class="certs rv"><span>Google Cloud — Large Language Models · Generative AI · Responsible AI · Computer Vision Fundamentals · Recommendation Systems</span></p>
   </section>
 
-  <!-- ─────────────── 8 · Contact — arrival ─────────────── -->
-  <section id="contact" class="wrap" data-sec="Contact" aria-labelledby="contact-h">
+  <!-- ───────────────── 6 · Contact — the close ───────────────── -->
+  <section id="contact" data-rail="Contact" class="wrap" aria-labelledby="contact-h">
     <div class="terminal" aria-hidden="true"><span class="dot"></span></div>
-    <p class="eyebrow rv"><span>Contact</span></p>
+    <p class="sec-mark"><i>05</i><span>Contact</span></p>
     <h2 id="contact-h" class="claim rv"><span>Open to backend and agentic-AI engineering roles.</span></h2>
     <p class="contact-meta rv"><span>Pakistan · working globally · remote, hybrid or onsite</span></p>
     <p class="mail rv"><span><a href="mailto:danialaslam04@gmail.com">danialaslam04@gmail.com</a></span></p>
