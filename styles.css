@@ -647,8 +647,17 @@ section{position:relative;padding-block:clamp(40px,8vh,72px);padding-left:var(--
 
 /* ---------- 7 · education: the quiet beat. Resist making it interesting. ---------- */
 .quiet{padding-block:clamp(28px,5vh,48px)}      /* a label and a list */
-.edu-degree{font-family:var(--display);font-weight:600;font-size:var(--t-value);color:var(--ink);margin:0;line-height:1.2}
-.edu-inst{font-size:var(--t-body);color:var(--dim);margin:.35rem 0 0;max-width:none}
+/* Dates in the same 164px label column the Stack groups use, so the two
+   compact sections read as one system rather than two treatments. */
+.timeline{list-style:none;margin:0;padding:0;display:grid;gap:.55rem}
+.timeline li{display:grid;grid-template-columns:minmax(0,164px) minmax(0,1fr);
+  gap:.2rem 1.5rem;align-items:baseline}
+@media(max-width:700px){.timeline li{grid-template-columns:1fr;gap:.1rem}}
+.tl-when{font-family:var(--label);font-size:var(--m-sm);font-weight:500;letter-spacing:.055em;
+  text-transform:uppercase;color:var(--dim);font-variant-numeric:tabular-nums;white-space:nowrap}
+.tl-what{font-size:var(--t-body);color:var(--dim);max-width:52ch}
+.tl-what b{color:var(--ink);font-weight:500}
+.tl-now .tl-when{color:var(--sig)}
 .certs{font-family:var(--label);font-size:var(--m-sm);letter-spacing:.055em;text-transform:uppercase;
   color:var(--dim);margin:1.75rem 0 0;max-width:none;line-height:2}
 
