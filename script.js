@@ -183,20 +183,25 @@
     if (lenis) lenis.on('scroll', ScrollTrigger.update);
   }
 
+  /* Every reveal tween, so 3c can finish precisely these and nothing else.
+     Killing ScrollTrigger.getAll() would work today and break the day
+     somebody adds a third trigger. */
+  var revealTweens = [];
+
   /* ---------------------- 3. line reveals ---------------------- */
   if (window.gsap && window.ScrollTrigger && !reduce) {
     gsap.utils.toArray('.rv').forEach(function (el) {
       var lines = el.querySelectorAll(':scope > span:not(.visually-hidden)');
       if (!lines.length) return;
       gsap.set(lines, { yPercent: 115, opacity: 0 });     /* from-state, at runtime */
-      gsap.to(lines, {
+      revealTweens.push(gsap.to(lines, {
         /* 1.05s put a three-line paragraph 1.22s from readable, and a fast
            scroller arrived at text still moving. What makes the page feel
            composed is the stagger — lines landing in sequence — not how long
            each line takes, so the duration came down and the sequence stayed. */
         yPercent: 0, opacity: 1, duration: .4, stagger: .06, ease: 'expo.out',
         scrollTrigger: { trigger: el, start: 'top 85%', once: true }
-      });
+      }));
     });
   }
 
@@ -223,12 +228,72 @@
       var chips = g.querySelectorAll('li');
       if (!chips.length) return;
       gsap.set(chips, { opacity: 0, y: 10 });
-      gsap.to(chips, {
+      revealTweens.push(gsap.to(chips, {
         opacity: 1, y: 0, duration: .3, ease: 'power2.out',
         stagger: { amount: .08 },
         scrollTrigger: { trigger: g, start: 'top 95%', once: true }
-      });
+      }));
     });
+  }
+
+  /* ---------------------- 3c. the no-scroll fallback ----------------------
+     A renderer that runs JS and never scrolls sees 35% of main at opacity 0 —
+     197 of 562 words, including "Three platforms, all under NDA." Measured.
+     That is a crawler's exact profile: load, wait, never scroll. The usual
+     mitigation is that bots render at an unusually tall viewport, and that
+     does not help here — 900px and 3000px fire the same triggers, because
+     ScrollTrigger's start is a fraction of the viewport and scales with it.
+
+     The content is in the served HTML and visible with JS off, so this is not
+     cloaking and indexing was never truly at risk. This exists so the
+     rendered snapshot matches the source for anything that samples it.
+
+     Cancelled on the first sign of a human rather than raced against one —
+     and the cost of getting that wrong is not one animation but 43 nodes and
+     230 words across six screens, reveals disabled for the whole session. If
+     the page is already scrolled on arrival, it never arms.
+
+     Nothing here runs under reduced motion, because that path never sets a
+     from-state at all — there is nothing to recover, and a second mechanism
+     touching the same elements is how two correct behaviours become one
+     defect. */
+  if (window.gsap && window.ScrollTrigger && !reduce && revealTweens.length) {
+    (function () {
+      var timer = 0;
+      /* pointermove earns its place: a reader's pointer drifts within a
+         second or two even while they are still reading, and a crawler's
+         never does. The absence of ALL of these is a far more precise
+         signature of "not a person" than elapsed time alone. */
+      var EVENTS = ['scroll', 'wheel', 'touchstart', 'keydown', 'pointerdown', 'pointermove'];
+
+      function stand_down() {
+        if (timer) { clearTimeout(timer); timer = 0; }
+        for (var i = 0; i < EVENTS.length; i++) {
+          window.removeEventListener(EVENTS[i], stand_down, true);
+        }
+      }
+      function finish() {
+        timer = 0;
+        stand_down();
+        for (var i = 0; i < revealTweens.length; i++) {
+          var tw = revealTweens[i];
+          if (tw.scrollTrigger) tw.scrollTrigger.kill(false);
+          tw.progress(1);            /* each tween's own end state, exactly */
+        }
+      }
+
+      if ((window.scrollY || window.pageYOffset) > 0) return;   /* already moving */
+      for (var i = 0; i < EVENTS.length; i++) {
+        window.addEventListener(EVENTS[i], stand_down, { once: true, passive: true, capture: true });
+      }
+      /* Ten seconds, not five. 82 words sit above the fold, 34 of them in
+         the Brief panel, and a careful read at 240wpm is about 21 seconds —
+         so a short timer fires while the page's best reader is a quarter of
+         the way through the first screen. The careless scroller would have
+         kept the designed experience and the attentive one would have had it
+         stripped, which is backwards. A crawler has no opinion about waiting. */
+      timer = setTimeout(finish, 10000);
+    })();
   }
 
   /* ---------------------- 4. the rail ----------------------
