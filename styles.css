@@ -736,6 +736,10 @@ section{position:relative;padding-block:clamp(40px,8vh,72px);padding-left:var(--
    separate destination, so it is now the last block of How I build. The id
    stays so the old in-page anchor still resolves. */
 .gate-block{margin-top:clamp(36px,5vh,64px);scroll-margin-top:72px}
+/* Was the gate's heading; it is the instruction now that the heading
+   carries stage three's claim. */
+.gate-prompt{font-family:var(--label);font-size:var(--m-sm);font-weight:500;letter-spacing:.055em;
+  text-transform:uppercase;color:var(--dim);margin:1.75rem 0 .75rem}
 .gate-h{margin-top:0}
 .verdict{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);
   border:1px solid var(--line);border-radius:var(--r-md);overflow:hidden;margin-top:1.75rem}
@@ -752,7 +756,7 @@ section{position:relative;padding-block:clamp(40px,8vh,72px);padding-left:var(--
 [data-state="approved"] .path-high{background:var(--approved-bg);box-shadow:var(--approved-shadow);
   border-left:var(--approved-edge) solid var(--sig)}
 
-.controls{display:flex;flex-wrap:wrap;gap:.75rem;margin-top:1.5rem;align-items:center}
+.controls{display:flex;flex-wrap:wrap;gap:.75rem;margin-top:0;align-items:center}
 .ctl{font-family:var(--label);font-size:var(--m-lg);font-weight:500;letter-spacing:.08em;
   text-transform:uppercase;background:transparent;color:var(--ink);border:1px solid var(--line);
   border-radius:var(--r-sm);padding:.85rem 1.25rem;min-height:46px;cursor:pointer;
@@ -901,8 +905,14 @@ section{position:relative;padding-block:clamp(40px,8vh,72px);padding-left:var(--
   70%{box-shadow:0 0 0 18px rgb(var(--sig-rgb) / 0)}
   100%{box-shadow:var(--pulse-rest)}
 }
+/* Above the headline, not under it. Availability is what a recruiter screens
+   on first and it was the smallest type in the section, crushed between an
+   80px claim and a 34px address. Two lines rather than one run-on: where he
+   will work, and the languages he works in. */
 .contact-meta{font-family:var(--label);font-size:var(--m-lg);font-weight:500;letter-spacing:.045em;
-  color:var(--dim);margin:1.1rem 0 0}
+  color:var(--dim);margin:0 0 1.5rem;line-height:1.85}
+.contact-meta > span{display:block}
+.contact-meta > span:first-child{color:var(--ink)}
 .mail{margin:1.75rem 0 2rem}
 .mail a{font-family:var(--display);font-weight:600;font-size:clamp(1.375rem,2.6vw,2.125rem);line-height:1.15;letter-spacing:-.015em;
   color:var(--ink);text-decoration:none;border-bottom:1px solid var(--line);
