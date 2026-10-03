@@ -296,7 +296,7 @@ main{position:relative;z-index:2}
     -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
 }
 .bar-in{max-width:1180px;margin-inline:auto;padding:0 24px 0 calc(24px + var(--rail));
-  display:flex;align-items:center;gap:16px;min-height:56px}
+  display:flex;flex-wrap:wrap;align-items:center;gap:16px;min-height:56px}
 @media(max-width:860px){.bar-in{padding-left:16px;padding-right:16px}}
 .bar-id{display:inline-flex;align-items:center;gap:9px;min-height:44px;margin-right:auto;
   font-family:var(--label);font-size:var(--m-lg);font-weight:500;letter-spacing:.08em;
@@ -361,7 +361,7 @@ main{position:relative;z-index:2}
   .bar{position:sticky;top:var(--bar-pin,0px)}
   .bar-nav{order:3;flex-basis:100%;min-width:0;border-top:1px solid var(--line);
     margin-inline:-16px;padding-inline:16px}
-  .bar-in{flex-wrap:wrap;padding-bottom:0}
+  .bar-in{padding-bottom:0}
   /* Snap is additive to the mask, not a replacement. The mask exists to say
      "there is more"; a single faded "C" says it in the weakest possible way,
      because one orphaned glyph reads as a bug before it reads as an
@@ -438,7 +438,9 @@ section[id]{scroll-margin-top:72px}
 .vbar.dragging .vbar-thumb{background:var(--sig)}
 .vbar.dragging .vbar-hit{cursor:grabbing}
 
+.vbar nav{display:contents}
 .vbar-mark{position:absolute;right:8px;display:flex;align-items:center;justify-content:flex-end;
+  text-decoration:none;
   gap:8px;height:24px;margin-top:-12px;pointer-events:auto;cursor:pointer;
   font-family:var(--label);font-size:10px;font-weight:500;letter-spacing:.07em;
   text-transform:uppercase;color:var(--dim);white-space:nowrap;
@@ -940,6 +942,19 @@ section{position:relative;padding-block:clamp(40px,8vh,72px);padding-left:var(--
 @media(prefers-color-scheme:light){
   :root:not([data-theme="dark"]) .i-sun{display:block}
   :root:not([data-theme="dark"]) .i-moon{display:none}
+}
+
+/* ---------- print ----------
+   Save-as-PDF rendered the scrollbar, the rail, both glows and a sticky bar
+   onto paper. None of them mean anything without a viewport to scroll. */
+@media print{
+  .vbar,#rail,.glow,.skip-link{display:none!important}
+  .bar{position:static!important;background:none!important;backdrop-filter:none!important}
+  body{background:#fff!important;color:#000!important}
+  .rv > span{transform:none!important;opacity:1!important}
+  a[href^="http"]::after{content:" (" attr(href) ")";font-size:.75em;color:#555}
+  .work-view{break-inside:avoid}
+  .panel{break-inside:avoid}
 }
 
 /* ---------- contentinfo ---------- */

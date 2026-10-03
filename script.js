@@ -336,19 +336,29 @@
        honest decoration beside working keyboard scrolling. */
     var vbar = document.createElement('div');
     vbar.className = 'vbar';
-    vbar.setAttribute('aria-hidden', 'true');
     var vhit = document.createElement('div'); vhit.className = 'vbar-hit';
+    /* The track and thumb are a pointer affordance with no keyboard story —
+       arrows, Page keys and Home/End already scroll — so they stay hidden
+       from assistive tech. The marks are destinations and must not be. */
+    vhit.setAttribute('aria-hidden', 'true');
     var vthumb = document.createElement('div'); vthumb.className = 'vbar-thumb';
     vhit.appendChild(vthumb);
     vbar.appendChild(vhit);
+    /* Real anchors in a real landmark. The nav this replaced carried the
+       same promise in its own comment — middle-click, open-in-new-tab and
+       the Tab key all work again, and Lenis owns the scrolling because it
+       owns every other anchor on the page. */
+    var vnav = document.createElement('nav');
+    vnav.setAttribute('aria-label', 'Sections');
+    vbar.appendChild(vnav);
     var vmarks = sections.map(function (sec) {
       var name = sec.getAttribute('data-rail');
-      if (!name) return null;
-      var m = document.createElement('div');
+      if (!name || !sec.id) return null;
+      var m = document.createElement('a');
       m.className = 'vbar-mark';
-      m.innerHTML = '<i></i><span>' + name + '</span>';
-      m.dataset.target = sec.id;
-      vbar.appendChild(m);
+      m.href = '#' + sec.id;
+      m.innerHTML = '<i aria-hidden="true"></i><span>' + name + '</span>';
+      vnav.appendChild(m);
       return m;
     });
     document.body.appendChild(vbar);
@@ -391,15 +401,6 @@
     vhit.addEventListener('pointerup', endDrag);
     vhit.addEventListener('pointercancel', endDrag);
 
-    /* A mark is a destination, so it animates like any other jump. */
-    vbar.addEventListener('click', function (e) {
-      var m = e.target && e.target.closest ? e.target.closest('.vbar-mark') : null;
-      if (!m) return;
-      var sec = document.getElementById(m.dataset.target);
-      if (!sec) return;
-      var margin = parseFloat(getComputedStyle(sec).scrollMarginTop) || 0;
-      goTo(sec.getBoundingClientRect().top + (window.scrollY || window.pageYOffset) - margin, reduce);
-    });
 
 
     var tops = [], litState = [];
@@ -539,7 +540,7 @@
     var denied = list.querySelectorAll('.tool[data-allow="0"]').length;
     var REST = count(denied).charAt(0).toUpperCase() + count(denied).slice(1) +
                ' of these ' + count(buttons.length) +
-               " are outside this caller's role.";
+               " are outside this caller’s role.";
     out.textContent = REST;
     var pending = 0;
 
