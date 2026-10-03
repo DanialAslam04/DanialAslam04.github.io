@@ -98,12 +98,31 @@
        600                300px (0.50x)   600px (1.00x)
        1200               600px (0.50x)   1200px (1.00x)
 
-     Chromium's own wheel handling halves a pixel-mode delta; Lenis does not,
-     so the page goes twice as far as the browser would have taken it for the
-     same flick of the same wheel. Hence the multiplier. It applies only to
-     wheel input, so touch devices — which send no wheel events — are
-     untouched; a mobile emulation driven by a synthetic wheel will read half
-     traversal, and that is the harness, not the page.
+     Chromium's own wheel handling scales a pixel-mode delta so that PHYSICAL
+     travel stays constant, and Lenis does not, so the page goes further than
+     the browser would have taken it for the same flick of the same wheel.
+
+     The scaling is by device pixel ratio, which is why the multiplier cannot
+     be a constant. Measured, one identical event, same page:
+
+       viewport/dsf   delivered   native   x0.5    x0.5*dpr
+       375  / 1       1100        550px    550px   550px
+       1280 / 2       550         550px    275px   550px
+       390  / 3       367         550px    183px   550px
+
+     Native holds 550px throughout; a flat 0.5 only lands at dsf1, where it
+     happened to be tuned. Real phones are dsf 2-3, so a constant would have
+     left the page scrolling at a half to a third of native on exactly the
+     devices most of the audience uses — the original defect inverted, and
+     worse, because too slow reads as broken rather than merely slippery.
+
+     Hence 0.5 * devicePixelRatio, recomputed when the ratio changes: DPR is
+     not fixed for the life of a page, it moves when a window is dragged to
+     another display or the browser is zoomed.
+
+     This applies only to wheel input, so touch devices — which send no wheel
+     events — are untouched; a mobile emulation driven by a synthetic wheel
+     will read reduced traversal, and that is the harness, not the page.
 
      The tail is the second defect and it is measured in time, not distance:
      with duration 1.1 the page kept moving for 1082ms after the input
@@ -113,10 +132,38 @@
      duration brings the tail to roughly a native flick and it still starts
      moving sooner than native does. */
   var lenis = null;
+  function wheelScale() { return .5 * (window.devicePixelRatio || 1); }
   if (!reduce && window.Lenis) {
-    lenis = new Lenis({ duration: .35, smoothWheel: true, wheelMultiplier: .5 });
+    lenis = new Lenis({ duration: .35, smoothWheel: true, wheelMultiplier: wheelScale() });
     window.__lenis = lenis;   /* so an instrument can isolate it without a rebuild */
     (function raf(t) { lenis.raf(t); requestAnimationFrame(raf); })(0);
+
+    /* Drag the window to a display with a different pixel ratio and the
+       tuning silently inverts, so track it. resize covers both causes — a
+       display change and a zoom — and the guard means this costs a compare
+       per resize and nothing else. */
+    /* Both option objects, deliberately. The wheel handler is installed on
+       lenis.virtualScroll and reads ITS options — lenis.options is a
+       different object, and writing only that one is a silent no-op. Tested:
+       setting lenis.options alone changed nothing at all. Writing both means
+       that if a future version consolidates them this keeps working, and if
+       the internal moves again the worst case is a stale multiplier after a
+       display change rather than a broken page. */
+    function setWheelScale() {
+      var v = wheelScale();
+      if (!lenis) return;
+      if (lenis.options) lenis.options.wheelMultiplier = v;
+      if (lenis.virtualScroll && lenis.virtualScroll.options) {
+        lenis.virtualScroll.options.wheelMultiplier = v;
+      }
+    }
+    var dpr = window.devicePixelRatio || 1;
+    window.addEventListener('resize', function () {
+      var now = window.devicePixelRatio || 1;
+      if (now === dpr) return;
+      dpr = now;
+      setWheelScale();
+    });
   }
   if (window.gsap && window.ScrollTrigger) {
     gsap.registerPlugin(ScrollTrigger);
