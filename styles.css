@@ -572,8 +572,14 @@ p.lede-lead{color:var(--ink);font-weight:500;margin-top:1.1rem;max-width:52ch}
    small section read as a leftover rather than as a short section.
 
    Three tiers. Anything added later takes the tier its weight earns. */
-section{position:relative;padding-block:clamp(40px,8vh,72px);padding-left:var(--rail)}
-.sec-lg{padding-block:clamp(52px,11vh,100px)}   /* the page's substance */
+/* One gap between every pair of sections. The three weight tiers that used
+   to live here were the right fix for a different problem — air INSIDE a
+   section looking like a leftover — and they were solving it before every
+   section carried a numbered rule. The marker does the separating now, so
+   varying the padding only varied the gap, and four gaps with no
+   relationship to each other is a rhythm a reader feels without being able
+   to name. Symmetric, so gap = 2x this value. */
+section{position:relative;padding-block:clamp(44px,8.3vh,75px);padding-left:var(--rail)}
 
 /* Every separation on this page was previously whitespace alone, which is
    why "too much space between sections" and "there is no section divider"
@@ -605,7 +611,8 @@ section{position:relative;padding-block:clamp(40px,8vh,72px);padding-left:var(--
    to that edge still landed off-screen. --bar-h is measured in script.js;
    with no JS it falls back to 0 and the hero behaves as it did before. */
 #hero{min-height:calc(100svh - var(--bar-h, 0px));
-  display:flex;flex-direction:column;justify-content:center;padding-block:0}
+  display:flex;flex-direction:column;justify-content:flex-end;
+  padding-top:0;padding-bottom:clamp(44px,8.3vh,75px)}
 
 /* ---------- hero proof strip ---------- */
 .proof{list-style:none;margin:2.5rem 0 0;padding:0;display:flex;flex-wrap:wrap;gap:.5rem 2rem;
@@ -855,7 +862,6 @@ section{position:relative;padding-block:clamp(40px,8vh,72px);padding-left:var(--
   clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0}
 
 /* ---------- 7 · education: the quiet beat. Resist making it interesting. ---------- */
-.quiet{padding-block:clamp(28px,5vh,48px)}      /* a label and a list */
 /* Dates in the same 164px label column the Stack groups use, so the two
    compact sections read as one system rather than two treatments. */
 .timeline{list-style:none;margin:0;padding:0;display:grid;gap:.55rem}
@@ -907,8 +913,7 @@ section{position:relative;padding-block:clamp(40px,8vh,72px);padding-left:var(--
    80px claim and a 34px address. Two lines rather than one run-on: where he
    will work, and the languages he works in. */
 .contact-meta{font-family:var(--label);font-size:var(--m-lg);font-weight:500;letter-spacing:.045em;
-  color:var(--dim);margin:0 0 1.5rem;line-height:1.85}
-.contact-meta > span{display:block}
+  color:var(--dim);margin:0 0 1.25rem;line-height:1.85}
 .contact-meta > span:first-child{color:var(--ink)}
 .mail{margin:1.75rem 0 2rem}
 .mail a{font-family:var(--display);font-weight:600;font-size:clamp(1.375rem,2.6vw,2.125rem);line-height:1.15;letter-spacing:-.015em;

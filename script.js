@@ -193,6 +193,14 @@
     gsap.utils.toArray('.rv').forEach(function (el) {
       var lines = el.querySelectorAll(':scope > span:not(.visually-hidden)');
       if (!lines.length) return;
+      /* Anything already on screen when the page loads is not revealed by
+         scrolling to it — it is simply there, and giving it a from-state
+         hides it until the reader moves. The hero's role line sat at y774
+         against a trigger at 85% of an 900px viewport, so it was blank on
+         arrival at desktop widths: the seniority line, missing, on the first
+         screen. Every probe and screenshot we have drives the page before
+         measuring, which is exactly why nobody saw it. */
+      if (el.getBoundingClientRect().top < innerHeight) return;
       gsap.set(lines, { yPercent: 115, opacity: 0 });     /* from-state, at runtime */
       revealTweens.push(gsap.to(lines, {
         /* 1.05s put a three-line paragraph 1.22s from readable, and a fast
