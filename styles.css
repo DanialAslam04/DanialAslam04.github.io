@@ -378,6 +378,14 @@ section[id]{scroll-margin-top:72px}
    860 landed short by exactly the difference: 47px at 768 and 414, 107px at
    320-390. Derived, so it holds at whatever height the bar happens to be. */
 #hero{scroll-margin-top:var(--bar-h,0px)}
+/* The skip target had no scroll-margin at all, so it landed the full bar
+   height under the header — 46px on a phone, 57px on desktop. Same derivation
+   as the hero: #main starts directly beneath the bar, so the bar's own height
+   is the clearance. And no ring: this is a container focused programmatically,
+   not a control, and an outline around the entire page is noise rather than
+   feedback — the jump and the new tab order are the confirmation. */
+#main{scroll-margin-top:var(--bar-h,0px)}
+#main:focus{outline:none}
 
 /* ---------- the right-hand scrollbar ----------
    A control, not a menu. The bar nav answers "take me there"; this answers

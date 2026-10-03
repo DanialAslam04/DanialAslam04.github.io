@@ -456,7 +456,20 @@
     if (!buttons.length) return;
     list.classList.add('tools-live');                                   /* S1 */
 
-    var REST = out.innerHTML;
+    /* The rest string states a count about a list that lives in the markup,
+       and a number in prose always drifts from the thing it counts — this
+       one shipped saying four when three chips carry data-allow="0". Both
+       halves are fixable at once: the markup carries the correct sentence so
+       it is right with no JS, and this recomputes it from the chips on load
+       so it cannot go stale again. Change the toolset and the sentence
+       follows by itself. */
+    var WORDS = ['no','one','two','three','four','five','six','seven','eight','nine'];
+    function count(n) { return WORDS[n] || String(n); }
+    var denied = list.querySelectorAll('.tool[data-allow="0"]').length;
+    var REST = count(denied).charAt(0).toUpperCase() + count(denied).slice(1) +
+               ' of these ' + count(buttons.length) +
+               " are outside this caller's role.";
+    out.textContent = REST;
     var pending = 0;
 
     function say(html) {
