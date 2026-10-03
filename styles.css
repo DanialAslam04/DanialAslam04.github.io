@@ -90,6 +90,14 @@
      caught it. */
   --result:300ms;
 
+  /* Static fallbacks, overwritten by the measured value in script.js. With
+     a 0px fallback the hero's calc(100svh - var(--bar-h)) resolved to a full
+     100svh under a bar that is in flow, so with JS off the hero overflowed
+     by the bar's whole height — a correctness bug, not a layout preference.
+     These are the measured heights at each breakpoint; JS refines them. */
+  --bar-h:57px;
+  --bar-nav-h:46px;
+
   --grid:56px;
   --grid-rgb:148 163 184;
   --grid-a:.045;
@@ -327,7 +335,18 @@ main{position:relative;z-index:2}
    desktop bar while the mobile one wraps to three rows, so the trade it
    refused was three times the one it had measured. */
 @media(max-width:860px){
+  :root{--bar-h:106px}      /* two rows: identity+CTA, then the nav row */
   #rail{display:none}
+  /* The header wrapped to three rows under 414, and the middle one carried
+     nothing but RESUME — 56px of bar to hold one 83px button. The cost was
+     the brand: "Muhammad Danial Aslam" is 215px of a 288px row, so nothing
+     could sit beside it and the toggle.
+
+     The given name is hidden visually, not removed, so the link's accessible
+     name stays the full one and the visible text remains a substring of it.
+     Two rows at every phone width, and the row that goes was pure chrome. */
+  .bar-given{position:absolute;width:1px;height:1px;margin:-1px;padding:0;
+    overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0}
   /* Sticky with a negative offset, so the identity row scrolls away and only
      the nav row pins. The whole bar is 166px at 320-390 — a fifth to a
      quarter of a phone viewport — and pinning all of it would trade "no
@@ -353,7 +372,12 @@ main{position:relative;z-index:2}
   .bar-nav li{scroll-snap-align:start}
   .bar-nav ul::-webkit-scrollbar{display:none}
   .bar-nav li{flex:none}
-  .bar-nav a{padding:10px 8px;letter-spacing:.045em}
+  /* Five links never fit a phone row — 354px of links in a 256px track at
+     320 — so the strip scrolls and the mask says so. But at 320 the last
+     link began entirely off-screen, and a fade over nothing reads as the row
+     simply ending. Tighter here so some of CONTACT is always showing: a
+     partial word is an affordance, an absent one is not. */
+  .bar-nav a{padding:10px 6px;letter-spacing:.03em}
   /* The scrollbar is suppressed, so without this nothing says the row
      continues — a link cut mid-word reads as a rendering fault rather than
      as more content. Decorative: no mask support simply means no fade. */
@@ -365,6 +389,11 @@ main{position:relative;z-index:2}
      dissolve its focus ring. The affordance is for pointer users; they are
      not the ones it would harm. */
   .bar-nav:focus-within{-webkit-mask-image:none;mask-image:none}
+  /* Snap and keyboard focus fight: scrollIntoView puts the link flush, then
+     proximity snapping pulls back to the nearest snap point and leaves it
+     6px short — measured on Background. Snap is a pointer affordance, so it
+     stands down for the keyboard, exactly as the mask does. */
+  .bar-nav:focus-within ul{scroll-snap-type:none}
 }
 /* Anchor jumps must clear the sticky bar. */
 section[id]{scroll-margin-top:72px}
