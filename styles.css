@@ -745,10 +745,14 @@ section{position:relative;padding-block:clamp(40px,8vh,72px);padding-left:var(--
    reported, because none of them compares one width's composition against
    another's.
 
-   Column count is deliberately not set: the grouping is under review and the
-   right number of columns follows from how many groups there are, so that
-   decision waits for the content rather than guessing ahead of it. */
-.field{margin:0;display:grid;gap:clamp(22px,3vh,34px)}
+   Three across, on the stylesheet's own breakpoints rather than new ones.
+   Measured against a two-column version at 1440: three is 441px to two's
+   491px and reads as two rows of three rather than three of two, which
+   matters because the six are meant to be read as one set of roles. */
+.field{margin:0;display:grid;gap:clamp(22px,3vh,34px) clamp(20px,2.4vw,36px);
+  grid-template-columns:repeat(3,minmax(0,1fr))}
+@media(max-width:1179px){.field{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:860px){.field{grid-template-columns:minmax(0,1fr)}}
 .grp{display:block;min-width:0}
 .grp dt{display:flex;align-items:baseline;gap:9px;margin:0 0 .7rem;
   font-family:var(--label);font-size:var(--m-sm);font-weight:500;letter-spacing:.055em;
@@ -758,10 +762,10 @@ section{position:relative;padding-block:clamp(40px,8vh,72px);padding-left:var(--
 .grp ul{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:.35rem}
 .grp li{font-family:var(--label);font-size:var(--m-sm);letter-spacing:.055em;text-transform:uppercase;
   color:var(--dim);border:1px solid var(--line);border-radius:var(--r-sm);padding:.35rem .65rem}
-/* What this caller can reach is brighter than what it cannot — the field is
-   the role-filtered toolset, stated as type rather than as a diagram. */
-.grp-lit dt{color:var(--sig)}
-.grp-lit li{color:var(--ink);border-color:rgb(var(--sig-rgb) / .38)}
+/* No lit group. Six roles of equal standing, so there is nothing to dim —
+   the idea the highlight carried now lives in the lede instead of in a
+   visual state, where a dimmed group read as deprecated rather than
+   secondary. */
 
 /* ---------- 5 · the toolset filter: the one informational motion ---------- */
 .tool-ask{font-family:var(--label);font-size:var(--m-sm);font-weight:500;letter-spacing:.055em;
