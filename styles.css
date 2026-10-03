@@ -361,6 +361,14 @@ section[id]{scroll-margin-top:72px}
 /* Anchors must clear whatever is actually pinned, which is the nav row. */
 @media(max-width:860px){section[id]{scroll-margin-top:calc(var(--bar-nav-h,46px) + 14px)}}
 
+/* The hero is the exception: it starts directly under the bar, so its anchor
+   has to land at 0 rather than clear of anything. Its margin is therefore the
+   bar's own height, not the nav row's. Desktop was reaching 0 by accident —
+   a 72px margin against a 57px bar clamps negative — while every width under
+   860 landed short by exactly the difference: 47px at 768 and 414, 107px at
+   320-390. Derived, so it holds at whatever height the bar happens to be. */
+#hero{scroll-margin-top:var(--bar-h,0px)}
+
 /* ---------- section nav: the orientation device you can actually click ----
    Mirrors the left rail's position language on the other edge. Below 860 the
    bar nav takes over and this goes, at the same breakpoint that drops the
