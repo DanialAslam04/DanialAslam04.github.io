@@ -168,10 +168,16 @@
 
   --glow-op:0;                /* a bloom on white is haze, not depth */
   --line-rgb:100 116 139;
-  --line:rgb(var(--line-rgb) / .20);   /* slate carries less on white than on
+  --line:rgb(var(--line-rgb) / .28);   /* slate carries less on white than on
                                           navy, so the alpha goes up rather
                                           than the colour going darker */
-  --surface:rgb(var(--deep-rgb) / .75);
+  /* Opaque and a step deeper than the ground. At .75 over a near-white void
+     this resolved to roughly 245 247 250 against a 252 252 253 page — a
+     three-value separation, which is why the Executive Brief read as a
+     sidebar note in light where the dark one reads as a dossier. It is the
+     page's proof block and a visitor can land in light cold. Separation
+     comes from surface and edge, not from introducing another colour. */
+  --surface:rgb(236 240 247);
   --grid-rgb:100 116 139;
   --grid-a:.07;
   --page-wash:linear-gradient(180deg,#F5F8FC 0%,#FCFCFD 46%);
@@ -199,10 +205,16 @@
 
   --glow-op:0;                /* a bloom on white is haze, not depth */
   --line-rgb:100 116 139;
-  --line:rgb(var(--line-rgb) / .20);   /* slate carries less on white than on
+  --line:rgb(var(--line-rgb) / .28);   /* slate carries less on white than on
                                           navy, so the alpha goes up rather
                                           than the colour going darker */
-  --surface:rgb(var(--deep-rgb) / .75);
+  /* Opaque and a step deeper than the ground. At .75 over a near-white void
+     this resolved to roughly 245 247 250 against a 252 252 253 page — a
+     three-value separation, which is why the Executive Brief read as a
+     sidebar note in light where the dark one reads as a dossier. It is the
+     page's proof block and a visitor can land in light cold. Separation
+     comes from surface and edge, not from introducing another colour. */
+  --surface:rgb(236 240 247);
   --grid-rgb:100 116 139;
   --grid-a:.07;
   --page-wash:linear-gradient(180deg,#F5F8FC 0%,#FCFCFD 46%);
@@ -267,7 +279,7 @@ main{position:relative;z-index:2}
   border-bottom:1px solid var(--line)}
 .bar-in{max-width:1180px;margin-inline:auto;padding:0 24px 0 calc(24px + var(--rail));
   display:flex;align-items:center;gap:16px;min-height:56px}
-@media(max-width:860px){.bar-in{padding-left:calc(16px + 34px);padding-right:16px}}
+@media(max-width:860px){.bar-in{padding-left:16px;padding-right:16px}}
 .bar-id{display:inline-flex;align-items:center;gap:9px;min-height:44px;margin-right:auto;
   font-family:var(--label);font-size:var(--m-lg);font-weight:500;letter-spacing:.08em;
   text-transform:uppercase;color:var(--ink);text-decoration:none;white-space:nowrap}
@@ -282,18 +294,53 @@ main{position:relative;z-index:2}
   font-family:var(--label);font-size:var(--m-sm);font-weight:500;letter-spacing:.06em;
   text-transform:uppercase;
   transition:background-color var(--fast) var(--fast-ease),color var(--fast) var(--fast-ease),transform var(--fast) var(--fast-ease)}
-/* The bar scrolls away with the page below 860 — a 56px band is too much of a
-   short viewport to spend permanently, and the rail still carries position. */
+/* Below 860 the rail goes and the bar stays.
+
+   The bar used to scroll away here, on the argument that a persistent band
+   is too much of a short viewport and the rail still carries position. Both
+   halves were wrong once the page got long: #rail is aria-hidden and
+   pointer-events:none, so it carries position for nobody who needs it, and
+   .sidenav starts at 1440 — which left a 7.4-screen phone page with no
+   persistent navigation at all after the first screen. A LinkedIn tap lands
+   on a phone.
+
+   The original trade below was real and is kept rather than deleted: the nav
+   row does not owe the rail a gutter, because indenting past it spent 34px
+   of a 254px row. It is dissolved rather than overruled — with the rail
+   hidden there is no gutter to owe, so EVERY mobile rail allowance collapses
+   to the page margin and the content gets the 18px back as well. A missing
+   2px decorative line costs an aesthetic; no way back costs the reader.
+
+   The note that used to sit here refused a persistent band at 56px. It is
+   worth keeping the threshold and recording that this clears it: what pins
+   is the 46px nav row, not the 166px bar — the original was pricing the
+   desktop bar while the mobile one wraps to three rows, so the trade it
+   refused was three times the one it had measured. */
 @media(max-width:860px){
-  .bar{position:relative}
-  /* The nav row does not owe the rail a gutter. The rail is a 2px line at
-     x=12 and the bar scrolls away with the page here, so indenting the links
-     past it spent 34px of a 254px row — a whole link's worth. */
+  #rail{display:none}
+  /* Sticky with a negative offset, so the identity row scrolls away and only
+     the nav row pins. The whole bar is 166px at 320-390 — a fifth to a
+     quarter of a phone viewport — and pinning all of it would trade "no
+     navigation after the first screen" for "a quarter of every screen is
+     chrome", which is the worse of the two.
+
+     The offset is the identity row's height, and it is MEASURED rather than
+     written here, because that row is 121px tall at 360 and 61px at 414: a
+     constant tuned at one width pushes the whole bar off-screen at another.
+     script.js writes --bar-pin on every layout. With no JS the fallback is
+     top:0 — the full bar pins, which costs height but still navigates. */
+  .bar{position:sticky;top:var(--bar-pin,0px)}
   .bar-nav{order:3;flex-basis:100%;min-width:0;border-top:1px solid var(--line);
-    margin-inline:calc(-16px - 34px) -16px;padding-inline:16px 16px}
+    margin-inline:-16px;padding-inline:16px}
   .bar-in{flex-wrap:wrap;padding-bottom:0}
+  /* Snap is additive to the mask, not a replacement. The mask exists to say
+     "there is more"; a single faded "C" says it in the weakest possible way,
+     because one orphaned glyph reads as a bug before it reads as an
+     affordance. Resting on a word boundary costs no height. */
   .bar-nav ul{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none;
-    overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch}
+    overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch;
+    scroll-snap-type:x proximity}
+  .bar-nav li{scroll-snap-align:start}
   .bar-nav ul::-webkit-scrollbar{display:none}
   .bar-nav li{flex:none}
   .bar-nav a{padding:10px 8px;letter-spacing:.045em}
@@ -311,24 +358,37 @@ main{position:relative;z-index:2}
 }
 /* Anchor jumps must clear the sticky bar. */
 section[id]{scroll-margin-top:72px}
-@media(max-width:860px){section[id]{scroll-margin-top:16px}}
+/* Anchors must clear whatever is actually pinned, which is the nav row. */
+@media(max-width:860px){section[id]{scroll-margin-top:calc(var(--bar-nav-h,46px) + 14px)}}
 
 /* ---------- section nav: the orientation device you can actually click ----
    Mirrors the left rail's position language on the other edge. Below 860 the
    bar nav takes over and this goes, at the same breakpoint that drops the
    rail's tick labels — two persistent navs on a phone is one too many. */
 .sidenav{position:fixed;right:28px;top:50%;transform:translateY(-50%);z-index:30}
+/* The number is the mark. Two persistent navs listing the same six
+   destinations needed to be visibly different objects rather than two menus:
+   the bar is a menu of words, this is a position with a count — and the count
+   is the one the dividers already carry in flow, so it is the page's existing
+   language rather than a second one.
+
+   It was 10px at --faint, which measured 2.00:1 dark and 1.93:1 light. On
+   interactive text, in the one affordance built specifically for a visitor
+   who cannot scroll. Quiet is a contrast relationship with the active item,
+   not absolute faintness, so the idle state is --dim at 6.2:1 and the active
+   state separates by accent and weight instead of by the other one fading. */
 .sidenav ul{list-style:none;margin:0;padding:0;display:grid;gap:2px}
-.sidenav a{display:flex;align-items:center;gap:9px;min-height:30px;padding:2px 4px;
-  font-family:var(--label);font-size:10px;font-weight:500;letter-spacing:.09em;
-  text-transform:uppercase;color:var(--faint);text-decoration:none;
+.sidenav a{display:grid;grid-template-columns:17px auto;align-items:center;gap:10px;
+  min-height:30px;padding:3px 4px;
+  font-family:var(--label);font-size:11px;font-weight:500;letter-spacing:.07em;
+  text-transform:uppercase;color:var(--dim);text-decoration:none;
   transition:color var(--fast) var(--fast-ease)}
-.sidenav i{width:5px;height:5px;border-radius:50%;background:currentColor;flex:none;
-  transition:transform var(--fast) var(--fast-ease)}
-@media (hover:hover){ .sidenav a:hover{color:var(--ink)} .sidenav a:hover i{transform:scale(1.5)} }
+.sidenav b{font-weight:500;font-variant-numeric:tabular-nums;text-align:right;
+  transition:color var(--fast) var(--fast-ease)}
+@media (hover:hover){ .sidenav a:hover{color:var(--ink)} }
 .sidenav a:focus-visible{color:var(--ink)}
 .sidenav a[aria-current]{color:var(--sig)}
-.sidenav a[aria-current] i{transform:scale(1.7)}
+.sidenav a[aria-current] b{font-weight:700}
 @media(max-width:1439px){.sidenav{display:none}}
 
 /* ---------- hero: argument left, proof right ---------- */
@@ -337,6 +397,24 @@ section[id]{scroll-margin-top:72px}
    a dip in the available width that forced the whole display clamp down to
    suit one breakpoint. Below 1180 the panel sits under the claim instead. */
 @media(min-width:1180px){.hero-grid{grid-template-columns:minmax(0,1fr) minmax(0,360px)}}
+
+/* Below two columns the panel fell to the bottom of the hero, which on a
+   390x844 phone put 72% of it under the fold — and left "Scroll — you are
+   the request" ABOVE it. The reader met the cue to leave before the reason
+   to stay, and the 3 platforms / 5 agents / 3 years row is the strongest
+   recruiter signal on the page. Order only, no new content: claim, then
+   proof, then the elaboration. The panel keeps its card; splitting the
+   numbers out of it would cost the dossier treatment to save nothing. */
+@media(max-width:1179px){
+  .hero-grid{display:flex;flex-direction:column;gap:0}
+  .hero-main{display:contents}
+  .eyebrow{order:1}
+  #hero .claim{order:2}
+  .brief{order:3;margin-top:1.75rem}
+  .hero-bio{order:4}
+  .hero-meta{order:5}
+  #hero .note{order:6}
+}
 
 /* Dense and card-based against an otherwise airy page, deliberately: the hero
    proves, the rest argues. This treatment does not propagate downward. */
@@ -376,7 +454,7 @@ section[id]{scroll-margin-top:72px}
 /* The rail carries no labels. It briefly did, and that put the same six
    section names on screen three times — rail, divider and right nav. It is
    a positional trace; the names belong to the dividers and the nav. */
-@media(max-width:860px){#rail{left:12px}}
+
 
 /* ---------- type ---------- */
 .eyebrow{font-family:var(--label);font-size:var(--m-lg);font-weight:500;letter-spacing:.08em;
@@ -407,6 +485,14 @@ p.lede-lead{color:var(--ink);font-weight:500;margin-top:1.1rem;max-width:52ch}
 .hero-meta{font-family:var(--label);font-size:var(--m-lg);font-weight:500;letter-spacing:.045em;
   color:var(--dim);margin:2rem 0 0;line-height:1.9}
 .hero-meta > span:first-child{color:var(--ink)}
+/* Anchored to the hero's own bottom rather than to the end of its flow:
+   the hero is 100svh, so this is always just above the fold whatever the
+   content above it does. Only where the hero is actually full-height — on
+   phones it rides the flow, below the panel, where F1 put it. */
+@media(min-width:861px){
+  #hero{position:relative}
+  #hero .note{position:absolute;left:var(--rail);bottom:clamp(18px,4vh,40px);margin:0}
+}
 .note{font-family:var(--label);font-size:var(--m-sm);letter-spacing:.06em;
   text-transform:uppercase;color:var(--dim);margin-top:4rem}
 
@@ -448,8 +534,14 @@ section{position:relative;padding-block:clamp(40px,8vh,72px);padding-left:var(--
   background:linear-gradient(to right,transparent,var(--line))}
 .sec-mark::after{content:'';flex:1;height:1px;min-width:0;
   background:linear-gradient(to right,var(--line),var(--line) 86%,transparent)}
-@media(max-width:860px){section{padding-left:34px}}
-#hero{min-height:100svh;display:flex;flex-direction:column;justify-content:center;padding-block:0}
+@media(max-width:860px){section{padding-left:16px}}
+/* 100svh LESS the bar, because the bar is in flow above it. At 100svh flat
+   the hero was always one bar-height taller than the viewport, so its bottom
+   edge sat below the fold at every size — which is why a scroll cue anchored
+   to that edge still landed off-screen. --bar-h is measured in script.js;
+   with no JS it falls back to 0 and the hero behaves as it did before. */
+#hero{min-height:calc(100svh - var(--bar-h, 0px));
+  display:flex;flex-direction:column;justify-content:center;padding-block:0}
 
 /* ---------- hero proof strip ---------- */
 .proof{list-style:none;margin:2.5rem 0 0;padding:0;display:flex;flex-wrap:wrap;gap:.5rem 2rem;
@@ -465,6 +557,7 @@ section{position:relative;padding-block:clamp(40px,8vh,72px);padding-left:var(--
 .stage-h{font-family:var(--display);font-weight:600;font-size:var(--t-value);
   line-height:1.15;letter-spacing:-.02em;margin:0 0 1rem;max-width:24ch}
 .hero-bio{margin-top:1.25rem}
+.sec-lede{margin:0 0 1.4rem;max-width:46ch}
 /* The thesis that heads How I build is a 110-character sentence. At --t-head
    against an 18ch measure it set as seven lines of display type — a heading
    the height of a screen, which is the single largest piece of air the
@@ -518,7 +611,7 @@ section{position:relative;padding-block:clamp(40px,8vh,72px);padding-left:var(--
 /* Inner alignment matches .wrap plus the rail gutter, so the band bleeds to
    the edges while its text stays on the page's content edge. */
 .panel-in{max-width:1180px;margin-inline:auto;padding-inline:24px;padding-left:calc(24px + var(--rail))}
-@media(max-width:860px){.panel-in{padding-left:calc(16px + 34px);padding-right:16px}}
+@media(max-width:860px){.panel-in{padding-left:16px;padding-right:16px}}
 .panel-k{font-family:var(--label);font-size:var(--m-lg);font-weight:500;letter-spacing:.08em;
   text-transform:uppercase;color:var(--dim);margin:0 0 1.25rem}
 .panel-pull{font-family:var(--display);font-weight:600;font-size:clamp(1.5rem,3vw,2.5rem);
@@ -665,7 +758,7 @@ section{position:relative;padding-block:clamp(40px,8vh,72px);padding-left:var(--
 #contact{position:relative}
 .terminal{position:absolute;left:calc(var(--rail) * -1 + 22px);top:clamp(96px,16vh,200px);
   width:14px;height:14px;pointer-events:none}
-@media(max-width:860px){.terminal{left:-28px}}
+@media(max-width:860px){.terminal{display:none}}   /* its rail is gone */
 .terminal .dot{display:block;width:100%;height:100%;border-radius:50%;
   background:var(--faint);transition:background-color var(--result)}
 .terminal.landed .dot{background:var(--sig);animation:land .9s ease-out 1}
@@ -771,5 +864,5 @@ section{position:relative;padding-block:clamp(40px,8vh,72px);padding-left:var(--
 
 /* ---------- contentinfo ---------- */
 .site-foot{padding-left:var(--rail);padding-block:0 clamp(48px,7vh,96px);position:relative;z-index:2}
-@media(max-width:860px){.site-foot{padding-left:34px}}
+@media(max-width:860px){.site-foot{padding-left:16px}}
 .site-foot .note{margin-top:0}
