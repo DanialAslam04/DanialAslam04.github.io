@@ -82,12 +82,36 @@
      landed — which reads as lag even though every frame arrived on time, and
      which no frame-rate instrument could ever have caught.
 
-     Lenis applies the wheel delta at twice its value: measured 2.00x at 150,
-     300, 600 and 1200px and across a burst of four small events, so it is a
-     constant factor and a multiplier is the right correction rather than a
-     fudge. Halving it restores one-to-one; the shorter duration brings the
-     tail down to roughly a native flick. It now starts moving sooner than
-     native does. */
+     Getting to that first row took three attempts, because the obvious
+     measurement is not the right one. Driving the page and comparing travel
+     to the delta you ASKED for measures the harness: Playwright's
+     mouse.wheel doubles deltaY in a desktop context, and so does CDP's
+     dispatchMouseEvent, so a request for 600 arrives as 1200. By that
+     reading Lenis looks like it doubles, and it does not — it applies
+     exactly the delta it is handed.
+
+     The question that matters is what native does with the SAME delivered
+     event, and there the difference is real and constant:
+
+       delivered deltaY   native travel   Lenis travel
+       200                100px (0.50x)   200px (1.00x)
+       600                300px (0.50x)   600px (1.00x)
+       1200               600px (0.50x)   1200px (1.00x)
+
+     Chromium's own wheel handling halves a pixel-mode delta; Lenis does not,
+     so the page goes twice as far as the browser would have taken it for the
+     same flick of the same wheel. Hence the multiplier. It applies only to
+     wheel input, so touch devices — which send no wheel events — are
+     untouched; a mobile emulation driven by a synthetic wheel will read half
+     traversal, and that is the harness, not the page.
+
+     The tail is the second defect and it is measured in time, not distance:
+     with duration 1.1 the page kept moving for 1082ms after the input
+     stopped, so you overshot what you aimed at and then waited to find out
+     where you landed. That reads as lag even though every frame arrived on
+     time, which is why no frame-rate instrument ever caught it. A shorter
+     duration brings the tail to roughly a native flick and it still starts
+     moving sooner than native does. */
   var lenis = null;
   if (!reduce && window.Lenis) {
     lenis = new Lenis({ duration: .35, smoothWheel: true, wheelMultiplier: .5 });

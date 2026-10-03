@@ -24,8 +24,10 @@
   which is visibly sharper.
 
   Keep the output as PNG. The card is flat colour and text, which compresses
-  better losslessly than as JPEG (68 KB vs 78 KB), and JPEG rings around glyphs.
-  Budget is 100 KB.
+  better losslessly than as JPEG, and JPEG rings around glyphs. Budget is
+  100 KB — re-check the figure after a type change rather than assuming it.
+
+  Render over http rather than file:// so the @font-face below resolves.
 
   Colours are the site's dark-theme tokens from styles.css. If those change,
   change them here too — nothing links the two automatically.
@@ -39,22 +41,32 @@
 <meta name="robots" content="noindex, nofollow"/>
 <style>
   /* Same tokens as the site's dark theme, so the card and the page match. */
+  /* The site's dark tokens, as of the Geist rebuild. The teal second accent
+     is gone: the page runs a two-level blue, an interface level and a signal
+     level, and a third hue on the card would be the only place it appears. */
   :root {
-    --bg:     #0D1117;
-    --text:   #E6EDF3;
-    --muted:  #9FB0C0;
-    --accent: #58A6FF;
-    --accent-2: #3FB9A5;
-    --border: #30363D;
+    --bg:     #070B12;
+    --text:   #EEF1F6;
+    --muted:  #8891A3;
+    --accent: #4DA3FF;   /* interface blue */
+    --signal: #96CEFF;   /* signal blue — the brighter of the two */
   }
+  @font-face{font-family:'Geist';font-style:normal;font-weight:400 700;
+    src:url('geist-latin.woff2') format('woff2');font-display:block}
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
   html, body { width: 600px; height: 315px; }
 
+  /* The page's 56px grid is deliberately NOT here. Measured, it cost 18 KB
+     of a 100 KB budget — a flat ground compresses in long runs and a grid
+     breaks every one of them — and at the size a social card is actually
+     looked at, a .055 alpha line is invisible. 18 KB for texture nobody
+     sees, on a file every crawler fetches. The card reads as the site
+     through the navy, the Geist and the two-level blue instead. */
   body {
-    background: var(--bg);
+    background-color: var(--bg);
     color: var(--text);
-    font-family: -apple-system, "SF Pro Display", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-family: 'Geist', -apple-system, "SF Pro Display", "Helvetica Neue", Helvetica, Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
     display: flex;
     flex-direction: column;
@@ -69,7 +81,7 @@
     position: absolute;
     left: 0; top: 0; bottom: 0;
     width: 5px;
-    background: linear-gradient(to bottom, var(--accent), var(--accent-2));
+    background: linear-gradient(to bottom, var(--accent), var(--signal));
   }
 
   .eyebrow {
@@ -117,14 +129,15 @@
     margin-bottom: 19px;
   }
 
+  /* Sans, like the page — the second family went with the rebuild. */
   .tagline {
-    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
-    font-size: 15px;
-    color: var(--accent);
-    letter-spacing: -.005em;
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--signal);
+    letter-spacing: -.012em;
     padding-left: 13px;
     border-left: 2px solid var(--accent);
-    line-height: 1.45;
+    line-height: 1.4;
   }
 
   .stack {
@@ -136,6 +149,7 @@
     letter-spacing: .015em;
   }
   .stack b { color: #C3D0DC; font-weight: 600; }
+  h1 { font-weight: 600; }
 </style>
 </head>
 <body>
@@ -148,7 +162,7 @@
 
   <h1>Muhammad&nbsp;Danial&nbsp;Aslam</h1>
   <p class="role">Backend &amp; Agentic AI Engineer</p>
-  <p class="tagline">Models propose.<br/>Deterministic code executes.</p>
+  <p class="tagline">Autonomous by default.<br/>Gated where it counts.</p>
 
   <p class="stack"><b>Google ADK</b> · <b>MCP</b> · <b>Vertex AI</b> · <b>Spring Boot</b> · <b>FastAPI</b> · <b>GKE</b></p>
 </body>

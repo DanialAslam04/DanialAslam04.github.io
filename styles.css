@@ -16,16 +16,37 @@
 @font-face{font-family:'Geist';font-style:normal;font-weight:400 700;font-display:swap;
   src:url('assets/geist-latin.woff2') format('woff2');
   unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+2122,U+2212,U+FEFF,U+FFFD}
-/* Metric-matched fallback. 'swap' alone avoids invisible text and causes a
-   reflow instead: the page paints in system-ui, then jumps when Geist lands.
-   Measured, not guessed — Geist's advance widths run 8.61% wider than
-   system-ui at the same size, so the fallback is scaled up by that much and
-   its ascent and descent are restated against the scaled em. The swap is now
-   a change of shape with no change of metrics. */
-@font-face{font-family:'Geist Fallback';
-  src:local('system-ui'),local('-apple-system'),local('Segoe UI'),local('Roboto'),local('Helvetica Neue'),local('Arial');
-  size-adjust:108.61%;ascent-override:92.54%;descent-override:27.16%;line-gap-override:0%}
+/* A metric-matched fallback was built here, measured, and removed. Recording
+   why, because it is the obvious next idea and it does not work on this page.
 
+   The intent was sound: font-display:swap avoids invisible text and buys a
+   reflow instead. The fix is normally a @font-face over a local system face
+   with size-adjust so the swap changes shape without changing metrics.
+
+   Two things defeated it, both only visible once measured.
+
+   First, local() has to name a real face. local('system-ui') never matches
+   anything, so the first attempt silently resolved to Helvetica Neue while
+   its numbers had been calibrated against SF Pro — a 7.14% error dressed up
+   as a fix.
+
+   Second, and the reason none of it mattered: this page sets its measures in
+   ch (46ch, 48ch, 18ch). A ch is the font's own '0' advance, so a wider
+   fallback widens the column by the same proportion and the characters per
+   line never change. size-adjust swept from 94% to 112% — an 18% range —
+   moved the document height by exactly 0px. The layout was already
+   self-normalising against font width.
+
+   What remained was the choice of face, and the plain system-ui the stack
+   already had beat anything local() could reach:
+
+     no fallback face      2 of 121 blocks re-wrap,  60px document delta
+     Helvetica Neue face   9 of 121 blocks re-wrap, 240px document delta
+
+   So the stack below is the fallback, and it is the better one. Measured on
+   macOS, where system-ui is SF Pro; a Windows reading could differ, but
+   shipping a face that is four times worse on the platform we can measure,
+   on the chance it helps one we cannot, is the wrong way round. */
 :root{
   /* Component tokens first. Every derived colour below is expressed through
      these, so changing the signal or the ground is one value rather than a
@@ -86,8 +107,8 @@
   /* One family across display and prose. "No serif anywhere" implies one
      sans doing both jobs; carrying a second family to no purpose would spend
      29 KB that the light theme and imagery need. */
-  --display:'Geist','Geist Fallback',ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
-  --sans:'Geist','Geist Fallback',ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --display:'Geist',ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --sans:'Geist',ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
   /* Labels are the same sans, uppercase. A second family earned nothing here:
      it spent 20 KB to say "label" in a voice the display face already has.
      Uppercase sans needs less tracking than uppercase mono did, so the label
@@ -275,7 +296,7 @@ main{position:relative;z-index:2}
     overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch}
   .bar-nav ul::-webkit-scrollbar{display:none}
   .bar-nav li{flex:none}
-  .bar-nav a{padding:10px 9px;letter-spacing:.045em}
+  .bar-nav a{padding:10px 8px;letter-spacing:.045em}
   /* The scrollbar is suppressed, so without this nothing says the row
      continues — a link cut mid-word reads as a rendering fault rather than
      as more content. Decorative: no mask support simply means no fade. */
@@ -354,7 +375,14 @@ h1{font-family:var(--display);font-weight:600;font-size:var(--t-name);
 h2{font-family:var(--display);font-weight:600;font-size:var(--t-head);
   line-height:1;letter-spacing:-.025em;margin:0 0 1.5rem;max-width:18ch}
 p.lede{font-size:var(--t-body);color:var(--dim);max-width:46ch;margin:0}
-.lede-2{margin-top:1.25rem}
+/* p.lede sets margin:0 at (0,1,1); this was .lede-2 at (0,1,0) and lost,
+   so the gap it existed to create had never once applied — in About or in
+   Work. Matched on the element so it actually wins. */
+p.lede-2{margin-top:1.25rem}
+/* The pattern he established across all three platforms is the strongest
+   sentence on the page. It was set as a second dim lede, which read as more
+   preamble; it is the claim the three panels below are evidence for. */
+p.lede-lead{color:var(--ink);font-weight:500;margin-top:1.5rem;max-width:52ch}
 .hero-meta{font-family:var(--label);font-size:var(--m-lg);font-weight:500;letter-spacing:.045em;
   color:var(--dim);margin:2rem 0 0;line-height:1.9}
 .hero-meta > span:first-child{color:var(--ink)}
@@ -548,7 +576,9 @@ section{position:relative;padding-block:clamp(96px,16vh,200px);padding-left:var(
   70%{box-shadow:0 0 0 18px rgb(var(--sig-rgb) / 0)}
   100%{box-shadow:var(--pulse-rest)}
 }
-.mail{margin:0 0 2.5rem}
+.contact-meta{font-family:var(--label);font-size:var(--m-lg);font-weight:500;letter-spacing:.045em;
+  color:var(--dim);margin:1.5rem 0 0}
+.mail{margin:2.5rem 0 2.5rem}
 .mail a{font-family:var(--display);font-weight:600;font-size:var(--t-claim);line-height:1.05;letter-spacing:-.02em;
   color:var(--ink);text-decoration:none;border-bottom:1px solid var(--line);
   /* inline-flex with a floor rather than inline-block: at 375 the claim size
