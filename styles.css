@@ -513,38 +513,51 @@ section{position:relative;padding-block:clamp(96px,16vh,200px);padding-left:var(
 /* ---------- 5 · the toolset filter: the one informational motion ---------- */
 .tool-ask{font-family:var(--label);font-size:var(--m-sm);font-weight:500;letter-spacing:.055em;
   text-transform:uppercase;color:var(--dim);margin:1.5rem 0 .6rem}
-.tools{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:.4rem}
+/* Row gap is 0 because the buttons are 44px tall and the visible chips are
+   23px — the target supplies the spacing, so an added row gap would show up
+   as a hole. Column gap is unchanged. */
+.tools{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:0 .4rem}
 .tools li{display:flex;min-width:0}
-/* The six permission strings are identifiers, so they keep a monospace face —
-   the one carve-out left after the second family went. */
-.tools .tool{font-family:var(--code);font-size:var(--m-sm);letter-spacing:.01em;
+
+/* These became real buttons during the surface pass, which was right — a
+   control at .22 opacity is not defensible once you invite a click. But a
+   change of role inherits that role's requirements, and a 23px chip that was
+   fine as decoration is under every tap-target floor as a button.
+   So the button is a transparent 44px target and the chip is drawn inside it
+   at its own size. Target area, not appearance: inflating the visible chip
+   would undo the density this surface was built for. */
+.tools .tool{display:inline-flex;align-items:center;min-height:44px;
+  background:none;border:0;padding:0;font:inherit;color:inherit;cursor:default}
+.tools .tool-face{font-family:var(--code);font-size:var(--m-sm);letter-spacing:.01em;
   color:var(--dim);background:transparent;border:1px solid var(--line);
   border-radius:var(--r-sm);padding:.28rem .55rem;
-  font-weight:inherit;cursor:default;
   transition:opacity var(--slow) ease,color var(--slow) ease,border-color var(--slow) ease,
              background-color var(--fast) var(--fast-ease),transform var(--fast) var(--fast-ease)}
+/* The ring belongs on the chip, not on the invisible target around it. */
+.tools .tool:focus-visible{outline:none}
+.tools .tool:focus-visible .tool-face{outline:2px solid var(--ui);outline-offset:3px}
 /* The filter used to fade the out-of-role tools to .22, which was legible as
    a diagram and became a defect the moment they were controls: a button you
    are invited to press must be readable, and four of the six are the
    interesting ones. The distinction moved from opacity to border style, so
    the boundary still reads at a glance and nothing drops below contrast. */
-.unit.filtered .tools .deny .tool{border-style:dashed}
-.unit.filtered .tools .allow .tool{color:var(--sig);border-color:rgb(var(--sig-rgb) / .45)}
+.unit.filtered .tools .deny .tool-face{border-style:dashed}
+.unit.filtered .tools .allow .tool-face{color:var(--sig);border-color:rgb(var(--sig-rgb) / .45)}
 
 /* Not clickable until script says so. A button that looks live and does
    nothing is worse than a tag: the markup above already states the rule these
    demonstrate, so with no JS they stay exactly what they were — labels. */
 .tools-live .tool{cursor:pointer}
 @media (hover:hover){
-  .tools-live .tool:hover{border-color:rgb(var(--line-rgb) / .4);transform:translateY(-1px)}
-  .tools-live .allow .tool:hover{border-color:var(--sig)}
+  .tools-live .tool:hover .tool-face{border-color:rgb(var(--line-rgb) / .4);transform:translateY(-1px)}
+  .tools-live .allow .tool:hover .tool-face{border-color:var(--sig)}
 }
-.tools-live .tool:active{transform:translateY(0)}
+.tools-live .tool:active .tool-face{transform:translateY(0)}
 /* The answer, on the chip itself as well as in the status line — the status
    line is below the fold on a phone when the node is at the top of it. */
-.tools .tool[data-said="allow"]{color:var(--sig);border-color:var(--sig);
+.tools .tool[data-said="allow"] .tool-face{color:var(--sig);border-color:var(--sig);
   background-color:rgb(var(--sig-rgb) / .10)}
-.tools .deny .tool[data-said="deny"]{opacity:1;color:var(--ink);
+.tools .deny .tool[data-said="deny"] .tool-face{opacity:1;color:var(--ink);
   border-color:rgb(var(--line-rgb) / .55);background-color:rgb(var(--line-rgb) / .12);
   text-decoration:line-through;text-decoration-thickness:1px}
 .tool-out{font-family:var(--label);font-size:var(--m-sm);letter-spacing:.045em;
