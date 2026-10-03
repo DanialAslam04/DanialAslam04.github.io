@@ -37,9 +37,15 @@
     if (!list) return;
     list.addEventListener('focusin', function (e) {
       var a = e.target && e.target.closest ? e.target.closest('a') : null;
-      if (a && typeof a.scrollIntoView === 'function') {
-        a.scrollIntoView({ inline: 'nearest', block: 'nearest' });
-      }
+      if (!a) return;
+      /* Deterministic rather than scrollIntoView: with scroll-snap on the
+         strip, scrollIntoView lands flush and snapping then pulls it back a
+         few pixels. Setting scrollLeft from measured edges cannot be
+         re-interpreted, and the focus-within rule stops snap re-applying. */
+      var ar = a.getBoundingClientRect(), lr = list.getBoundingClientRect();
+      var pad = 10;
+      if (ar.right > lr.right)      list.scrollLeft += (ar.right - lr.right) + pad;
+      else if (ar.left < lr.left)   list.scrollLeft -= (lr.left - ar.left) + pad;
     });
   })();
 
