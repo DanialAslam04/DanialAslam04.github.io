@@ -825,6 +825,18 @@ section{position:relative;padding-block:clamp(40px,8vh,72px);padding-left:var(--
   text-transform:uppercase;color:var(--dim);font-variant-numeric:tabular-nums;white-space:nowrap}
 .tl-what{font-size:var(--t-body);color:var(--dim);max-width:52ch}
 .tl-what b{color:var(--ink);font-weight:500}
+/* The internship is the only row carrying a measured result, and in a band
+   where every other entry is one line it simply looked like a row that had
+   misbehaved — at 1440 it was exactly double its neighbours. The column
+   cannot hold role, employer and any clause at all; the shortest wording
+   measured still overran by 25px, so it is two lines or no clause.
+   Making the second line deliberate says what is true of it: this row
+   carries something the others do not.
+
+   Subordinate by size, not by colour. --dim is already the dim level here
+   and anything below it fails the contrast floor, so this keeps the colour
+   and steps down the scale. */
+.tl-note{display:block;font-size:.9375rem;margin-top:.1rem}
 .tl-now .tl-when{color:var(--sig)}
 /* Same micro-type as the date column, same left edge, directly under the
    last row and unlabelled — it scanned as a fourth timeline entry whose date
