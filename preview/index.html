@@ -26,7 +26,6 @@
 <meta name="theme-color" content="#070B12"/>
 
 <link rel="preload" href="assets/geist-latin.woff2" as="font" type="font/woff2" crossorigin/>
-<link rel="preload" href="assets/ibm-plex-mono-400.woff2" as="font" type="font/woff2" crossorigin/>
 <link rel="stylesheet" href="styles.css"/>
 
 <script>
@@ -61,7 +60,6 @@
         <li><a href="#work">Work</a></li>
         <li><a href="#approach">Approach</a></li>
         <li><a href="#skills">Stack</a></li>
-        <li><a href="#education">Education</a></li>
         <li><a href="#contact">Contact</a></li>
       </ul>
     </nav>
@@ -73,7 +71,6 @@
   </div>
 </header>
 
-<canvas id="field" aria-hidden="true"></canvas>
 <div class="glow glow-a" aria-hidden="true"></div>
 <div class="glow glow-b" aria-hidden="true"></div>
 
@@ -89,6 +86,7 @@
       <div class="hero-main">
         <p class="eyebrow rv"><span><b>Backend &amp; Agentic AI Engineer</b></span></p>
         <h1 class="claim rv"><span class="visually-hidden">Muhammad Danial Aslam. </span><span>Autonomous</span> <span>by default.</span> <span class="two">Gated where</span> <span class="two">it counts.</span></h1>
+        <p class="hero-meta rv"><span>Software Engineer · 2023 – present · a software consultancy</span><span>Pakistan · working globally</span></p>
         <p class="note rv"><span>Scroll — you are the request</span></p>
       </div>
 
@@ -97,9 +95,9 @@
            it are to fabricate or to look empty. Neither. -->
       <aside class="brief" aria-label="At a glance">
         <ul class="metrics">
-          <li><b>3</b><span>years</span></li>
           <li><b>3</b><span>production client platforms</span></li>
           <li><b>5</b><span>LLM agents on Google ADK</span></li>
+          <li><b>3</b><span>years</span></li>
         </ul>
         <ul class="caps">
           <li><p class="cap-t">Agentic AI systems</p><p class="cap-d">Google ADK, MCP, multi-agent orchestration, Vertex AI</p></li>
@@ -124,6 +122,7 @@
     <p class="eyebrow rv"><span>Selected work</span></p>
     <h2 id="work-h" class="rv"><span>Three platforms, all under NDA.</span></h2>
     <p class="lede rv"><span>The engineering is described. The clients are not named.</span></p>
+    <p class="lede lede-2 lede-lead rv"><span>I established the agent-execution pattern these platforms run on — MCP tool servers, per-call identity propagation, role-filtered toolsets.</span></p>
 
     <div class="work-view">
       <ol class="work-track">
@@ -131,6 +130,7 @@
           <div class="panel-in">
           <p class="panel-k rv"><span>Multi-Tenant Drayage TMS</span></p>
           <p class="panel-pull rv"><span>Email in. Loads out. No human in the flow.</span></p>
+          <p class="panel-own">I developed the backend services and the LLM ingestion pipeline — the full order-to-delivery lifecycle, running unattended.</p>
           <p class="panel-desc">An LLM pipeline ingests delivery orders straight from email, extracts and validates the structured data, runs credit checks and creates loads. The order-to-delivery lifecycle runs unattended.</p>
           <ul class="stack"><li>LLM extraction</li><li>Multi-tenancy</li><li>Workflow automation</li></ul>
           <p class="marker">Private client platform</p>
@@ -140,6 +140,7 @@
           <div class="panel-in">
           <p class="panel-k rv"><span>Business-Acquisition Marketplace</span></p>
           <p class="panel-pull rv"><span>Five LLM agents on Google ADK. Three roles, each seeing a different slice.</span></p>
+          <p class="panel-own">I designed and built the domain backend and the Python/FastAPI agentic service beside it.</p>
           <p class="panel-desc">A Spring Boot domain backend paired with a Python/FastAPI agentic service. Buyers, brokers and admins each see a different projection of the same system.</p>
           <ul class="stack"><li>Spring Boot</li><li>FastAPI</li><li>Google ADK</li><li>Stripe</li><li>Plaid</li></ul>
           <p class="marker">Private client platform</p>
@@ -149,6 +150,7 @@
           <div class="panel-in">
           <p class="panel-k rv"><span>Concierge Care Platform</span></p>
           <p class="panel-pull rv"><span>An onboarding agent, a task-planning agent, and a pod matching engine.</span></p>
+          <p class="panel-own">I built the backend, the onboarding and task-planning agents, and the pod matching engine.</p>
           <p class="panel-desc">Connects aging-adult clients with field staff. A different control pattern from the risk-tiered gate: the planning agent runs autonomously and a coordinator reviews the plan afterwards.</p>
           <ul class="stack"><li>Multi-agent orchestration</li><li>Gusto Embedded Payroll</li><li>Checkr</li></ul>
           <p class="marker">Private client platform</p>
@@ -197,14 +199,19 @@
       <div class="unit">
         <span class="k">MCP tool server</span>
         <span class="v">propagates identity per call</span>
-        <ul class="tools" aria-label="Tools reachable by this caller's role">
-          <li class="allow">read:orders</li>
-          <li class="deny">write:billing<span class="sr"> — outside this role</span></li>
-          <li class="allow">read:loads</li>
-          <li class="deny">admin:tenants<span class="sr"> — outside this role</span></li>
-          <li class="allow">write:loads</li>
-          <li class="deny">delete:account<span class="sr"> — outside this role</span></li>
+        <p class="tool-ask" id="tool-ask">Call one.</p>
+        <ul class="tools" aria-labelledby="tool-ask">
+          <li class="allow"><button type="button" class="tool" data-allow="1">read:orders</button></li>
+          <li class="deny"><button type="button" class="tool" data-allow="0">write:billing<span class="sr"> — outside this role</span></button></li>
+          <li class="allow"><button type="button" class="tool" data-allow="1">read:loads</button></li>
+          <li class="deny"><button type="button" class="tool" data-allow="0">admin:tenants<span class="sr"> — outside this role</span></button></li>
+          <li class="allow"><button type="button" class="tool" data-allow="1">write:loads</button></li>
+          <li class="deny"><button type="button" class="tool" data-allow="0">delete:account<span class="sr"> — outside this role</span></button></li>
         </ul>
+        <!-- Rendered complete without JS: the sentence below states the rule
+             the buttons go on to demonstrate, so a visitor with no script
+             reads the claim rather than meeting a dead control. -->
+        <p class="tool-out" role="status" aria-live="polite">Four of these six are outside this caller's role.</p>
         <span class="chip"><i aria-hidden="true"></i>identity propagated</span>
       </div>
     </div>
@@ -266,7 +273,8 @@
   <section id="contact" class="wrap" data-sec="Contact" aria-labelledby="contact-h">
     <div class="terminal" aria-hidden="true"><span class="dot"></span></div>
     <p class="eyebrow rv"><span>Contact</span></p>
-    <h2 id="contact-h" class="claim rv"><span>Open to backend and agentic-AI roles.</span></h2>
+    <h2 id="contact-h" class="claim rv"><span>Open to backend and agentic-AI engineering roles.</span></h2>
+    <p class="contact-meta rv"><span>Pakistan · working globally · remote, hybrid or onsite</span></p>
     <p class="mail rv"><span><a href="mailto:danialaslam04@gmail.com">danialaslam04@gmail.com</a></span></p>
     <ul class="links">
       <li><a href="assets/Muhammad-Danial-Aslam-Resume.pdf" target="_blank" rel="noopener noreferrer">Resume <em>PDF</em></a></li>
@@ -278,7 +286,7 @@
 </main>
 
 <footer class="wrap site-foot">
-  <p class="note">Remote, hybrid or onsite · Hand-written HTML, CSS and JavaScript · No trackers</p>
+  <p class="note">Hand-written HTML, CSS and JavaScript · No trackers</p>
 </footer>
 
 <script src="assets/lib/gsap.min.js" defer></script>

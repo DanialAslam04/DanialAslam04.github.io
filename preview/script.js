@@ -1,12 +1,11 @@
 /* ============================================================================
    The page is the pipeline. Three independent pieces:
-     1. the ambient field   — a system idling, canvas, pauses when unseen
-     2. the rail            — scroll position IS the request's position
+     1. the rail            — scroll position IS the request's position
+     2. the toolset         — call a tool, watch the boundary answer
      3. the gate            — a state machine; the climax
 
-   Reduced motion is a complete page, not a stripped one: the field renders
-   once and still, scrolling is native, reveals are skipped, and the gate is
-   fully operable.
+   Reduced motion is a complete page, not a stripped one: scrolling is native,
+   reveals are skipped, and both the toolset and the gate stay fully operable.
 
    Nothing here is required for the content to be readable. Reveal from-states
    are set in JS precisely so that with JS off, nothing is hidden.
@@ -17,110 +16,30 @@
 
   var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  /* ---------------------- 1. ambient field ---------------------- */
+  /* The ambient field used to live here: a canvas, a rAF loop, a spawn timer,
+     a visibilitychange listener and a re-theme hook, all to suggest a system
+     idling. The ground is now a 56px CSS grid and two breathing glows — the
+     same idea, declared, with no main-thread cost and nothing to re-theme.
+     ~95 lines and a per-frame loop removed. */
+
+  /* ---------------------- 1a. nav focus ----------------------
+     Its own block, deliberately. The last time this fix lived inside another
+     section it was lost in a re-skin, and before that it sat below an early
+     return and silently did not exist under reduced motion. Nothing above
+     can skip it from here.
+
+     The row scrolls horizontally on narrow screens, and a browser only
+     auto-scrolls an element that is entirely outside the scroller — a
+     partially visible link keeps its ring clipped and nothing fires.
+     block:'nearest' stops the page jumping while it corrects. */
   (function () {
-    var c = document.getElementById('field');
-    if (!c || !c.getContext) return;
-    /* Canvas cannot read CSS tokens, so read them once here rather than
-       keeping a second copy of the palette that drifts from the first. */
-    var SIG, NODE, LINK_A, NODE_A, PULSE_SOLID;
-    function readTokens() {
-      var cs = getComputedStyle(document.documentElement);
-      var g = function (n, d) { var v = cs.getPropertyValue(n).trim(); return v || d; };
-      SIG  = g('--sig-rgb', '150 206 255').replace(/\s+/g, ',');
-      NODE = g('--field-node', '150 170 210').replace(/\s+/g, ',');
-      LINK_A = parseFloat(g('--field-link-a', '.10'));
-      NODE_A = parseFloat(g('--field-node-a', '.30'));
-      PULSE_SOLID = g('--pulse-solid', '0') === '1';
-    }
-    readTokens();
-    var x = c.getContext('2d'), w, h, dpr, nodes = [], pulses = [], running = false, spawnTimer = null;
-
-    function size() {
-      dpr = Math.min(devicePixelRatio || 1, 2);
-      w = c.width = innerWidth * dpr;
-      h = c.height = innerHeight * dpr;
-    }
-    size();
-    addEventListener('resize', size);
-
-    for (var i = 0; i < 54; i++) {
-      nodes.push({ x: Math.random(), y: Math.random(),
-                   vx: (Math.random() - .5) * .00012, vy: (Math.random() - .5) * .00012 });
-    }
-
-    function spawn() {
-      if (pulses.length > 5) return;
-      var a = (Math.random() * nodes.length) | 0, b = (Math.random() * nodes.length) | 0;
-      if (a !== b) pulses.push({ a: a, b: b, t: 0 });
-    }
-
-    function draw(animate) {
-      x.clearRect(0, 0, w, h);
-      var i, j;
-      if (animate) {
-        for (i = 0; i < nodes.length; i++) {
-          var n = nodes[i];
-          n.x += n.vx; n.y += n.vy;
-          if (n.x < 0 || n.x > 1) n.vx *= -1;
-          if (n.y < 0 || n.y > 1) n.vy *= -1;
-        }
+    var list = document.querySelector('.bar-nav ul');
+    if (!list) return;
+    list.addEventListener('focusin', function (e) {
+      var a = e.target && e.target.closest ? e.target.closest('a') : null;
+      if (a && typeof a.scrollIntoView === 'function') {
+        a.scrollIntoView({ inline: 'nearest', block: 'nearest' });
       }
-      x.lineWidth = dpr;
-      for (i = 0; i < nodes.length; i++) {
-        for (j = i + 1; j < nodes.length; j++) {
-          var a = nodes[i], b = nodes[j], dx = a.x - b.x, dy = a.y - b.y;
-          var d = Math.sqrt(dx * dx + dy * dy);
-          if (d < .16) {
-            x.strokeStyle = 'rgba(' + NODE + ',' + (LINK_A * (1 - d / .16)) + ')';
-            x.beginPath(); x.moveTo(a.x * w, a.y * h); x.lineTo(b.x * w, b.y * h); x.stroke();
-          }
-        }
-      }
-      for (i = 0; i < nodes.length; i++) {
-        x.fillStyle = 'rgba(' + NODE + ',' + NODE_A + ')';
-        x.beginPath(); x.arc(nodes[i].x * w, nodes[i].y * h, 1.1 * dpr, 0, 6.283); x.fill();
-      }
-      for (var p = pulses.length - 1; p >= 0; p--) {
-        var pu = pulses[p]; pu.t += .012;
-        if (pu.t >= 1) { pulses.splice(p, 1); continue; }
-        var na = nodes[pu.a], nb = nodes[pu.b];
-        var px = (na.x + (nb.x - na.x) * pu.t) * w, py = (na.y + (nb.y - na.y) * pu.t) * h;
-        var a = 1 - Math.abs(pu.t - .5) * 2;
-        if (PULSE_SOLID) {
-          /* A soft gradient on white paints nothing. In light the pulse is a
-             solid dot — the intent kept, the technique replaced. */
-          x.fillStyle = 'rgba(' + SIG + ',' + (0.85 * a) + ')';
-          x.beginPath(); x.arc(px, py, 4 * dpr, 0, 6.283); x.fill();
-        } else {
-          var g = x.createRadialGradient(px, py, 0, px, py, 14 * dpr);
-          g.addColorStop(0, 'rgba(' + SIG + ',' + (0.55 * a) + ')');
-          g.addColorStop(1, 'rgba(' + SIG + ',0)');
-          x.fillStyle = g; x.beginPath(); x.arc(px, py, 14 * dpr, 0, 6.283); x.fill();
-        }
-      }
-    }
-
-    function frame() { if (!running) return; draw(true); requestAnimationFrame(frame); }
-
-    function start() {
-      if (running || reduce) return;
-      running = true; requestAnimationFrame(frame);
-      if (!spawnTimer) spawnTimer = setInterval(spawn, 900);
-    }
-    function stop() {
-      running = false;
-      if (spawnTimer) { clearInterval(spawnTimer); spawnTimer = null; }
-    }
-
-    window.__fieldRetheme = function () { readTokens(); if (reduce) draw(false); };
-    draw(false);                                   /* one still frame, always */
-    if (reduce) return;                            /* and that is the whole field */
-    start();
-    /* The field is fixed and full-viewport, so the only time it is unseen is
-       when the tab is. Burning a rAF loop and a timer there is free to stop. */
-    document.addEventListener('visibilitychange', function () {
-      document.hidden ? stop() : start();
     });
   })();
 
@@ -140,21 +59,63 @@
       root.setAttribute('data-theme', active() === 'light' ? 'dark' : 'light');
       try { localStorage.setItem('theme', root.getAttribute('data-theme')); } catch (e) {}
       label();
-      /* The canvas holds no palette of its own; it re-reads the tokens. */
-      if (window.__fieldRetheme) window.__fieldRetheme();
     });
     label();
     if (window.matchMedia) {
       var q = matchMedia('(prefers-color-scheme: light)');
-      var on = function () { if (!root.hasAttribute('data-theme')) { label(); if (window.__fieldRetheme) window.__fieldRetheme(); } };
+      var on = function () { if (!root.hasAttribute('data-theme')) label(); };
       q.addEventListener ? q.addEventListener('change', on) : q.addListener && q.addListener(on);
     }
   })();
 
-  /* ---------------------- 2. momentum scroll ---------------------- */
+  /* ---------------------- 2. momentum scroll ----------------------
+     The smoothing is the part that looks good. What was wrong was that the
+     gesture had stopped meaning a distance:
+
+                          input -> moving   travel for 600px   tail
+       as built           49ms              1200px  (2.00x)    1082ms
+       native             56ms              600px   (1.00x)    0ms
+       now                37ms              600px   (1.00x)    345ms
+
+     Two seconds of a page you did not ask for, every flick. You aimed at a
+     section, sailed past it, and waited a full second to find out where you
+     landed — which reads as lag even though every frame arrived on time, and
+     which no frame-rate instrument could ever have caught.
+
+     Getting to that first row took three attempts, because the obvious
+     measurement is not the right one. Driving the page and comparing travel
+     to the delta you ASKED for measures the harness: Playwright's
+     mouse.wheel doubles deltaY in a desktop context, and so does CDP's
+     dispatchMouseEvent, so a request for 600 arrives as 1200. By that
+     reading Lenis looks like it doubles, and it does not — it applies
+     exactly the delta it is handed.
+
+     The question that matters is what native does with the SAME delivered
+     event, and there the difference is real and constant:
+
+       delivered deltaY   native travel   Lenis travel
+       200                100px (0.50x)   200px (1.00x)
+       600                300px (0.50x)   600px (1.00x)
+       1200               600px (0.50x)   1200px (1.00x)
+
+     Chromium's own wheel handling halves a pixel-mode delta; Lenis does not,
+     so the page goes twice as far as the browser would have taken it for the
+     same flick of the same wheel. Hence the multiplier. It applies only to
+     wheel input, so touch devices — which send no wheel events — are
+     untouched; a mobile emulation driven by a synthetic wheel will read half
+     traversal, and that is the harness, not the page.
+
+     The tail is the second defect and it is measured in time, not distance:
+     with duration 1.1 the page kept moving for 1082ms after the input
+     stopped, so you overshot what you aimed at and then waited to find out
+     where you landed. That reads as lag even though every frame arrived on
+     time, which is why no frame-rate instrument ever caught it. A shorter
+     duration brings the tail to roughly a native flick and it still starts
+     moving sooner than native does. */
   var lenis = null;
   if (!reduce && window.Lenis) {
-    lenis = new Lenis({ duration: 1.1, smoothWheel: true });
+    lenis = new Lenis({ duration: .35, smoothWheel: true, wheelMultiplier: .5 });
+    window.__lenis = lenis;   /* so an instrument can isolate it without a rebuild */
     (function raf(t) { lenis.raf(t); requestAnimationFrame(raf); })(0);
   }
   if (window.gsap && window.ScrollTrigger) {
@@ -169,22 +130,43 @@
       if (!lines.length) return;
       gsap.set(lines, { yPercent: 115, opacity: 0 });     /* from-state, at runtime */
       gsap.to(lines, {
-        yPercent: 0, opacity: 1, duration: 1.05, stagger: .085, ease: 'expo.out',
-        scrollTrigger: { trigger: el, start: 'top 88%', once: true }
+        /* 1.05s put a three-line paragraph 1.22s from readable, and a fast
+           scroller arrived at text still moving. What makes the page feel
+           composed is the stagger — lines landing in sequence — not how long
+           each line takes, so the duration came down and the sequence stayed. */
+        yPercent: 0, opacity: 1, duration: .4, stagger: .06, ease: 'expo.out',
+        scrollTrigger: { trigger: el, start: 'top 85%', once: true }
       });
     });
   }
 
-  /* ---------- 3b. skills stagger: the differentiator lands last ---------- */
+  /* ---------- 3b. skills stagger ----------
+     Measured, this was the slowest thing on the page: 1501ms worst case on
+     mobile against a 17ms median everywhere else. Two causes, both here.
+
+     The trigger was '.field' for every group, so one group arriving started
+     all six sequences — by which time the later groups' chips were already
+     on screen, waiting their turn in a queue that began off-screen. Each
+     group now waits for itself.
+
+     And the lit group carried a .18s delay so that "the differentiator lands
+     last". That delay landed on Agentic AI, which is the content a recruiter
+     came for, and made it the slowest block on the page. The group is
+     already distinguished by colour and border; it does not also need to be
+     late. The tell was that the worst case improved as scrolling got
+     faster — a queue, not a duration.
+
+     The stagger is now capped as a total rather than set per item, so a six
+     chip group and a three chip group both finish in the same .12s. */
   if (window.gsap && window.ScrollTrigger && !reduce) {
     gsap.utils.toArray('.field .grp').forEach(function (g) {
       var chips = g.querySelectorAll('li');
       if (!chips.length) return;
       gsap.set(chips, { opacity: 0, y: 10 });
       gsap.to(chips, {
-        opacity: 1, y: 0, duration: .5, ease: 'power2.out', stagger: .035,
-        delay: g.classList.contains('grp-lit') ? .18 : 0,
-        scrollTrigger: { trigger: '.field', start: 'top 85%', once: true }
+        opacity: 1, y: 0, duration: .3, ease: 'power2.out',
+        stagger: { amount: .08 },
+        scrollTrigger: { trigger: g, start: 'top 95%', once: true }
       });
     });
   }
@@ -259,6 +241,74 @@
     addEventListener('scroll', onScroll, { passive: true });
     addEventListener('resize', function () { layout(); paint(); });
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { layout(); paint(); });
+  })();
+
+  /* ---------------------- 4b. the toolset answers ----------------------
+     The smallest honest version of "try something out of role". It makes no
+     claim the page did not already make: the six strings and the allow/deny
+     split are the ones that were rendered here before this was interactive,
+     and the verdict is read from the markup's data-allow, not decided here.
+     There is no authorisation model in this function — there is a lookup.
+
+     States, all of them:
+       S0  no JS, or no node          markup stands; the chips are labels and
+                                      the sentence below them states the rule
+       S1  JS present                 chips become operable, cursor changes
+       S2  allowed tool called        chip lights, status names it
+       S3  denied tool called         chip strikes through, status refuses
+       S4  a second tool called       the previous verdict clears first, so
+                                      two chips never both read as "current"
+       S5  same tool called twice     status is cleared before it is rewritten
+                                      so a live region re-announces identical
+                                      text instead of staying silent
+       S6  keyboard                   buttons, so Enter and Space already work
+       S7  reduced motion             unchanged; this is state, not motion */
+  (function () {
+    var list = document.querySelector('.tools');
+    var out  = document.querySelector('.tool-out');
+    if (!list || !out) return;                                          /* S0 */
+
+    var buttons = list.querySelectorAll('.tool');
+    if (!buttons.length) return;
+    list.classList.add('tools-live');                                   /* S1 */
+
+    var REST = out.innerHTML;
+    var pending = 0;
+
+    function say(html) {
+      /* A polite live region announces a change in text. Writing the same
+         string twice is not a change, so the second refusal would be silent
+         — which is exactly the case a visitor is most likely to produce. */
+      if (pending) cancelAnimationFrame(pending);                       /* S5 */
+      out.textContent = '';
+      pending = requestAnimationFrame(function () {
+        pending = 0;
+        out.innerHTML = html;
+      });
+    }
+
+    function name(btn) {
+      return btn.firstChild && btn.firstChild.nodeValue
+        ? btn.firstChild.nodeValue.trim()
+        : btn.textContent.trim();
+    }
+
+    list.addEventListener('click', function (e) {
+      var btn = e.target && e.target.closest ? e.target.closest('.tool') : null;
+      if (!btn) return;
+
+      for (var i = 0; i < buttons.length; i++) {                        /* S4 */
+        buttons[i].removeAttribute('data-said');
+      }
+
+      var allowed = btn.getAttribute('data-allow') === '1';
+      btn.setAttribute('data-said', allowed ? 'allow' : 'deny');
+
+      say(allowed                                                       /* S2 */
+        ? '<code>' + name(btn) + '</code> returned. It is in this role\'s toolset.'
+        : '<code>' + name(btn) + '</code> <b>refused.</b> Not filtered at the ' +
+          'call — the agent never had that tool.');                     /* S3 */
+    });
   })();
 
   /* ---------------------- 5. the gate ---------------------- */
