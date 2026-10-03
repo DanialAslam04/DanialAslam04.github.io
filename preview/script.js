@@ -134,14 +134,17 @@
   var lenis = null;
   function wheelScale() { return .5 * (window.devicePixelRatio || 1); }
   if (!reduce && window.Lenis) {
-    lenis = new Lenis({ duration: .35, smoothWheel: true, wheelMultiplier: wheelScale() });
+    /* anchors:true because a native anchor jump and Lenis fight each other.
+       The browser sets scrollY, then Lenis's next frame pulls it back toward
+       its own targetScroll, and which wins is a race. Measured on a phone:
+       four of five nav links landed and #build went to 295 instead of 2878
+       while still setting location.hash — a link that changes the URL and
+       does not travel is the worst form of this, because it looks like it
+       worked. One scroller owns anchors now, so there is nothing to race. */
+    lenis = new Lenis({ duration: .35, smoothWheel: true, wheelMultiplier: wheelScale(), anchors: true });
     window.__lenis = lenis;   /* so an instrument can isolate it without a rebuild */
     (function raf(t) { lenis.raf(t); requestAnimationFrame(raf); })(0);
 
-    /* Drag the window to a display with a different pixel ratio and the
-       tuning silently inverts, so track it. resize covers both causes — a
-       display change and a zoom — and the guard means this costs a compare
-       per resize and nothing else. */
     /* Both option objects, deliberately. The wheel handler is installed on
        lenis.virtualScroll and reads ITS options — lenis.options is a
        different object, and writing only that one is a silent no-op. Tested:
@@ -157,6 +160,10 @@
         lenis.virtualScroll.options.wheelMultiplier = v;
       }
     }
+    /* Drag the window to a display with a different pixel ratio and the
+       tuning silently inverts, so track it. resize covers both causes — a
+       display change and a zoom — and the guard means this costs a compare
+       per resize and nothing else. */
     var dpr = window.devicePixelRatio || 1;
     window.addEventListener('resize', function () {
       var now = window.devicePixelRatio || 1;
@@ -264,6 +271,22 @@
     function layout() {
       vh = innerHeight;
       docH = Math.max(document.body.scrollHeight, 1);
+
+      /* Pin only the bar's nav row on phones: the sticky offset is the
+         identity row's height, which varies with how the bar wraps (121px at
+         360, 61px at 414). Hard-coding one of those breaks the other, so it
+         is measured here and read by CSS. Layout time only — never a frame. */
+      var bar = document.querySelector('.bar'), barNav = document.querySelector('.bar-nav');
+      if (bar && barNav) {
+        var navH = barNav.offsetHeight;
+        /* less 1px: subpixel bar heights otherwise park the nav row's own
+           top border just above the viewport edge. */
+        var idH = Math.max(0, bar.offsetHeight - navH - 1);
+        var root = document.documentElement.style;
+        root.setProperty('--bar-pin', (-idH) + 'px');
+        root.setProperty('--bar-nav-h', navH + 'px');
+        root.setProperty('--bar-h', bar.offsetHeight + 'px');
+      }
       var y = window.scrollY || window.pageYOffset;
       if (terminal) terminalTop = terminal.getBoundingClientRect().top + y;
       tops = sections.map(function (s, i) {
