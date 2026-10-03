@@ -441,7 +441,14 @@ section[id]{scroll-margin-top:72px}
    proof, then the elaboration. The panel keeps its card; splitting the
    numbers out of it would cost the dossier treatment to save nothing. */
 @media(max-width:1179px){
-  .hero-grid{display:flex;flex-direction:column;gap:0}
+  /* align-items:stretch is load-bearing. The grid above sets align-items:
+     center, where it centres two columns on the BLOCK axis. Switching this
+     container to a column flex so the children could be ordered silently
+     changed that property's axis to the inline one, so every hero child
+     shrink-wrapped and centred itself — at 1179 they sat at 468, 264, 320,
+     472 and 354 while every section below was at 24. The declaration never
+     changed; what it meant changed underneath it. */
+  .hero-grid{display:flex;flex-direction:column;gap:0;align-items:stretch}
   .hero-main{display:contents}
   .eyebrow{order:1}
   #hero .claim{order:2}
@@ -592,7 +599,11 @@ section{position:relative;padding-block:clamp(40px,8vh,72px);padding-left:var(--
 .stage-h{font-family:var(--display);font-weight:600;font-size:var(--t-value);
   line-height:1.15;letter-spacing:-.02em;margin:0 0 1rem;max-width:24ch}
 .hero-bio{margin-top:1.25rem}
+/* In Background this introduces a list whose rows are .55rem apart, so the
+   lede needs to sit further from row one than the rows sit from each other
+   or it reads as the first entry rather than the introduction. */
 .sec-lede{margin:0 0 1.4rem;max-width:46ch}
+#background .sec-lede{margin-bottom:2rem}
 /* The thesis that heads How I build is a 110-character sentence. At --t-head
    against an 18ch measure it set as seven lines of display type — a heading
    the height of a screen, which is the single largest piece of air the
@@ -784,8 +795,15 @@ section{position:relative;padding-block:clamp(40px,8vh,72px);padding-left:var(--
 .tl-what{font-size:var(--t-body);color:var(--dim);max-width:52ch}
 .tl-what b{color:var(--ink);font-weight:500}
 .tl-now .tl-when{color:var(--sig)}
-.certs{font-family:var(--label);font-size:var(--m-sm);letter-spacing:.055em;text-transform:uppercase;
-  color:var(--dim);margin:1.75rem 0 0;max-width:none;line-height:2}
+/* Same micro-type as the date column, same left edge, directly under the
+   last row and unlabelled — it scanned as a fourth timeline entry whose date
+   had run long. It now sits in the band's own grid with a label where a date
+   would be, so it is explicitly not one. */
+.certs{display:grid;grid-template-columns:minmax(0,164px) minmax(0,1fr);
+  gap:.2rem 1.5rem;align-items:baseline;margin:1.5rem 0 0;max-width:none}
+@media(max-width:700px){.certs{grid-template-columns:1fr;gap:.1rem}}
+.certs .tl-when{white-space:nowrap}
+.certs span:last-child{font-size:var(--t-body);color:var(--dim);line-height:1.5}
 
 /* ---------- 8 · contact: arrival ---------- */
 #contact{position:relative}
