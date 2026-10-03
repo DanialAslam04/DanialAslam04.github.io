@@ -634,7 +634,8 @@ section{position:relative;padding-block:clamp(40px,8vh,72px);padding-left:var(--
    lede needs to sit further from row one than the rows sit from each other
    or it reads as the first entry rather than the introduction. */
 .sec-lede{margin:0 0 1.4rem;max-width:46ch}
-#background .sec-lede{margin-bottom:2rem}
+#background .sec-lede,
+#stack .sec-lede{margin-bottom:2rem}
 /* The thesis that heads How I build is a 110-character sentence. At --t-head
    against an 18ch measure it set as seven lines of display type — a heading
    the height of a screen, which is the single largest piece of air the
@@ -736,17 +737,23 @@ section{position:relative;padding-block:clamp(40px,8vh,72px);padding-left:var(--
 .status b{color:var(--sig);font-weight:400}
 
 /* ---------- 4 · skills: a field, lit and dim ---------- */
-/* Six groups was a taxonomy; three is a statement. Same chips, regrouped —
-   and the label sits beside them rather than above, which is what actually
-   buys the height back. Six stacked groups on a phone made the section with
-   the least content the largest one after Work, on the device that matters
-   most. A stack list is scanned, not read. */
-.field{margin:0;display:grid;gap:clamp(18px,2.4vh,26px)}
-.grp{display:grid;grid-template-columns:minmax(0,164px) minmax(0,1fr);
-  gap:.75rem 1.5rem;align-items:baseline}
-@media(max-width:700px){.grp{grid-template-columns:1fr;gap:.5rem}}
-.grp dt{font-family:var(--label);font-size:var(--m-sm);font-weight:500;letter-spacing:.055em;
-  text-transform:uppercase;color:var(--dim);margin:0}
+/* The label sits ABOVE its chips, as the phone layout already did. Beside
+   them it was eating 164px of the chip area at every desktop width, which is
+   what produced the ragged wrap and left RAG orphaned on a line of its own
+   with the right half of the section empty. The narrow layout was the good
+   one and the wide layout was the defect — which no probe here could have
+   reported, because none of them compares one width's composition against
+   another's.
+
+   Column count is deliberately not set: the grouping is under review and the
+   right number of columns follows from how many groups there are, so that
+   decision waits for the content rather than guessing ahead of it. */
+.field{margin:0;display:grid;gap:clamp(22px,3vh,34px)}
+.grp{display:block;min-width:0}
+.grp dt{display:flex;align-items:baseline;gap:9px;margin:0 0 .7rem;
+  font-family:var(--label);font-size:var(--m-sm);font-weight:500;letter-spacing:.055em;
+  text-transform:uppercase;color:var(--dim)}
+.grp dt i{font-style:normal;color:var(--sig);font-variant-numeric:tabular-nums;flex:none}
 .grp dd{margin:0}
 .grp ul{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:.35rem}
 .grp li{font-family:var(--label);font-size:var(--m-sm);letter-spacing:.055em;text-transform:uppercase;
