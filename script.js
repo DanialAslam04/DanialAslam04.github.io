@@ -218,18 +218,44 @@
     });
   }
 
-  /* ---------------------- 4. the rail ---------------------- */
+  /* ---------------------- 4. the rail ----------------------
+     Two node lists, deliberately, and they used to be one.
+
+     The ticks mark sections: six now rather than thirteen, so the signal has
+     fewer, heavier movements and the marks sit far enough apart to be read
+     as a position rather than a texture. They carry no labels — the section
+     names live on the dividers and in the right nav, and a third copy on
+     the rail was three of the same six words on one screen.
+
+     The live lighting marks BLOCKS — the three stages and the gate, which
+     after the consolidation all live inside one section. The old code took
+     querySelector('.unit') off the tick node, so collapsing to six ticks
+     would have found only the first stage's unit and the other two would
+     never have lit again. Separate lists, separate jobs. */
   (function () {
     var rail = document.getElementById('rail');
     if (!rail) return;
     var trace = rail.querySelector('.trace'), head = rail.querySelector('.head');
-    /* One tick per section, plus one per Work panel — the request moving through
-       three systems shows as three ticks close together in the band. */
-    var sections = [].slice.call(document.querySelectorAll('main > section, [data-tick]'));
-    var ticks = sections.map(function () {
-      var t = document.createElement('div'); t.className = 'tick'; rail.appendChild(t); return t;
+
+    var sections = [].slice.call(document.querySelectorAll('main > section'));
+    var ticks = sections.map(function (sec) {
+      var t = document.createElement('div');
+      t.className = 'tick';
+      rail.appendChild(t);
+      return t;
     });
-    var tops = [], heights = [], units = [], looses = [], litState = [], liveState = [];
+    var live = [].slice.call(document.querySelectorAll('[data-live]'));
+
+    /* The right-hand nav hangs off the same lit state the ticks use. A second
+       observer would be a second thing to keep in sync and a second place to
+       lose the write-only-on-change guard. */
+    var navFor = sections.map(function (sec) {
+      return sec.id ? document.querySelector('.sidenav a[href="#' + sec.id + '"]') : null;
+    });
+    var activeIdx = -1;
+
+    var tops = [], litState = [];
+    var liveTops = [], liveHeights = [], liveUnits = [], liveOn = [];
     var docH = 1, vh = 1, ticking = false;
     var terminal = document.querySelector('.terminal'), terminalTop = 0, landed = false;
 
@@ -238,16 +264,20 @@
     function layout() {
       vh = innerHeight;
       docH = Math.max(document.body.scrollHeight, 1);
-      if (terminal) terminalTop = terminal.getBoundingClientRect().top + (window.scrollY || window.pageYOffset);
+      var y = window.scrollY || window.pageYOffset;
+      if (terminal) terminalTop = terminal.getBoundingClientRect().top + y;
       tops = sections.map(function (s, i) {
-        var top = s.getBoundingClientRect().top + (window.scrollY || window.pageYOffset);
+        var top = s.getBoundingClientRect().top + y;
         ticks[i].style.top = ((top / docH) * vh) + 'px';
-        heights[i] = s.offsetHeight;          /* read here, not every frame */
-        units[i] = s.querySelector('.unit');  /* resolved once, not every frame */
-        looses[i] = s.querySelector('.chip-loose');
         return top;
       });
+      liveTops = live.map(function (el, i) {
+        liveHeights[i] = el.offsetHeight;
+        liveUnits[i] = el.querySelector('.unit') || el;
+        return el.getBoundingClientRect().top + y;
+      });
     }
+
     function paint() {
       ticking = false;
       var y = window.scrollY || window.pageYOffset;
@@ -258,28 +288,37 @@
       if (!landed && terminal && (terminalTop - y) < vh * 0.75) {
         terminal.classList.add('landed'); landed = true;   /* once, never looping */
       }
+      /* Only write when the value actually changes. classList.toggle with a
+         forced boolean still writes, and a write invalidates style whether
+         or not the class moved. */
+      var active = 0;
       for (var i = 0; i < sections.length; i++) {
-        var rel = tops[i] - y;                         /* from cached geometry */
-        var lit = rel < vh * 0.62;
-        /* Only write when the value actually changes. classList.toggle with a
-           forced boolean still writes, and a write invalidates style whether
-           or not the class moved — thirteen ticks plus their units, every
-           frame, was the bulk of the recalculation cost. */
-        if (litState[i] !== lit) { litState[i] = lit; ticks[i].classList.toggle('lit', lit); }
-        var inView = lit && rel + heights[i] > vh * 0.2;
-        var unit = units[i];
-        if (unit) {
-          if (liveState[i] !== inView) { liveState[i] = inView; unit.classList.toggle('live', inView); }
-          /* The toolset filter latches rather than toggling. It carries
-             information, not tone — "the tools outside this role are not
-             reachable" is a fact about the system, so re-running it on every
-             pass would make it a loop, and un-running it on scroll-past would
-             unsay it. The dimmed items also carry visually-hidden "outside
-             this role" text; the meaning must not live in opacity alone. */
-          if (inView && sections[i].hasAttribute('data-filter') && !unit.classList.contains('filtered')) unit.classList.add('filtered');
+        var lit = (tops[i] - y) < vh * 0.62;
+        if (lit) active = i;                  /* the last one crossed is the one you are in */
+        if (litState[i] !== lit) {
+          litState[i] = lit;
+          ticks[i].classList.toggle('lit', lit);
         }
-        /* Same reasoning: identity, once attached, stays attached. */
-        if (inView && looses[i] && !looses[i].classList.contains('lit')) looses[i].classList.add('lit');
+      }
+      if (active !== activeIdx) {
+        if (navFor[activeIdx]) navFor[activeIdx].removeAttribute('aria-current');
+        if (navFor[active]) navFor[active].setAttribute('aria-current', 'true');
+        activeIdx = active;
+      }
+      for (var j = 0; j < live.length; j++) {
+        var rel = liveTops[j] - y;
+        var inView = rel < vh * 0.62 && rel + liveHeights[j] > vh * 0.2;
+        var unit = liveUnits[j];
+        if (liveOn[j] !== inView) { liveOn[j] = inView; unit.classList.toggle('live', inView); }
+        /* The toolset filter latches rather than toggling. It carries
+           information, not tone — "the tools outside this role are not
+           reachable" is a fact about the system, so re-running it on every
+           pass would make it a loop, and un-running it on scroll-past would
+           unsay it. The dimmed items also carry visually-hidden "outside
+           this role" text; the meaning must not live in opacity alone. */
+        if (inView && live[j].hasAttribute('data-filter') && !unit.classList.contains('filtered')) {
+          unit.classList.add('filtered');
+        }
       }
     }
     function onScroll() { if (!ticking) { ticking = true; requestAnimationFrame(paint); } }
