@@ -275,8 +275,18 @@ main{position:relative;z-index:2}
 
 
 /* ---------- persistent bar: a recruiter must be able to jump ---------- */
-.bar{position:sticky;top:0;z-index:40;background:rgb(var(--void-rgb) / .86);
+/* .86 was legible enough when the bar only sat over the hero. Once it
+   persists on phones and the page scrolls under it everywhere, body text
+   reads straight through the strip — visible at a glance on the first
+   screenshot after the bar went sticky. Near-opaque by default; where
+   backdrop-filter exists it can afford to stay glassy, because the blur is
+   doing the separating rather than the alpha. */
+.bar{position:sticky;top:0;z-index:40;background:rgb(var(--void-rgb) / .94);
   border-bottom:1px solid var(--line)}
+@supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)){
+  .bar{background:rgb(var(--void-rgb) / .72);
+    -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+}
 .bar-in{max-width:1180px;margin-inline:auto;padding:0 24px 0 calc(24px + var(--rail));
   display:flex;align-items:center;gap:16px;min-height:56px}
 @media(max-width:860px){.bar-in{padding-left:16px;padding-right:16px}}
@@ -300,8 +310,8 @@ main{position:relative;z-index:2}
    is too much of a short viewport and the rail still carries position. Both
    halves were wrong once the page got long: #rail is aria-hidden and
    pointer-events:none, so it carries position for nobody who needs it, and
-   .sidenav starts at 1440 — which left a 7.4-screen phone page with no
-   persistent navigation at all after the first screen. A LinkedIn tap lands
+   .vbar is a pointer control, not navigation — which left a 7.4-screen
+   phone page with no persistent navigation at all after the first screen. A LinkedIn tap lands
    on a phone.
 
    The original trade below was real and is kept rather than deleted: the nav
@@ -361,35 +371,60 @@ section[id]{scroll-margin-top:72px}
 /* Anchors must clear whatever is actually pinned, which is the nav row. */
 @media(max-width:860px){section[id]{scroll-margin-top:calc(var(--bar-nav-h,46px) + 14px)}}
 
-/* ---------- section nav: the orientation device you can actually click ----
-   Mirrors the left rail's position language on the other edge. Below 860 the
-   bar nav takes over and this goes, at the same breakpoint that drops the
-   rail's tick labels — two persistent navs on a phone is one too many. */
-.sidenav{position:fixed;right:28px;top:50%;transform:translateY(-50%);z-index:30}
-/* The number is the mark. Two persistent navs listing the same six
-   destinations needed to be visibly different objects rather than two menus:
-   the bar is a menu of words, this is a position with a count — and the count
-   is the one the dividers already carry in flow, so it is the page's existing
-   language rather than a second one.
+/* The hero is the exception: it starts directly under the bar, so its anchor
+   has to land at 0 rather than clear of anything. Its margin is therefore the
+   bar's own height, not the nav row's. Desktop was reaching 0 by accident —
+   a 72px margin against a 57px bar clamps negative — while every width under
+   860 landed short by exactly the difference: 47px at 768 and 414, 107px at
+   320-390. Derived, so it holds at whatever height the bar happens to be. */
+#hero{scroll-margin-top:var(--bar-h,0px)}
+/* The skip target had no scroll-margin at all, so it landed the full bar
+   height under the header — 46px on a phone, 57px on desktop. Same derivation
+   as the hero: #main starts directly beneath the bar, so the bar's own height
+   is the clearance. And no ring: this is a container focused programmatically,
+   not a control, and an outline around the entire page is noise rather than
+   feedback — the jump and the new tab order are the confirmation. */
+#main{scroll-margin-top:var(--bar-h,0px)}
+#main:focus{outline:none}
 
-   It was 10px at --faint, which measured 2.00:1 dark and 1.93:1 light. On
-   interactive text, in the one affordance built specifically for a visitor
-   who cannot scroll. Quiet is a contrast relationship with the active item,
-   not absolute faintness, so the idle state is --dim at 6.2:1 and the active
-   state separates by accent and weight instead of by the other one fading. */
-.sidenav ul{list-style:none;margin:0;padding:0;display:grid;gap:2px}
-.sidenav a{display:grid;grid-template-columns:17px auto;align-items:center;gap:10px;
-  min-height:30px;padding:3px 4px;
-  font-family:var(--label);font-size:11px;font-weight:500;letter-spacing:.07em;
-  text-transform:uppercase;color:var(--dim);text-decoration:none;
+/* ---------- the right-hand scrollbar ----------
+   A control, not a menu. The bar nav answers "take me there"; this answers
+   "where am I and let me drag". It exists because #rail is aria-hidden and
+   pointer-events:none, so the page's only orientation device was unusable
+   by the person who most needs one — someone navigating without a wheel.
+
+   The container does not take pointer events; only the hit strip, the thumb
+   and the marks do. A full-height 46px overlay that swallowed clicks would
+   break the full-bleed work band underneath it. */
+.vbar{position:fixed;right:0;top:0;bottom:0;width:46px;z-index:30;pointer-events:none}
+/* 28px of grab for a 3px line: the whole point is catching it with a mouse. */
+.vbar-hit{position:absolute;right:8px;top:clamp(56px,9vh,96px);bottom:clamp(56px,9vh,96px);
+  width:28px;pointer-events:auto;cursor:pointer;touch-action:none}
+.vbar-hit::before{content:'';position:absolute;left:50%;top:0;bottom:0;width:3px;
+  margin-left:-1.5px;border-radius:2px;background:rgb(var(--line-rgb) / .30)}
+.vbar-thumb{position:absolute;left:50%;top:0;width:7px;margin-left:-3.5px;
+  border-radius:4px;background:var(--ui);will-change:transform;
+  transition:background-color var(--fast) var(--fast-ease)}
+@media (hover:hover){ .vbar-hit:hover .vbar-thumb{background:var(--sig)} }
+.vbar.dragging .vbar-thumb{background:var(--sig)}
+.vbar.dragging .vbar-hit{cursor:grabbing}
+
+.vbar-mark{position:absolute;right:8px;display:flex;align-items:center;justify-content:flex-end;
+  gap:8px;height:24px;margin-top:-12px;pointer-events:auto;cursor:pointer;
+  font-family:var(--label);font-size:10px;font-weight:500;letter-spacing:.07em;
+  text-transform:uppercase;color:var(--dim);white-space:nowrap;
   transition:color var(--fast) var(--fast-ease)}
-.sidenav b{font-weight:500;font-variant-numeric:tabular-nums;text-align:right;
-  transition:color var(--fast) var(--fast-ease)}
-@media (hover:hover){ .sidenav a:hover{color:var(--ink)} }
-.sidenav a:focus-visible{color:var(--ink)}
-.sidenav a[aria-current]{color:var(--sig)}
-.sidenav a[aria-current] b{font-weight:700}
-@media(max-width:1439px){.sidenav{display:none}}
+.vbar-mark i{order:2;width:9px;height:1px;background:currentColor;flex:none;margin-right:9.5px}
+.vbar-mark span{order:1}
+@media (hover:hover){ .vbar-mark:hover{color:var(--ink)} }
+
+/* Re-derived rather than inherited: the labelled nav that lived here needed
+   1440 to clear the 1180 measure. This sits harder against the edge, so the
+   threshold is measured against painted text, not assumed. */
+/* Measured, not assumed: clear by 47px at 1360 and tight to 7px at 1280.
+   Better reach than the 1440 the labelled nav needed. */
+@media(max-width:1359px){.vbar{display:none}}
+@media(prefers-reduced-motion:reduce){.vbar-thumb{will-change:auto}}
 
 /* ---------- hero: argument left, proof right ---------- */
 .hero-grid{display:grid;gap:clamp(40px,5vw,72px);align-items:center}
@@ -620,8 +655,6 @@ section{position:relative;padding-block:clamp(40px,8vh,72px);padding-left:var(--
 .panel-own{font-size:var(--t-body);color:var(--ink);max-width:48ch;margin:0 0 1rem;
   font-weight:500;line-height:1.5}
 .panel-desc{font-size:var(--t-body);color:var(--dim);max-width:48ch;margin:0}
-.marker{font-family:var(--label);font-size:var(--m-sm);letter-spacing:.08em;text-transform:uppercase;
-  color:var(--dim);margin:1.25rem 0 0;padding-top:.7rem;border-top:1px solid var(--line);max-width:18ch}
 .stack{list-style:none;display:flex;flex-wrap:wrap;gap:.4rem;margin:1.1rem 0 0;padding:0;
   font-family:var(--label);font-size:var(--m-sm);letter-spacing:.055em;text-transform:uppercase;color:var(--dim)}
 .stack li{border:1px solid var(--line);border-radius:var(--r-sm);padding:.3rem .6rem}
