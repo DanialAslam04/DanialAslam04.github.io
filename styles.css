@@ -219,12 +219,28 @@ main{position:relative;z-index:2}
    short viewport to spend permanently, and the rail still carries position. */
 @media(max-width:860px){
   .bar{position:relative}
+  /* The nav row does not owe the rail a gutter. The rail is a 2px line at
+     x=12 and the bar scrolls away with the page here, so indenting the links
+     past it spent 34px of a 254px row — a whole link's worth. */
   .bar-nav{order:3;flex-basis:100%;min-width:0;border-top:1px solid var(--faint);
-    margin-inline:calc(-16px - 34px) -16px;padding-inline:calc(16px + 34px) 16px}
+    margin-inline:calc(-16px - 34px) -16px;padding-inline:16px 16px}
   .bar-in{flex-wrap:wrap;padding-bottom:0}
-  .bar-nav ul{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none}
+  .bar-nav ul{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none;
+    overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch}
   .bar-nav ul::-webkit-scrollbar{display:none}
   .bar-nav li{flex:none}
+  .bar-nav a{padding:10px 9px;letter-spacing:.09em}
+  /* The scrollbar is suppressed, so without this nothing says the row
+     continues — a link cut mid-word reads as a rendering fault rather than
+     as more content. Decorative: no mask support simply means no fade. */
+  .bar-nav{
+    -webkit-mask-image:linear-gradient(to right,#000 calc(100% - 28px),transparent 100%);
+            mask-image:linear-gradient(to right,#000 calc(100% - 28px),transparent 100%);
+  }
+  /* Once a focused link is scrolled flush to the right edge the fade would
+     dissolve its focus ring. The affordance is for pointer users; they are
+     not the ones it would harm. */
+  .bar-nav:focus-within{-webkit-mask-image:none;mask-image:none}
 }
 /* Anchor jumps must clear the sticky bar. */
 section[id]{scroll-margin-top:72px}

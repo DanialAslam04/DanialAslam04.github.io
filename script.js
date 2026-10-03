@@ -124,6 +124,27 @@
     });
   })();
 
+  /* ---------------------- 1a. nav focus ----------------------
+     Its own block, deliberately. The last time this fix lived inside another
+     section it was lost in a re-skin, and before that it sat below an early
+     return and silently did not exist under reduced motion. Nothing above
+     can skip it from here.
+
+     The row scrolls horizontally on narrow screens, and a browser only
+     auto-scrolls an element that is entirely outside the scroller — a
+     partially visible link keeps its ring clipped and nothing fires.
+     block:'nearest' stops the page jumping while it corrects. */
+  (function () {
+    var list = document.querySelector('.bar-nav ul');
+    if (!list) return;
+    list.addEventListener('focusin', function (e) {
+      var a = e.target && e.target.closest ? e.target.closest('a') : null;
+      if (a && typeof a.scrollIntoView === 'function') {
+        a.scrollIntoView({ inline: 'nearest', block: 'nearest' });
+      }
+    });
+  })();
+
   /* ---------------------- 1b. theme ---------------------- */
   (function () {
     var root = document.documentElement;
