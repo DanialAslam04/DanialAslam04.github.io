@@ -16,18 +16,20 @@
 @font-face{font-family:'Geist';font-style:normal;font-weight:400 700;font-display:swap;
   src:url('assets/geist-latin.woff2') format('woff2');
   unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+2122,U+2212,U+FEFF,U+FFFD}
-@font-face{font-family:'IBM Plex Mono';font-style:normal;font-weight:400;font-display:swap;
-  src:url('assets/ibm-plex-mono-400.woff2') format('woff2');
-  unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+2122,U+2212,U+FEFF,U+FFFD}
-@font-face{font-family:'IBM Plex Mono';font-style:normal;font-weight:500;font-display:swap;
-  src:url('assets/ibm-plex-mono-500.woff2') format('woff2');
-  unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+2122,U+2212,U+FEFF,U+FFFD}
+/* Metric-matched fallback. 'swap' alone avoids invisible text and causes a
+   reflow instead: the page paints in system-ui, then jumps when Geist lands.
+   Measured, not guessed — Geist's advance widths run 8.61% wider than
+   system-ui at the same size, so the fallback is scaled up by that much and
+   its ascent and descent are restated against the scaled em. The swap is now
+   a change of shape with no change of metrics. */
+@font-face{font-family:'Geist Fallback';
+  src:local('system-ui'),local('-apple-system'),local('Segoe UI'),local('Roboto'),local('Helvetica Neue'),local('Arial');
+  size-adjust:108.61%;ascent-override:92.54%;descent-override:27.16%;line-gap-override:0%}
 
 :root{
   /* Component tokens first. Every derived colour below is expressed through
      these, so changing the signal or the ground is one value rather than a
-     hunt through fourteen rgba() literals — which is what it was. The canvas
-     reads --sig-rgb at runtime for the same reason. */
+     hunt through fourteen rgba() literals — which is what it was. */
   --void-rgb: 7 11 18;      /* navy ground */
   --deep-rgb: 12 18 28;     /* raised surfaces */
   --ui-rgb:   77 163 255;   /* INTERFACE: nav, CTAs, links — things you click */
@@ -36,6 +38,41 @@
   --faint-rgb:54 68 90;    /* 1.80:1 on the navy ground — the §2.4 floor.
                               48 60 80 measured 1.77 once the ground moved
                               from near-black to navy. */
+
+  /* Borders are one translucent slate across the whole page. A border that
+     is a tint of what it sits on survives a background change; an opaque one
+     has to be restated for every surface, which is how a page ends up with
+     fourteen edge colours that nearly match. */
+  --line-rgb:148 163 184;
+  --line:rgb(var(--line-rgb) / .16);
+  /* One raised fill. Panels, nodes and the brief had three near-identical
+     values between them; they are the same surface and now say so. */
+  --surface:rgb(var(--deep-rgb) / .55);
+  --surface-solid:var(--deep);
+
+  /* Rounding carries role, not taste: the smaller the thing you can click,
+     the tighter the corner. Full-bleed bands and the rail stay square —
+     a rounded corner on an element that runs to the viewport edge is a
+     corner that never appears. */
+  --r-sm:8px;    /* chips, tags, buttons */
+  --r-md:12px;   /* cards, nodes, panels */
+  --r-lg:16px;   /* large containers */
+
+  /* Feedback and result are different speeds. Feedback answers the pointer
+     and must feel instant — 120ms is the band where a change is visible
+     without being watched. A result is narrative and may take its time. */
+  --fast:120ms;
+  --fast-ease:cubic-bezier(.2,0,.2,1);
+  --slow:.5s;
+  /* Feedback is instant, consequence is perceptible. The gate's commit is the
+     one payoff the page builds to; at 120ms it would be over before the eye
+     caught it. */
+  --result:300ms;
+
+  --grid:56px;
+  --grid-rgb:148 163 184;
+  --grid-a:.045;
+  --page-wash:none;
 
   --void:rgb(var(--void-rgb));
   --deep:rgb(var(--deep-rgb));
@@ -49,9 +86,17 @@
   /* One family across display and prose. "No serif anywhere" implies one
      sans doing both jobs; carrying a second family to no purpose would spend
      29 KB that the light theme and imagery need. */
-  --display:'Geist',ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
-  --sans:'Geist',ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
-  --mono:'IBM Plex Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --display:'Geist','Geist Fallback',ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --sans:'Geist','Geist Fallback',ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  /* Labels are the same sans, uppercase. A second family earned nothing here:
+     it spent 20 KB to say "label" in a voice the display face already has.
+     Uppercase sans needs less tracking than uppercase mono did, so the label
+     letter-spacing comes down with it. */
+  --label:var(--sans);
+  /* The exception, and the only one: the six permission strings are literal
+     identifiers. read:orders is code, and code is monospaced. System mono,
+     so it costs no download. */
+  --code:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
   --rail:72px;
 
   /* One page ladder, swept across 320–1920: minimum adjacent gap 6.0px.
@@ -72,7 +117,6 @@
   /* Dark expresses state through emission. Each emissive treatment is a token
      so that light can replace the mechanism, not pale it down. */
   --glow-op:.5;
-  --page-bg:none;
   --trace-glow:0 0 12px var(--sig);
   --head-ring:0 0 18px 4px rgb(var(--sig-rgb) / .55);
   --tick-lit-scale:1;
@@ -82,14 +126,8 @@
   --approved-shadow:inset 0 0 60px -10px rgb(var(--sig-rgb) / .45);
   --approved-edge:0;
   --pulse-rest:0 0 18px 4px rgb(var(--sig-rgb) / .45);
-  --unit-bg:linear-gradient(180deg,rgb(255 255 255 / .028),transparent);
-  --unit-live-bg:transparent;
-  /* canvas, read at runtime — it cannot resolve CSS tokens itself */
-  --field-op:.55;
-  --field-node:150 170 210;
-  --field-link-a:.10;
-  --field-node-a:.30;
-  --pulse-solid:0;
+  --unit-bg:var(--surface);
+  --unit-live-bg:var(--surface);
 
   color-scheme:dark;
 }
@@ -108,7 +146,14 @@
   --dim:#4C586B;
 
   --glow-op:0;                /* a bloom on white is haze, not depth */
-  --page-bg:linear-gradient(180deg,#F5F8FC 0%,#FCFCFD 46%);
+  --line-rgb:100 116 139;
+  --line:rgb(var(--line-rgb) / .20);   /* slate carries less on white than on
+                                          navy, so the alpha goes up rather
+                                          than the colour going darker */
+  --surface:rgb(var(--deep-rgb) / .75);
+  --grid-rgb:100 116 139;
+  --grid-a:.07;
+  --page-wash:linear-gradient(180deg,#F5F8FC 0%,#FCFCFD 46%);
   --trace-glow:none;          /* the fade is the trail; it still reads as ink */
   --head-ring:0 0 0 3px rgb(var(--void-rgb)), 0 0 0 4px rgb(var(--sig-rgb) / .35);
   --tick-lit-scale:2;         /* thickness IS the state */
@@ -118,19 +163,8 @@
   --approved-shadow:none;
   --approved-edge:3px;        /* the commit lands as ink and weight */
   --pulse-rest:0 0 0 0;       /* the pulse happens, then it is a dot */
-  --unit-bg:none;
+  --unit-bg:var(--surface);
   --unit-live-bg:rgb(var(--deep-rgb));
-  --field-op:.35;
-  --field-node:70 82 102;     /* graphite */
-  --field-link-a:.08;         /* NOT parity. An ambient field's job is to be
-                                 barely noticed, so matching perceived strength
-                                 across themes was optimising for the wrong
-                                 thing — it made the field read, which is what
-                                 it must not do. Graphite on white does carry
-                                 further than light on dark, so this sits below
-                                 the dark value rather than above it. */
-  --field-node-a:.45;
-  --pulse-solid:1;            /* a glow on white paints nothing */
   color-scheme:light;
 }}
 :root[data-theme="light"]{
@@ -143,7 +177,14 @@
   --dim:#4C586B;
 
   --glow-op:0;                /* a bloom on white is haze, not depth */
-  --page-bg:linear-gradient(180deg,#F5F8FC 0%,#FCFCFD 46%);
+  --line-rgb:100 116 139;
+  --line:rgb(var(--line-rgb) / .20);   /* slate carries less on white than on
+                                          navy, so the alpha goes up rather
+                                          than the colour going darker */
+  --surface:rgb(var(--deep-rgb) / .75);
+  --grid-rgb:100 116 139;
+  --grid-a:.07;
+  --page-wash:linear-gradient(180deg,#F5F8FC 0%,#FCFCFD 46%);
   --trace-glow:none;          /* the fade is the trail; it still reads as ink */
   --head-ring:0 0 0 3px rgb(var(--void-rgb)), 0 0 0 4px rgb(var(--sig-rgb) / .35);
   --tick-lit-scale:2;         /* thickness IS the state */
@@ -153,19 +194,8 @@
   --approved-shadow:none;
   --approved-edge:3px;        /* the commit lands as ink and weight */
   --pulse-rest:0 0 0 0;       /* the pulse happens, then it is a dot */
-  --unit-bg:none;
+  --unit-bg:var(--surface);
   --unit-live-bg:rgb(var(--deep-rgb));
-  --field-op:.35;
-  --field-node:70 82 102;     /* graphite */
-  --field-link-a:.08;         /* NOT parity. An ambient field's job is to be
-                                 barely noticed, so matching perceived strength
-                                 across themes was optimising for the wrong
-                                 thing — it made the field read, which is what
-                                 it must not do. Graphite on white does carry
-                                 further than light on dark, so this sits below
-                                 the dark value rather than above it. */
-  --field-node-a:.45;
-  --pulse-solid:1;            /* a glow on white paints nothing */
   color-scheme:light;
 }
 
@@ -173,19 +203,36 @@
 *,*::before,*::after{box-sizing:border-box}
 html{scrollbar-width:none;scroll-behavior:smooth}
 html::-webkit-scrollbar{display:none}
-body{margin:0;background:var(--void);background-image:var(--page-bg);background-attachment:fixed;color:var(--ink);
+/* The ground is a 56px grid: a drafting surface for a page about systems,
+   and it holds still. It replaces a canvas field that ran a rAF loop to say
+   roughly the same thing — the grid says it in two gradients and no script.
+   Layer order paints the grid over the wash, both fixed, so the page scrolls
+   across the ground rather than dragging it along. */
+body{margin:0;background-color:var(--void);color:var(--ink);
+  background-image:
+    linear-gradient(rgb(var(--grid-rgb) / var(--grid-a)) 1px,transparent 1px),
+    linear-gradient(90deg,rgb(var(--grid-rgb) / var(--grid-a)) 1px,transparent 1px),
+    var(--page-wash);
+  background-size:var(--grid) var(--grid),var(--grid) var(--grid),auto;
+  background-repeat:repeat,repeat,no-repeat;
+  background-attachment:fixed;
   font-family:var(--sans);font-size:1.0625rem;line-height:1.6;
   -webkit-font-smoothing:antialiased;overflow-x:hidden}
 
 .skip-link{position:absolute;left:16px;top:-100px;z-index:100;
-  background:var(--ui);color:var(--void);padding:12px 18px;
-  font-family:var(--mono);font-size:var(--m-lg);font-weight:500;
-  letter-spacing:.14em;text-transform:uppercase;text-decoration:none}
+  background:var(--ui);color:var(--void);border-radius:var(--r-sm);padding:12px 18px;
+  font-family:var(--label);font-size:var(--m-lg);font-weight:500;
+  letter-spacing:.08em;text-transform:uppercase;text-decoration:none}
 .skip-link:focus{top:16px}
 
-/* ambient field — a system idling behind everything */
-#field{position:fixed;inset:0;width:100%;height:100%;z-index:0;opacity:var(--field-op);pointer-events:none}
-.glow{position:fixed;z-index:0;pointer-events:none;border-radius:50%;filter:blur(90px);opacity:var(--glow-op)}
+/* Two mesh glows, breathing. The blur is static, so it rasterises once and
+   the animation is a transform on the finished layer — compositor only, no
+   repaint, no filter re-run per frame. 18s and 5% is below the threshold
+   where you catch it moving; you only notice the page is not dead. */
+.glow{position:fixed;z-index:0;pointer-events:none;border-radius:50%;filter:blur(90px);opacity:var(--glow-op);
+  will-change:transform;animation:breathe 18s ease-in-out infinite alternate}
+.glow-b{animation-delay:-9s}
+@keyframes breathe{from{transform:scale(1)}to{transform:scale(1.05)}}
 .glow-a{width:60vw;height:60vw;left:-15vw;top:-10vw;background:radial-gradient(circle,rgb(var(--ui-rgb) / .20),transparent 68%)}
 .glow-b{width:55vw;height:55vw;right:-18vw;top:45vh;background:radial-gradient(circle,var(--sig-soft),transparent 68%)}
 
@@ -196,25 +243,24 @@ main{position:relative;z-index:2}
 
 /* ---------- persistent bar: a recruiter must be able to jump ---------- */
 .bar{position:sticky;top:0;z-index:40;background:rgb(var(--void-rgb) / .86);
-  border-bottom:1px solid var(--faint)}
+  border-bottom:1px solid var(--line)}
 .bar-in{max-width:1180px;margin-inline:auto;padding:0 24px 0 calc(24px + var(--rail));
   display:flex;align-items:center;gap:16px;min-height:56px}
 @media(max-width:860px){.bar-in{padding-left:calc(16px + 34px);padding-right:16px}}
 .bar-id{display:inline-flex;align-items:center;gap:9px;min-height:44px;margin-right:auto;
-  font-family:var(--mono);font-size:var(--m-lg);font-weight:500;letter-spacing:.14em;
+  font-family:var(--label);font-size:var(--m-lg);font-weight:500;letter-spacing:.08em;
   text-transform:uppercase;color:var(--ink);text-decoration:none;white-space:nowrap}
 .bar-dot{width:7px;height:7px;border-radius:50%;background:var(--ui);
   box-shadow:0 0 10px var(--sig);flex:none}
 .bar-nav ul{display:flex;gap:2px;list-style:none;margin:0;padding:0}
 .bar-nav a{display:inline-flex;align-items:center;min-height:44px;padding:10px 12px;
-  font-family:var(--mono);font-size:var(--m-sm);letter-spacing:.12em;text-transform:uppercase;
-  color:var(--dim);text-decoration:none;white-space:nowrap;transition:color .25s}
-.bar-nav a:hover{color:var(--ink)}
+  font-family:var(--label);font-size:var(--m-sm);letter-spacing:.06em;text-transform:uppercase;
+  color:var(--dim);text-decoration:none;white-space:nowrap;transition:color var(--fast) var(--fast-ease)}
 .bar-cta{display:inline-flex;align-items:center;min-height:44px;padding:10px 16px;flex:none;
-  border:1px solid var(--ui);color:var(--ui);text-decoration:none;
-  font-family:var(--mono);font-size:var(--m-sm);font-weight:500;letter-spacing:.12em;
-  text-transform:uppercase;transition:background .25s,color .25s}
-.bar-cta:hover{background:var(--ui);color:var(--void)}
+  border:1px solid var(--ui);border-radius:var(--r-sm);color:var(--ui);text-decoration:none;
+  font-family:var(--label);font-size:var(--m-sm);font-weight:500;letter-spacing:.06em;
+  text-transform:uppercase;
+  transition:background-color var(--fast) var(--fast-ease),color var(--fast) var(--fast-ease),transform var(--fast) var(--fast-ease)}
 /* The bar scrolls away with the page below 860 — a 56px band is too much of a
    short viewport to spend permanently, and the rail still carries position. */
 @media(max-width:860px){
@@ -222,14 +268,14 @@ main{position:relative;z-index:2}
   /* The nav row does not owe the rail a gutter. The rail is a 2px line at
      x=12 and the bar scrolls away with the page here, so indenting the links
      past it spent 34px of a 254px row — a whole link's worth. */
-  .bar-nav{order:3;flex-basis:100%;min-width:0;border-top:1px solid var(--faint);
+  .bar-nav{order:3;flex-basis:100%;min-width:0;border-top:1px solid var(--line);
     margin-inline:calc(-16px - 34px) -16px;padding-inline:16px 16px}
   .bar-in{flex-wrap:wrap;padding-bottom:0}
   .bar-nav ul{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none;
     overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch}
   .bar-nav ul::-webkit-scrollbar{display:none}
   .bar-nav li{flex:none}
-  .bar-nav a{padding:10px 9px;letter-spacing:.09em}
+  .bar-nav a{padding:10px 9px;letter-spacing:.045em}
   /* The scrollbar is suppressed, so without this nothing says the row
      continues — a link cut mid-word reads as a rendering fault rather than
      as more content. Decorative: no mask support simply means no fade. */
@@ -255,19 +301,19 @@ section[id]{scroll-margin-top:72px}
 
 /* Dense and card-based against an otherwise airy page, deliberately: the hero
    proves, the rest argues. This treatment does not propagate downward. */
-.brief{border:1px solid var(--faint);background:rgb(var(--deep-rgb) / .55);padding:clamp(20px,2.2vw,28px)}
+.brief{border:1px solid var(--line);background:var(--surface);border-radius:var(--r-lg);padding:clamp(20px,2.2vw,28px)}
 .metrics{list-style:none;display:grid;gap:.9rem;margin:0 0 1.75rem;padding:0 0 1.5rem;
-  border-bottom:1px solid var(--faint)}
+  border-bottom:1px solid var(--line)}
 /* One per row. Three across a 360px panel wrapped 2+1, which reads as a
    layout accident rather than a decision. */
 .metrics li{display:grid;grid-template-columns:2.25rem minmax(0,1fr);
   align-items:baseline;gap:.75rem;min-width:0}
 .metrics b{font-family:var(--display);font-weight:600;font-size:var(--t-value);
   line-height:1;color:var(--ui)}
-.metrics span{font-family:var(--mono);font-size:var(--m-sm);letter-spacing:.1em;
+.metrics span{font-family:var(--label);font-size:var(--m-sm);letter-spacing:.055em;
   text-transform:uppercase;color:var(--dim);line-height:1.5}
 .caps{list-style:none;margin:0;padding:0;display:grid;gap:1.1rem}
-.cap-t{font-family:var(--mono);font-size:var(--m-lg);font-weight:500;letter-spacing:.14em;
+.cap-t{font-family:var(--label);font-size:var(--m-lg);font-weight:500;letter-spacing:.08em;
   text-transform:uppercase;color:var(--ink);margin:0 0 .3rem}
 .cap-d{font-size:.9375rem;color:var(--dim);margin:0;max-width:42ch}
 
@@ -285,13 +331,13 @@ section[id]{scroll-margin-top:72px}
   background:var(--sig);box-shadow:var(--head-ring)}
 #rail .tick{position:absolute;left:-5px;width:12px;height:1px;background:var(--faint);
   transform-origin:50% 50%;transform:scaleY(1);
-  transition:background .4s,box-shadow .4s,transform .4s}
+  transition:background-color var(--result),box-shadow var(--result),transform var(--result)}
 #rail .tick.lit{background:var(--sig);transform:scaleY(var(--tick-lit-scale));
   box-shadow:var(--tick-lit-glow)}
 @media(max-width:860px){#rail{left:12px}}
 
 /* ---------- type ---------- */
-.eyebrow{font-family:var(--mono);font-size:var(--m-lg);font-weight:500;letter-spacing:.14em;
+.eyebrow{font-family:var(--label);font-size:var(--m-lg);font-weight:500;letter-spacing:.08em;
   text-transform:uppercase;color:var(--dim);margin:0 0 1.5rem}
 .eyebrow b{color:var(--ui);font-weight:500}
 h1{font-family:var(--display);font-weight:600;font-size:var(--t-name);
@@ -309,7 +355,10 @@ h2{font-family:var(--display);font-weight:600;font-size:var(--t-head);
   line-height:1;letter-spacing:-.025em;margin:0 0 1.5rem;max-width:18ch}
 p.lede{font-size:var(--t-body);color:var(--dim);max-width:46ch;margin:0}
 .lede-2{margin-top:1.25rem}
-.note{font-family:var(--mono);font-size:var(--m-sm);letter-spacing:.12em;
+.hero-meta{font-family:var(--label);font-size:var(--m-lg);font-weight:500;letter-spacing:.045em;
+  color:var(--dim);margin:2rem 0 0;line-height:1.9}
+.hero-meta > span:first-child{color:var(--ink)}
+.note{font-family:var(--label);font-size:var(--m-sm);letter-spacing:.06em;
   text-transform:uppercase;color:var(--dim);margin-top:4rem}
 
 /* line-reveal mask. The span's from-state is set in JS, never here. */
@@ -322,7 +371,7 @@ section{position:relative;padding-block:clamp(96px,16vh,200px);padding-left:var(
 
 /* ---------- hero proof strip ---------- */
 .proof{list-style:none;margin:2.5rem 0 0;padding:0;display:flex;flex-wrap:wrap;gap:.5rem 2rem;
-  font-family:var(--mono);font-size:var(--m-sm);letter-spacing:.12em;
+  font-family:var(--label);font-size:var(--m-sm);letter-spacing:.06em;
   text-transform:uppercase;color:var(--dim)}
 .proof li{overflow:hidden}
 .proof li > span{display:block}
@@ -331,17 +380,29 @@ section{position:relative;padding-block:clamp(96px,16vh,200px);padding-left:var(
 .stage{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,.85fr);gap:clamp(32px,6vw,96px);align-items:center}
 @media(max-width:900px){.stage{grid-template-columns:1fr;gap:2rem}}
 .unit{display:flex;flex-direction:column;align-items:flex-start;
-  border:1px solid var(--faint);background:var(--unit-bg);
-  padding:1.75rem;position:relative;transition:border-color .5s,box-shadow .5s,background .5s}
-.unit.live{border-color:var(--sig);background:var(--unit-live-bg);box-shadow:var(--unit-live-shadow)}
-.unit .k{font-family:var(--mono);font-size:var(--m-lg);font-weight:500;letter-spacing:.14em;
+  border:1px solid var(--line);background:var(--unit-bg);border-radius:var(--r-md);
+  padding:1.75rem;position:relative;
+  transition:border-color var(--slow),background-color var(--slow)}
+/* The live glow is a layer that fades, not a box-shadow that animates.
+   Transitioning box-shadow repaints the element's whole bounding box on every
+   frame of the change; fading a finished layer is a compositor property. */
+.unit::after{content:'';position:absolute;inset:-1px;border-radius:inherit;pointer-events:none;
+  box-shadow:var(--unit-live-shadow);opacity:0;transition:opacity var(--slow)}
+.unit.live{border-color:var(--sig);background:var(--unit-live-bg)}
+.unit.live::after{opacity:1}
+.unit .k{font-family:var(--label);font-size:var(--m-lg);font-weight:500;letter-spacing:.08em;
   text-transform:uppercase;color:var(--dim);display:block;margin-bottom:.5rem}
 .unit .v{display:block;font-family:var(--display);font-weight:600;font-size:var(--t-value);color:var(--ink);line-height:1.15}
 .chip{display:inline-flex;align-items:center;gap:.5rem;margin-top:1.25rem;
-  font-family:var(--mono);font-size:var(--m-sm);letter-spacing:.12em;text-transform:uppercase;
-  color:var(--faint);border:1px solid var(--faint);padding:.3rem .55rem;
-  transition:color .5s,border-color .5s,opacity .5s;opacity:.45}
-.unit.live .chip,.chip.lit{color:var(--sig);border-color:var(--sig);opacity:1}
+  font-family:var(--label);font-size:var(--m-sm);font-weight:500;letter-spacing:.05em;
+  text-transform:uppercase;color:var(--dim);background:var(--surface);
+  border:1px solid var(--line);border-radius:var(--r-sm);padding:7px 12px;
+  /* Rest state used to be .45 opacity, which put this text at 2.14:1 — the
+     chip says "identity attached", which is content, and it was unreadable
+     until something scrolled past it. The unlit state is now a colour, not a
+     fade, and the lit state is the same change it always was. */
+  transition:color var(--slow),border-color var(--slow)}
+.unit.live .chip,.chip.lit{color:var(--sig);border-color:var(--sig)}
 .chip i{width:5px;height:5px;background:currentColor;border-radius:50%;font-style:normal;flex:none}
 
 /* ---------- 3 · selected work: one full-bleed band, three stacked panels ----------
@@ -353,35 +414,37 @@ section{position:relative;padding-block:clamp(96px,16vh,200px);padding-left:var(
    more than one is visible at a time. */
 .work-view{
   position:relative;left:50%;margin-left:-50vw;width:100vw;
-  margin-top:3.5rem;background:var(--deep);
-  border-block:1px solid var(--faint);
+  margin-top:3.5rem;background:var(--surface-solid);
+  border-block:1px solid var(--line);
 }
 .work-track{list-style:none;margin:0;padding:0}
 .panel{padding-block:clamp(40px,6vw,72px)}
-.panel + .panel{border-top:1px solid var(--faint)}
+.panel + .panel{border-top:1px solid var(--line)}
 /* Inner alignment matches .wrap plus the rail gutter, so the band bleeds to
    the edges while its text stays on the page's content edge. */
 .panel-in{max-width:1180px;margin-inline:auto;padding-inline:24px;padding-left:calc(24px + var(--rail))}
 @media(max-width:860px){.panel-in{padding-left:calc(16px + 34px);padding-right:16px}}
-.panel-k{font-family:var(--mono);font-size:var(--m-lg);font-weight:500;letter-spacing:.14em;
+.panel-k{font-family:var(--label);font-size:var(--m-lg);font-weight:500;letter-spacing:.08em;
   text-transform:uppercase;color:var(--dim);margin:0 0 1.25rem}
 .panel-pull{font-family:var(--display);font-weight:600;font-size:var(--t-head);line-height:1.02;letter-spacing:-.025em;
   margin:0 0 1.25rem;max-width:30ch}   /* the breaks are authored as spans; an
   18ch cap re-wrapped them into orphans ("ADK." alone on a line) */
+.panel-own{font-size:var(--t-body);color:var(--ink);max-width:48ch;margin:0 0 1rem;
+  font-weight:500;line-height:1.5}
 .panel-desc{font-size:var(--t-body);color:var(--dim);max-width:48ch;margin:0}
-.marker{font-family:var(--mono);font-size:var(--m-sm);letter-spacing:.14em;text-transform:uppercase;
-  color:var(--dim);margin:1.75rem 0 0;padding-top:.75rem;border-top:1px solid var(--faint);max-width:18ch}
+.marker{font-family:var(--label);font-size:var(--m-sm);letter-spacing:.08em;text-transform:uppercase;
+  color:var(--dim);margin:1.75rem 0 0;padding-top:.75rem;border-top:1px solid var(--line);max-width:18ch}
 .stack{list-style:none;display:flex;flex-wrap:wrap;gap:.5rem;margin:1.5rem 0 0;padding:0;
-  font-family:var(--mono);font-size:var(--m-sm);letter-spacing:.1em;text-transform:uppercase;color:var(--dim)}
-.stack li{border:1px solid var(--faint);padding:.3rem .6rem}
+  font-family:var(--label);font-size:var(--m-sm);letter-spacing:.055em;text-transform:uppercase;color:var(--dim)}
+.stack li{border:1px solid var(--line);border-radius:var(--r-sm);padding:.3rem .6rem}
 
 /* ---------- the gate ---------- */
 #gate{min-height:100svh;display:flex;flex-direction:column;justify-content:center}
-.verdict{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--faint);
-  border:1px solid var(--faint);margin-top:2.5rem}
+.verdict{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);
+  border:1px solid var(--line);border-radius:var(--r-md);overflow:hidden;margin-top:2.5rem}
 @media(max-width:860px){.verdict{grid-template-columns:1fr}}
-.path{background:var(--deep);padding:1.75rem;transition:opacity .5s,background .5s}
-.path .pk{font-family:var(--mono);font-size:var(--m-lg);font-weight:500;letter-spacing:.14em;
+.path{background:var(--surface-solid);padding:1.75rem;transition:opacity var(--result),background-color var(--result)}
+.path .pk{font-family:var(--label);font-size:var(--m-lg);font-weight:500;letter-spacing:.08em;
   text-transform:uppercase;color:var(--dim);display:block;margin-bottom:.75rem}
 .path .pv{display:block;font-family:var(--display);font-weight:600;font-size:var(--t-value);line-height:1.1}
 .path .ps{display:block;font-size:.9375rem;color:var(--dim);margin-top:.5rem}
@@ -393,51 +456,83 @@ section{position:relative;padding-block:clamp(96px,16vh,200px);padding-left:var(
   border-left:var(--approved-edge) solid var(--sig)}
 
 .controls{display:flex;flex-wrap:wrap;gap:.75rem;margin-top:2rem;align-items:center}
-.ctl{font-family:var(--mono);font-size:var(--m-lg);font-weight:500;letter-spacing:.14em;
-  text-transform:uppercase;background:transparent;color:var(--ink);border:1px solid var(--faint);
-  padding:.85rem 1.25rem;min-height:46px;cursor:pointer;
-  transition:border-color .25s,color .25s,background .25s}
-.ctl:not(:disabled):hover{border-color:var(--ink)}
+.ctl{font-family:var(--label);font-size:var(--m-lg);font-weight:500;letter-spacing:.08em;
+  text-transform:uppercase;background:transparent;color:var(--ink);border:1px solid var(--line);
+  border-radius:var(--r-sm);padding:.85rem 1.25rem;min-height:46px;cursor:pointer;
+  transition:border-color var(--fast) var(--fast-ease),color var(--fast) var(--fast-ease),background-color var(--fast) var(--fast-ease),transform var(--fast) var(--fast-ease)}
 .ctl-go:not(:disabled){border-color:var(--ui);color:var(--ui)}
-.ctl-go:not(:disabled):hover{background:var(--ui);color:var(--void)}
 .ctl:disabled{color:var(--faint);border-color:rgb(var(--faint-rgb) / .5);cursor:not-allowed}
-.ctl-sep{font-family:var(--mono);font-size:var(--m-sm);letter-spacing:.12em;
+.ctl-sep{font-family:var(--label);font-size:var(--m-sm);letter-spacing:.06em;
   text-transform:uppercase;color:var(--dim);margin-right:.25rem}
 .ctl-sep-2{margin-left:1rem}
-.status{font-family:var(--mono);font-size:var(--m-sm);color:var(--dim);margin-top:1.5rem;min-height:1.4em}
+.status{font-family:var(--label);font-size:var(--m-sm);color:var(--dim);margin-top:1.5rem;min-height:1.4em}
 .status b{color:var(--sig);font-weight:400}
 
 /* ---------- 4 · skills: a field, lit and dim ---------- */
 .field{margin:3rem 0 0;display:grid;gap:clamp(28px,3.5vw,48px);
   grid-template-columns:repeat(auto-fit,minmax(248px,1fr))}
-.grp dt{font-family:var(--mono);font-size:var(--m-lg);font-weight:500;letter-spacing:.14em;
+.grp dt{font-family:var(--label);font-size:var(--m-lg);font-weight:500;letter-spacing:.08em;
   text-transform:uppercase;color:var(--dim);margin-bottom:1rem}
 .grp dd{margin:0}
 .grp ul{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:.5rem}
-.grp li{font-family:var(--mono);font-size:var(--m-sm);letter-spacing:.1em;text-transform:uppercase;
-  color:var(--dim);border:1px solid var(--faint);padding:.35rem .65rem}
+.grp li{font-family:var(--label);font-size:var(--m-sm);letter-spacing:.055em;text-transform:uppercase;
+  color:var(--dim);border:1px solid var(--line);border-radius:var(--r-sm);padding:.35rem .65rem}
 /* What this caller can reach is brighter than what it cannot — the field is
    the role-filtered toolset, stated as type rather than as a diagram. */
 .grp-lit dt{color:var(--sig)}
 .grp-lit li{color:var(--ink);border-color:rgb(var(--sig-rgb) / .38)}
 
 /* ---------- 5 · the toolset filter: the one informational motion ---------- */
-.tools{list-style:none;margin:1.25rem 0 0;padding:0;display:flex;flex-wrap:wrap;gap:.4rem}
-.tools li{font-family:var(--mono);font-size:var(--m-sm);letter-spacing:.1em;
-  color:var(--dim);border:1px solid var(--faint);padding:.28rem .55rem;
-  transition:opacity .6s ease,color .6s ease,border-color .6s ease}
-.unit.filtered .tools .deny{opacity:.22}
-.unit.filtered .tools .allow{color:var(--sig);border-color:rgb(var(--sig-rgb) / .45)}
+.tool-ask{font-family:var(--label);font-size:var(--m-sm);font-weight:500;letter-spacing:.055em;
+  text-transform:uppercase;color:var(--dim);margin:1.5rem 0 .6rem}
+.tools{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:.4rem}
+.tools li{display:flex;min-width:0}
+/* The six permission strings are identifiers, so they keep a monospace face —
+   the one carve-out left after the second family went. */
+.tools .tool{font-family:var(--code);font-size:var(--m-sm);letter-spacing:.01em;
+  color:var(--dim);background:transparent;border:1px solid var(--line);
+  border-radius:var(--r-sm);padding:.28rem .55rem;
+  font-weight:inherit;cursor:default;
+  transition:opacity var(--slow) ease,color var(--slow) ease,border-color var(--slow) ease,
+             background-color var(--fast) var(--fast-ease),transform var(--fast) var(--fast-ease)}
+/* The filter used to fade the out-of-role tools to .22, which was legible as
+   a diagram and became a defect the moment they were controls: a button you
+   are invited to press must be readable, and four of the six are the
+   interesting ones. The distinction moved from opacity to border style, so
+   the boundary still reads at a glance and nothing drops below contrast. */
+.unit.filtered .tools .deny .tool{border-style:dashed}
+.unit.filtered .tools .allow .tool{color:var(--sig);border-color:rgb(var(--sig-rgb) / .45)}
+
+/* Not clickable until script says so. A button that looks live and does
+   nothing is worse than a tag: the markup above already states the rule these
+   demonstrate, so with no JS they stay exactly what they were — labels. */
+.tools-live .tool{cursor:pointer}
+@media (hover:hover){
+  .tools-live .tool:hover{border-color:rgb(var(--line-rgb) / .4);transform:translateY(-1px)}
+  .tools-live .allow .tool:hover{border-color:var(--sig)}
+}
+.tools-live .tool:active{transform:translateY(0)}
+/* The answer, on the chip itself as well as in the status line — the status
+   line is below the fold on a phone when the node is at the top of it. */
+.tools .tool[data-said="allow"]{color:var(--sig);border-color:var(--sig);
+  background-color:rgb(var(--sig-rgb) / .10)}
+.tools .deny .tool[data-said="deny"]{opacity:1;color:var(--ink);
+  border-color:rgb(var(--line-rgb) / .55);background-color:rgb(var(--line-rgb) / .12);
+  text-decoration:line-through;text-decoration-thickness:1px}
+.tool-out{font-family:var(--label);font-size:var(--m-sm);letter-spacing:.045em;
+  color:var(--dim);margin:.9rem 0 0;min-height:2.6em;max-width:34ch;line-height:1.5}
+.tool-out b{color:var(--ink);font-weight:500}
+.tool-out code{font-family:var(--code);font-size:1em;letter-spacing:0;color:var(--sig)}
 .sr{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;
   clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0}
 
 /* ---------- 7 · education: the quiet beat. Resist making it interesting. ---------- */
 .quiet{padding-block:clamp(64px,9vh,120px)}
-.quiet h2{font-family:var(--mono);font-size:var(--m-lg);font-weight:500;letter-spacing:.14em;
+.quiet h2{font-family:var(--label);font-size:var(--m-lg);font-weight:500;letter-spacing:.08em;
   text-transform:uppercase;color:var(--dim);margin-bottom:1.5rem;max-width:none}
 .edu-degree{font-family:var(--display);font-weight:600;font-size:var(--t-value);color:var(--ink);margin:0;line-height:1.2}
 .edu-inst{font-size:var(--t-body);color:var(--dim);margin:.35rem 0 0;max-width:none}
-.certs{font-family:var(--mono);font-size:var(--m-sm);letter-spacing:.1em;text-transform:uppercase;
+.certs{font-family:var(--label);font-size:var(--m-sm);letter-spacing:.055em;text-transform:uppercase;
   color:var(--dim);margin:1.75rem 0 0;max-width:none;line-height:2}
 
 /* ---------- 8 · contact: arrival ---------- */
@@ -446,7 +541,7 @@ section{position:relative;padding-block:clamp(96px,16vh,200px);padding-left:var(
   width:14px;height:14px;pointer-events:none}
 @media(max-width:860px){.terminal{left:-28px}}
 .terminal .dot{display:block;width:100%;height:100%;border-radius:50%;
-  background:var(--faint);transition:background .5s}
+  background:var(--faint);transition:background-color var(--result)}
 .terminal.landed .dot{background:var(--sig);animation:land .9s ease-out 1}
 @keyframes land{
   0%{box-shadow:0 0 0 0 rgb(var(--sig-rgb) / .55)}
@@ -455,20 +550,70 @@ section{position:relative;padding-block:clamp(96px,16vh,200px);padding-left:var(
 }
 .mail{margin:0 0 2.5rem}
 .mail a{font-family:var(--display);font-weight:600;font-size:var(--t-claim);line-height:1.05;letter-spacing:-.02em;
-  color:var(--ink);text-decoration:none;border-bottom:1px solid var(--faint);
+  color:var(--ink);text-decoration:none;border-bottom:1px solid var(--line);
   /* inline-flex with a floor rather than inline-block: at 375 the claim size
      renders 36.7px tall, under the 44px target. Moot at desktop sizes. */
   display:inline-flex;align-items:center;min-height:44px;
-  transition:color .25s,border-color .25s}
-.mail a:hover{color:var(--ui);border-color:var(--ui)}
+  transition:color var(--fast) var(--fast-ease),border-color var(--fast) var(--fast-ease)}
 .links{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:.75rem 2.5rem}
 .links a{display:inline-flex;align-items:center;gap:.6rem;min-height:46px;
-  font-family:var(--mono);font-size:var(--m-lg);font-weight:500;letter-spacing:.14em;
-  text-transform:uppercase;color:var(--ink);text-decoration:none;transition:color .25s}
-.links a em{font-style:normal;color:var(--dim);letter-spacing:.1em}
-.links a:hover,.links a:hover em{color:var(--ui)}
+  font-family:var(--label);font-size:var(--m-lg);font-weight:500;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--ink);text-decoration:none;
+  transition:color var(--fast) var(--fast-ease),transform var(--fast) var(--fast-ease)}
+.links a em{font-style:normal;color:var(--dim);letter-spacing:.055em}
 .note-foot{margin-top:4rem;line-height:2}
 .chip-loose{margin-top:2.5rem}
+
+
+/* ======================= interaction =======================================
+   One place, so that no control is left without a state and no two controls
+   answer differently. Three rules hold throughout:
+
+   1. Hover lives inside @media (hover:hover). A touch device resolves :hover
+      on tap and then keeps it until you touch something else, which leaves a
+      button looking pressed long after you have moved on.
+   2. Every hover state has a :focus-visible twin carrying the same change.
+      A keyboard user gets the affordance, not just the ring.
+   3. A lift means clickable. Chips and panels that do nothing get a surface
+      response and stay still — a tag that rises under the cursor promises a
+      click that never comes.
+
+   Transitions are declared on the elements themselves at --fast (120ms), the
+   band where feedback is visible without being watched. Only transform,
+   opacity and colour move.
+   ========================================================================= */
+
+/* --- things you click: colour, and a 1px lift --- */
+@media (hover:hover){
+  .bar-nav a:hover{color:var(--ink)}
+  .bar-id:hover{color:var(--ui)}
+  .bar-cta:hover{background-color:var(--ui);color:var(--void);transform:translateY(-1px)}
+  .bar-toggle:hover{border-color:var(--ui);color:var(--ui);transform:translateY(-1px)}
+  .ctl:not(:disabled):hover{border-color:var(--ink);transform:translateY(-1px)}
+  .ctl-go:not(:disabled):hover{background-color:var(--ui);color:var(--void)}
+  .mail a:hover{color:var(--ui);border-color:var(--ui)}
+  .links a:hover,.links a:hover em{color:var(--ui)}
+  .links a:hover{transform:translateX(2px)}
+}
+.bar-nav a:focus-visible{color:var(--ink)}
+.bar-id:focus-visible{color:var(--ui)}
+.bar-cta:focus-visible{background-color:var(--ui);color:var(--void)}
+.bar-toggle:focus-visible{border-color:var(--ui);color:var(--ui)}
+.ctl:not(:disabled):focus-visible{border-color:var(--ink)}
+.ctl-go:not(:disabled):focus-visible{background-color:var(--ui);color:var(--void)}
+.mail a:focus-visible{color:var(--ui);border-color:var(--ui)}
+.links a:focus-visible,.links a:focus-visible em{color:var(--ui)}
+
+/* A pressed control should say so before the state machine answers. */
+.bar-cta:active,.bar-toggle:active,.ctl:not(:disabled):active{transform:translateY(0)}
+
+/* --- things you cannot click: the surface acknowledges, nothing moves --- */
+@media (hover:hover){
+  .stack li,.grp li{transition:border-color var(--fast) var(--fast-ease)}
+  .stack li:hover,.grp li:hover{border-color:rgb(var(--line-rgb) / .34)}
+  .panel{transition:background-color var(--fast) var(--fast-ease)}
+  .panel:hover{background-color:rgb(var(--line-rgb) / .035)}
+}
 
 :focus-visible{outline:2px solid var(--ui);outline-offset:3px}
 
@@ -477,14 +622,18 @@ section{position:relative;padding-block:clamp(96px,16vh,200px);padding-left:var(
 @media(prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}
   .rv > span{transform:none!important;opacity:1!important}
-  *,*::before,*::after{transition-duration:.001ms!important;animation-duration:.001ms!important}
+  /* iteration-count matters as much as duration here: an infinite animation
+     at .001ms does not stop, it runs thousands of times a second. Capping
+     iterations is what actually ends it. */
+  *,*::before,*::after{transition-duration:.001ms!important;animation-duration:.001ms!important;
+    animation-iteration-count:1!important}
+  .glow{animation:none!important;transform:none!important}
 }
 
 /* ---------- theme toggle ---------- */
 .bar-toggle{display:grid;place-items:center;width:44px;height:44px;flex:none;
-  background:transparent;border:1px solid var(--faint);color:var(--ink);cursor:pointer;
-  transition:border-color .25s,color .25s}
-.bar-toggle:hover{border-color:var(--ui);color:var(--ui)}
+  background:transparent;border:1px solid var(--line);border-radius:var(--r-sm);color:var(--ink);cursor:pointer;
+  transition:border-color var(--fast) var(--fast-ease),color var(--fast) var(--fast-ease),transform var(--fast) var(--fast-ease)}
 .i-sun{display:none}
 :root[data-theme="light"] .i-sun{display:block}
 :root[data-theme="light"] .i-moon{display:none}
