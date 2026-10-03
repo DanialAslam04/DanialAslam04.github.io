@@ -288,9 +288,10 @@
     }
 
     function name(btn) {
-      return btn.firstChild && btn.firstChild.nodeValue
-        ? btn.firstChild.nodeValue.trim()
-        : btn.textContent.trim();
+      /* The visible chip, not the button's full text — the button also holds
+         the " — outside this role" that only a screen reader reads. */
+      var face = btn.querySelector('.tool-face');
+      return (face ? face.textContent : btn.textContent).trim();
     }
 
     list.addEventListener('click', function (e) {
