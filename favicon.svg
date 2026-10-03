@@ -1,8 +1,8 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Danial Aslam">
-  <rect width="64" height="64" rx="14" fill="#58A6FF"/>
-  <g fill="#0D1117">
-    <rect x="14" y="17" width="36" height="7" rx="3.5"/>
-    <rect x="19" y="28.5" width="26" height="7" rx="3.5"/>
-    <rect x="25" y="40" width="14" height="7" rx="3.5"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Muhammad Danial Aslam">
+  <rect width="64" height="64" rx="14" fill="#05060A"/>
+  <g fill="#4DA3FF">
+    <rect x="14" y="17" width="36" height="6" rx="3"/>
+    <rect x="19" y="29" width="26" height="6" rx="3"/>
+    <rect x="25" y="41" width="14" height="6" rx="3"/>
   </g>
 </svg>
