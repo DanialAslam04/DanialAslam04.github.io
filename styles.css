@@ -264,6 +264,26 @@
    why this is measured at four widths rather than eyeballed. */
 html{scroll-behavior:smooth;
   font-size:clamp(100%, calc(100% + (100vw - 1600px) * .003667), 122%)}
+
+/* The scrollbar is part of the page, not the OS. This is NOT a reversal of
+   removing .vbar: that was a navigation control wearing a scrollbar's shape,
+   and it stays deleted. This is the real scrollbar, dressed.
+
+   Only the webkit pseudo-elements are styled; `scrollbar-width` is left at
+   auto deliberately, which is also what the reference does. Setting it to
+   `thin` would quietly re-enter the territory we just left, and Firefox
+   showing its own normal scrollbar is the correct outcome, not a gap.
+
+   --line-rgb is theme-aware (148 163 184 dark, 100 116 139 light) so one
+   rule serves both. Not --sig-rgb, which is a single value across themes
+   and would go pale on white — the same trap as the Stack icons.
+
+   .bar-nav ul keeps its own display:none below; that selector is more
+   specific than this one, so the mobile nav strip is unaffected either way. */
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgb(var(--line-rgb) / .45);border-radius:10px}
+::-webkit-scrollbar-thumb:hover{background:var(--ui)}
 /* The ground is a 56px grid: a drafting surface for a page about systems,
    and it holds still. It replaces a canvas field that ran a rAF loop to say
    roughly the same thing — the grid says it in two gradients and no script.
