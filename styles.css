@@ -803,19 +803,54 @@ section{position:relative;padding-block:clamp(44px,8.3vh,75px);padding-left:var(
    Measured against a two-column version at 1440: three is 441px to two's
    491px and reads as two rows of three rather than three of two, which
    matters because the six are meant to be read as one set of roles. */
-.field{margin:0;display:grid;gap:clamp(22px,3vh,34px) clamp(20px,2.4vw,36px);
-  grid-template-columns:repeat(3,minmax(0,1fr))}
-@media(max-width:1179px){.field{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media(max-width:860px){.field{grid-template-columns:minmax(0,1fr)}}
-.grp{display:block;min-width:0}
-.grp dt{display:flex;align-items:baseline;gap:9px;margin:0 0 .7rem;
-  font-family:var(--label);font-size:var(--m-sm);font-weight:500;letter-spacing:.055em;
-  text-transform:uppercase;color:var(--dim)}
-.grp dt i{font-style:normal;color:var(--sig);font-variant-numeric:tabular-nums;flex:none}
+/* Eight categories in one bordered block, subdivided by hairlines — not
+   eight elevated cards. The page has no drop shadows and no raised surfaces
+   anywhere else, so a rule between cells is the language it already speaks;
+   elevation would have been a second one invented for this section.
+
+   The internal rules come from per-cell right/bottom borders rather than a
+   1px grid gap over a background. The gap trick needs opaque cells, and
+   these sit over the page's drafting grid — opaque cells would have punched
+   eight holes in it. The trade is that the outer edges have to be removed
+   per breakpoint, which is the nth-child block below: 4 columns, then 2,
+   then 1, each clearing its own last column and last row. */
+.field{margin:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));
+  border:1px solid var(--line);border-radius:var(--r-lg)}
+.grp{min-width:0;padding:clamp(17px,1.5vw,23px);
+  border-right:1px solid var(--line);border-bottom:1px solid var(--line)}
+.grp:nth-child(4n){border-right:0}
+.grp:nth-child(n+5){border-bottom:0}
+
+.grp dt{display:block;margin:0 0 .85rem}
+.grp-head{display:flex;align-items:center;justify-content:space-between;gap:10px}
+/* --ui, not --sig: --sig-rgb is one value across both themes and goes pale
+   on white, while --ui is redefined per theme and is what the proof card's
+   numbers already use. An icon that vanishes in light mode is not an icon. */
+.grp-ico{display:inline-flex;align-items:center;justify-content:center;flex:none;
+  width:38px;height:38px;border-radius:var(--r-sm);
+  background:rgb(var(--ui-rgb) / .10);color:var(--ui)}
+.grp-ico svg{width:20px;height:20px;display:block}
+.grp dt i{font-style:normal;color:var(--dim);font-variant-numeric:tabular-nums;flex:none;
+  font-family:var(--label);font-size:var(--m-sm);letter-spacing:.055em}
+.grp-t{display:block;margin-top:.8rem;
+  font-family:var(--label);font-size:var(--m-lg);font-weight:500;letter-spacing:.06em;
+  text-transform:uppercase;color:var(--ink)}
 .grp dd{margin:0}
 .grp ul{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:.35rem}
 .grp li{font-family:var(--label);font-size:var(--m-sm);letter-spacing:.055em;text-transform:uppercase;
   color:var(--dim);border:1px solid var(--line);border-radius:var(--r-sm);padding:.35rem .65rem}
+
+@media(max-width:1179px){
+  .field{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .grp{border-right:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .grp:nth-child(2n){border-right:0}
+  .grp:nth-child(n+7){border-bottom:0}
+}
+@media(max-width:860px){
+  .field{grid-template-columns:minmax(0,1fr)}
+  .grp{border-right:0;border-bottom:1px solid var(--line)}
+  .grp:last-child{border-bottom:0}
+}
 /* No lit group. Six roles of equal standing, so there is nothing to dim —
    the idea the highlight carried now lives in the lede instead of in a
    visual state, where a dimmed group read as deprecated rather than

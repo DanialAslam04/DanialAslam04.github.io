@@ -218,7 +218,7 @@
      mobile against a 17ms median everywhere else. Two causes, both here.
 
      The trigger was '.field' for every group, so one group arriving started
-     all six sequences — by which time the later groups' chips were already
+     every sequence at once — by which time the later groups' chips were already
      on screen, waiting their turn in a queue that began off-screen. Each
      group now waits for itself.
 
@@ -229,7 +229,7 @@
      late. The tell was that the worst case improved as scrolling got
      faster — a queue, not a duration.
 
-     The stagger is now capped as a total rather than set per item, so a six
+     The stagger is now capped as a total rather than set per item, so a seven
      chip group and a three chip group both finish in the same .12s. */
   if (window.gsap && window.ScrollTrigger && !reduce) {
     gsap.utils.toArray('.field .grp').forEach(function (g) {
@@ -246,7 +246,7 @@
 
   /* ---------------------- 3c. the no-scroll fallback ----------------------
      A renderer that runs JS and never scrolls sees 35% of main at opacity 0 —
-     197 of 562 words, including "Three platforms, all under NDA." Measured.
+     197 of 562 words, including "Client platforms, all under NDA." Measured.
      That is a crawler's exact profile: load, wait, never scroll. The usual
      mitigation is that bots render at an unusually tall viewport, and that
      does not help here — 900px and 3000px fire the same triggers, because
