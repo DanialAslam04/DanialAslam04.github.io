@@ -126,7 +126,18 @@
      identifiers. read:orders is code, and code is monospaced. System mono,
      so it costs no download. */
   --code:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
-  --rail:72px;
+  /* The page is sized in rem so that ONE declaration can enlarge all of it.
+     --sc is 1 up to 1600 and ramps to 1.22 at 2560; html's font-size carries
+     it, so every rem — type ceilings, padding, gaps, chip insets — grows by
+     the same factor at once.
+
+     This is why the measure is in rem too (73.75rem = the old 1180px). A ch
+     measure scales with its own font-size, so if the type grew and the
+     column did not, 61ch of prose would stop fitting and the paragraphs
+     would rewrap narrower. Growing both by one factor keeps every ch count
+     identical and nothing reflows: the same page, larger. The clamps all sit
+     on their ceilings above 1400 anyway, so the vw slopes are untouched. */
+  --rail:4.5rem;
 
   /* One page ladder, swept across 320–1920: minimum adjacent gap 6.0px.
      Floors are separated deliberately — both earlier inversions happened
@@ -242,7 +253,17 @@
 
 
 *,*::before,*::after{box-sizing:border-box}
-html{scroll-behavior:smooth}
+/* The ramp lives on the root font-size, so every rem on the page grows with
+   it at once. It starts from 100% rather than 16px so it ADDS to whatever
+   the reader has set in their browser instead of overriding it.
+
+   It is a length and not a unitless factor because calc() cannot divide a
+   length by a length: `1 + (100vw - 1600px) / 4360` adds a length to a
+   number and never resolves. That fails SILENTLY — the custom property is
+   just invalid and the page renders unscaled with no error anywhere. It is
+   why this is measured at four widths rather than eyeballed. */
+html{scroll-behavior:smooth;
+  font-size:clamp(100%, calc(100% + (100vw - 1600px) * .003667), 122%)}
 /* The ground is a 56px grid: a drafting surface for a page about systems,
    and it holds still. It replaces a canvas field that ran a rAF loop to say
    roughly the same thing — the grid says it in two gradients and no script.
@@ -277,7 +298,7 @@ body{margin:0;background-color:var(--void);color:var(--ink);
 .glow-b{width:55vw;height:55vw;right:-18vw;top:45vh;background:radial-gradient(circle,var(--sig-soft),transparent 68%)}
 
 main{position:relative;z-index:2}
-.wrap{max-width:1180px;margin-inline:auto;padding-inline:24px}
+.wrap{max-width:73.75rem;margin-inline:auto;padding-inline:1.5rem}
 @media(max-width:767px){.wrap{padding-inline:16px}}
 
 
@@ -294,7 +315,7 @@ main{position:relative;z-index:2}
   .bar{background:rgb(var(--void-rgb) / .72);
     -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
 }
-.bar-in{max-width:1180px;margin-inline:auto;padding:0 24px 0 calc(24px + var(--rail));
+.bar-in{max-width:73.75rem;margin-inline:auto;padding:0 1.5rem 0 calc(1.5rem + var(--rail));
   display:flex;flex-wrap:wrap;align-items:center;gap:16px;min-height:56px}
 @media(max-width:860px){.bar-in{padding-left:16px;padding-right:16px}}
 .bar-id{display:inline-flex;align-items:center;gap:9px;min-height:44px;margin-right:auto;
@@ -422,7 +443,7 @@ section[id]{scroll-margin-top:72px}
 /* Two columns only from 1180. At 1024 a 360px panel left the claim 565px —
    a dip in the available width that forced the whole display clamp down to
    suit one breakpoint. Below 1180 the panel sits under the claim instead. */
-@media(min-width:1180px){.hero-grid{grid-template-columns:minmax(0,1fr) minmax(0,360px)}}
+@media(min-width:1180px){.hero-grid{grid-template-columns:minmax(0,1fr) minmax(0,22.5rem)}}
 
 /* Below two columns the panel fell to the bottom of the hero, which on a
    390x844 phone put 72% of it under the fold — and left "Scroll — you are
@@ -450,7 +471,7 @@ section[id]{scroll-margin-top:72px}
 
 /* Dense and card-based against an otherwise airy page, deliberately: the hero
    proves, the rest argues. This treatment does not propagate downward. */
-.brief{border:1px solid var(--line);background:var(--surface);border-radius:var(--r-lg);padding:clamp(20px,2.2vw,28px)}
+.brief{border:1px solid var(--line);background:var(--surface);border-radius:var(--r-lg);padding:clamp(1.25rem,2.2vw,1.75rem)}
 .metrics{list-style:none;display:grid;gap:.9rem;margin:0 0 1.75rem;padding:0 0 1.5rem;
   border-bottom:1px solid var(--line)}
 /* One per row. Three across a 360px panel wrapped 2+1, which reads as a
@@ -486,7 +507,11 @@ section[id]{scroll-margin-top:72px}
    in its own empty field rather than as the page's margin. The 96px cap is
    what keeps it tied to the column at every width.
 
-   At the narrow end the floor of 16px lands it at x=8, inside the page's own
+   The floor and cap are in rem (1rem/6rem = the specced 16px/96px at a
+   16px root) so they grow with the type ramp instead of tightening against
+   it at 2560.
+
+   At the narrow end the floor lands it at x=8, inside the page's own
    padding — where a margin rule belongs when there is no margin. Below 860
    it is hidden outright, so the sticky-bar layout never sees it.
 
@@ -496,7 +521,7 @@ section[id]{scroll-margin-top:72px}
    takes layout width, 100vw would centre the rail half a scrollbar off the
    column it is meant to be anchored to. */
 #rail{position:fixed;
-  left:calc(max(24px, (100% - 1132px) / 2) - clamp(16px, (100% - 1132px) * .165, 96px));
+  left:calc(max(1.5rem, (100% - 70.75rem) / 2) - clamp(1rem, (100% - 70.75rem) * .165, 6rem));
   top:0;bottom:0;width:2px;z-index:3;pointer-events:none}
 #rail .track{position:absolute;inset:0;background:linear-gradient(to bottom,transparent,var(--faint) 12%,var(--faint) 88%,transparent)}
 /* The trace scales and the head translates — never height/top. Animating
@@ -704,7 +729,7 @@ section{position:relative;padding-block:clamp(44px,8.3vh,75px);padding-left:var(
 .panel + .panel{border-top:1px solid var(--line)}
 /* Inner alignment matches .wrap plus the rail gutter, so the band bleeds to
    the edges while its text stays on the page's content edge. */
-.panel-in{max-width:1180px;margin-inline:auto;padding-inline:24px;padding-left:calc(24px + var(--rail))}
+.panel-in{max-width:73.75rem;margin-inline:auto;padding-inline:1.5rem;padding-left:calc(1.5rem + var(--rail))}
 @media(max-width:860px){.panel-in{padding-left:16px;padding-right:16px}}
 /* Two columns per entry: the claim on the left, the detail on the right.
    Work was using about 55% of the page while Approach used all of it — the
@@ -713,7 +738,7 @@ section{position:relative;padding-block:clamp(44px,8.3vh,75px);padding-left:var(
    is the claim, the ownership line is what he did, the description is what
    the system is, and they were set almost identically so the structure never
    read. Position carries it now, with type as the second signal. */
-.panel-in{max-width:1180px;margin-inline:auto;padding-inline:24px;padding-left:calc(24px + var(--rail));
+.panel-in{max-width:73.75rem;margin-inline:auto;padding-inline:1.5rem;padding-left:calc(1.5rem + var(--rail));
   display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);
   gap:clamp(24px,3.5vw,64px);align-items:start}
 @media(max-width:900px){
@@ -747,7 +772,7 @@ section{position:relative;padding-block:clamp(44px,8.3vh,75px);padding-left:var(
    the band; capping the box would shorten that rule into looking deliberate.
    The span carries the measure instead. */
 .work-note > span{display:block;max-width:58ch}
-.work-note{max-width:1180px;margin:0 auto;padding:0 24px 0 calc(24px + var(--rail));
+.work-note{max-width:73.75rem;margin:0 auto;padding:0 1.5rem 0 calc(1.5rem + var(--rail));
   font-family:var(--label);font-size:var(--m-sm);letter-spacing:.045em;color:var(--dim);
   padding-block:clamp(14px,1.6vw,20px);border-top:1px solid var(--line)}
 @media(max-width:860px){.work-note{padding-left:16px;padding-right:16px}}
@@ -816,7 +841,7 @@ section{position:relative;padding-block:clamp(44px,8.3vh,75px);padding-left:var(
    then 1, each clearing its own last column and last row. */
 .field{margin:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));
   border:1px solid var(--line);border-radius:var(--r-lg)}
-.grp{min-width:0;padding:clamp(17px,1.5vw,23px);
+.grp{min-width:0;padding:clamp(1.0625rem,1.5vw,1.4375rem);
   border-right:1px solid var(--line);border-bottom:1px solid var(--line)}
 .grp:nth-child(4n){border-right:0}
 .grp:nth-child(n+5){border-bottom:0}
@@ -832,9 +857,13 @@ section{position:relative;padding-block:clamp(44px,8.3vh,75px);padding-left:var(
 .grp-ico svg{width:20px;height:20px;display:block}
 .grp dt i{font-style:normal;color:var(--dim);font-variant-numeric:tabular-nums;flex:none;
   font-family:var(--label);font-size:var(--m-sm);letter-spacing:.055em}
+/* A heading, not a tag. These were 11px uppercase small-caps, which read as
+   a label on a chip group; the reference he sent has them as titles the
+   chips sit beneath. Display face, sentence case, body size — so they scale
+   with --sc like everything else. */
 .grp-t{display:block;margin-top:.8rem;
-  font-family:var(--label);font-size:var(--m-lg);font-weight:500;letter-spacing:.06em;
-  text-transform:uppercase;color:var(--ink)}
+  font-family:var(--display);font-size:var(--t-body);font-weight:600;
+  letter-spacing:-.005em;color:var(--ink);line-height:1.2}
 .grp dd{margin:0}
 .grp ul{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:.35rem}
 .grp li{font-family:var(--label);font-size:var(--m-sm);letter-spacing:.055em;text-transform:uppercase;
