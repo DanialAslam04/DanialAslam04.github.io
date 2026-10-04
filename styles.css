@@ -485,6 +485,7 @@ section[id]{scroll-margin-top:72px}
   .eyebrow{order:1}
   #hero .claim{order:2}
   .brief{order:3;margin-top:1.75rem}
+  .ident{order:0}
   .hero-bio{order:4}
   .hero-meta{order:5}
 }
@@ -564,6 +565,25 @@ section[id]{scroll-margin-top:72px}
 
 
 /* ---------- type ---------- */
+/* He was on his own page once, at 11px, in the nav. Name and face together
+   above the role line, so the hero reads who -> what -> the claim.
+
+   A circle, not a square. The source is a headshot on a near-black gradient,
+   which on the light theme would sit as a hard dark rectangle against an
+   almost-white page; a circle has no corners to fight the background and the
+   1px ring ties it to every other bordered thing here.
+
+   Sized in rem so it grows with the type ramp, and capped well under what
+   the file can carry: the source is 400x400 and softens past about 200 CSS
+   px. At the 6rem ceiling it is 96px, or 117px at 2560 where the ramp is
+   122%, which is 234 device pixels at DPR 2 against 400 available. Do not
+   raise this without a larger file. */
+.ident{display:flex;align-items:center;gap:clamp(.75rem,1.1vw,1.125rem);margin:0 0 1.4rem}
+.ident-face{width:clamp(3.5rem,5.2vw,6rem);height:auto;aspect-ratio:1;flex:none;
+  border-radius:50%;object-fit:cover;border:1px solid var(--line);background:var(--surface)}
+.ident-name{margin:0;font-family:var(--display);font-weight:600;font-size:var(--t-value);
+  letter-spacing:-.01em;line-height:1.1;color:var(--ink)}
+
 .eyebrow{font-family:var(--label);font-size:var(--m-lg);font-weight:500;letter-spacing:.08em;
   text-transform:uppercase;color:var(--dim);margin:0 0 1.1rem}
 .eyebrow b{color:var(--ui);font-weight:500}
