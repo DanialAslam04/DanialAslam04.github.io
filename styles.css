@@ -488,6 +488,17 @@ section[id]{scroll-margin-top:72px}
   .ident{order:0}
   .hero-bio{order:4}
   .hero-meta{order:5}
+  /* Both of these are new and both default to order:0, which lands them in
+     the ident group ahead of the eyebrow and the h1. Every child of a
+     display:contents parent in this block needs an explicit order; there is
+     no safe default here. */
+  .avail{order:1}
+  .eyebrow{order:2}
+  #hero .claim{order:3}
+  .hero-bio{order:4}
+  .hero-meta{order:5}
+  .hero-cta{order:6}
+  .brief{order:7;margin-top:1.75rem}
 }
 
 /* Dense and card-based against an otherwise airy page, deliberately: the hero
@@ -710,7 +721,9 @@ section{position:relative;padding-block:clamp(44px,8.3vh,75px);padding-left:var(
    lede needs to sit further from row one than the rows sit from each other
    or it reads as the first entry rather than the introduction. */
 .sec-lede{margin:0 0 1.4rem;max-width:46ch}
-#background .sec-lede,
+#experience .sec-lede,
+#education .sec-lede,
+#training .sec-lede,
 #stack .sec-lede{margin-bottom:2rem}
 /* The thesis that heads How I build is a 110-character sentence. At --t-head
    against an 18ch measure it set as seven lines of display type — a heading
@@ -1212,3 +1225,76 @@ section{position:relative;padding-block:clamp(44px,8.3vh,75px);padding-left:var(
 /* The sixth certification is from a different awarding body, so it breaks to
    its own line rather than joining a Google Cloud run that it is not part of. */
 .certs-more{display:block;margin-top:.3rem}
+
+/* ---------- Portfolio C additions ----------
+   Availability badge, hero link row, per-project tech chips, the Experience
+   list, Training, and the contact sub-line. No new colours or type sizes —
+   every one of these reuses a token already in the sheet. */
+
+/* Availability badge. Sits above the eyebrow, so it must not compete with it:
+   label type, one accent dot, no fill. */
+.avail{margin:0 0 .7rem}
+.avail > span{display:inline-flex;align-items:center;gap:.5rem;
+  font-family:var(--label);font-size:var(--m-sm);letter-spacing:.055em;
+  text-transform:uppercase;color:var(--dim)}
+.avail i{width:7px;height:7px;border-radius:50%;background:var(--sig);flex:none}
+
+/* Hero link row. The CV link is the one with a border — the same treatment the
+   bar CTA carries, so the page has one primary action and it looks the same
+   in both places. */
+.hero-cta{list-style:none;display:flex;flex-wrap:wrap;gap:.55rem .7rem;
+  margin:1.25rem 0 0;padding:0}
+.hero-cta a{display:inline-block;padding:.5rem .85rem;border-radius:999px;
+  border:1px solid var(--line);font-family:var(--label);font-size:var(--m-sm);
+  letter-spacing:.055em;text-transform:uppercase;color:var(--ink);
+  text-decoration:none;transition:border-color var(--result),color var(--result)}
+.hero-cta a:hover{border-color:var(--ui);color:var(--sig)}
+.hero-cta .hc-go{border-color:var(--sig);color:var(--sig)}
+.hero-cta .hc-go:hover{background:rgb(var(--sig-rgb) / .08)}
+
+/* Per-project tech chips, matching the Stack field's chip treatment so the two
+   read as the same vocabulary. */
+.panel-tech{list-style:none;display:flex;flex-wrap:wrap;gap:.35rem;margin:.85rem 0 0;padding:0}
+.panel-tech li{font-family:var(--label);font-size:var(--m-sm);letter-spacing:.055em;
+  text-transform:uppercase;color:var(--dim);
+  border:1px solid var(--line);border-radius:999px;padding:.25rem .6rem}
+
+/* Experience. Same two-column when/what rhythm as the timeline it replaces,
+   so the restructure does not introduce a second way of showing dates. */
+.exp{list-style:none;margin:0;padding:0;display:grid;gap:clamp(20px,2.6vw,32px)}
+.exp > li{display:grid;grid-template-columns:minmax(0,164px) minmax(0,1fr);gap:1rem;
+  padding-top:clamp(14px,1.6vw,20px);border-top:1px solid var(--line)}
+.exp > li:first-child{border-top:0;padding-top:0}
+.exp-when{display:flex;flex-direction:column;gap:.2rem}
+.exp-where{font-family:var(--label);font-size:var(--m-sm);letter-spacing:.055em;
+  text-transform:uppercase;color:var(--dim)}
+.exp-role{margin:0 0 .6rem;font-size:var(--t-body);color:var(--dim)}
+.exp-role b{color:var(--ink);font-weight:500}
+.exp-body ul{list-style:none;margin:0;padding:0;display:grid;gap:.45rem}
+.exp-body li{position:relative;padding-left:1.1rem;font-size:.9375rem;
+  line-height:1.6;color:var(--dim);max-width:68ch}
+.exp-body li::before{content:"";position:absolute;left:0;top:.62em;
+  width:5px;height:5px;border-radius:50%;background:var(--ui)}
+
+.trn-d{max-width:68ch}
+.trn-d b{color:var(--ink);font-weight:500}
+.contact-open{margin:.9rem 0 0;max-width:52ch}
+
+@media(max-width:860px){
+  .exp > li{grid-template-columns:1fr;gap:.6rem}
+  .exp-when{flex-direction:row;align-items:baseline;gap:.6rem}
+  .hero-cta{gap:.5rem}
+}
+
+/* The metrics list carried a bottom rule to divide it from the capability
+   groups beneath. Portfolio C has no such groups, so the rule now underlines
+   nothing and the card ends in dead space. */
+.metrics{margin-bottom:0;padding-bottom:0;border-bottom:0}
+
+/* Footer row. Portfolio C's copyright line, without the city. The back-to-top
+   earns its place on a nine-section page in a way it would not have on six. */
+.foot-row{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;
+  gap:.6rem 1rem;margin:.6rem 0 0;font-family:var(--label);font-size:var(--m-sm);
+  letter-spacing:.055em;text-transform:uppercase;color:var(--dim)}
+.foot-row a{color:var(--dim);text-decoration:none;min-height:44px;display:inline-flex;align-items:center}
+.foot-row a:hover{color:var(--sig)}
