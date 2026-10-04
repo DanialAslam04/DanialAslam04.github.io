@@ -1164,3 +1164,51 @@ section{position:relative;padding-block:clamp(44px,8.3vh,75px);padding-left:var(
 .site-foot{padding-left:var(--rail);padding-block:0 clamp(48px,7vh,96px);position:relative;z-index:2}
 @media(max-width:860px){.site-foot{padding-left:16px}}
 .site-foot .note{margin-top:0}
+
+/* ---------- Work with me, the earlier entry, and the infra coda ----------
+   New with Portfolio A. Three components, no new design language: the service
+   cards reuse the Stack grid's border treatment, and the earlier entry reuses
+   the work panel's key/description pair at one step down in weight. */
+
+/* The non-client entry under Work. It sits below the NDA note, so it needs to
+   read as an addendum to the track rather than a fourth member of it —
+   hence the lighter key and the absence of a panel frame. */
+.earlier{max-width:73.75rem;margin:0 auto;
+  padding:clamp(16px,2vw,24px) 1.5rem 0 calc(1.5rem + var(--rail))}
+.earlier-k{display:flex;flex-wrap:wrap;align-items:baseline;gap:.5rem .7rem;margin:0 0 .5rem;
+  font-size:var(--t-body);color:var(--ink);font-weight:500}
+.earlier-k i{font-style:normal;font-family:var(--label);font-size:var(--m-sm);
+  letter-spacing:.055em;text-transform:uppercase;color:var(--sig)}
+.earlier-k em{font-style:normal;font-family:var(--label);font-size:var(--m-sm);
+  letter-spacing:.055em;text-transform:uppercase;color:var(--dim)}
+.earlier-d{margin:0;font-size:.9375rem;line-height:1.6;color:var(--dim);max-width:60ch}
+.earlier-d b{color:var(--ink);font-weight:500}
+@media(max-width:860px){.earlier{padding-left:16px;padding-right:16px}}
+
+/* Service cards. Three across on desktop, matching the Stack field's rules so
+   the two sections read as one system seen twice. */
+.serve{list-style:none;margin:1.6rem 0 0;padding:0;
+  display:grid;grid-template-columns:repeat(3,minmax(0,1fr));
+  border:1px solid var(--line);border-radius:var(--r-lg)}
+.serve > li{min-width:0;padding:clamp(1.0625rem,1.5vw,1.4375rem);
+  border-right:1px solid var(--line)}
+.serve > li:last-child{border-right:0}
+.serve-t{margin:0 0 .6rem;font-size:var(--t-body);color:var(--ink);font-weight:500}
+.serve-d{margin:0;font-size:.9375rem;line-height:1.6;color:var(--dim)}
+@media(max-width:860px){
+  .serve{grid-template-columns:1fr}
+  .serve > li{border-right:0;border-bottom:1px solid var(--line)}
+  .serve > li:last-child{border-bottom:0}
+}
+
+/* The coda closing Approach. Named as substrate, not inventory — so it is set
+   as body copy rather than as chips, which is what makes it a different claim
+   from the Stack group listing the same products. */
+.under{margin:clamp(20px,2.6vw,32px) 0 0;max-width:62ch;
+  font-size:.9375rem;line-height:1.65;color:var(--dim);
+  padding-top:clamp(14px,1.6vw,20px);border-top:1px solid var(--line)}
+.under b{color:var(--ink);font-weight:500}
+
+/* The sixth certification is from a different awarding body, so it breaks to
+   its own line rather than joining a Google Cloud run that it is not part of. */
+.certs-more{display:block;margin-top:.3rem}
