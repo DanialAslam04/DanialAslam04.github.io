@@ -242,8 +242,7 @@
 
 
 *,*::before,*::after{box-sizing:border-box}
-html{scrollbar-width:none;scroll-behavior:smooth}
-html::-webkit-scrollbar{display:none}
+html{scroll-behavior:smooth}
 /* The ground is a 56px grid: a drafting surface for a page about systems,
    and it holds still. It replaces a canvas field that ran a rAF loop to say
    roughly the same thing — the grid says it in two gradients and no script.
@@ -318,9 +317,11 @@ main{position:relative;z-index:2}
    is too much of a short viewport and the rail still carries position. Both
    halves were wrong once the page got long: #rail is aria-hidden and
    pointer-events:none, so it carries position for nobody who needs it, and
-   .vbar is a pointer control, not navigation — which left a 7.4-screen
-   phone page with no persistent navigation at all after the first screen. A LinkedIn tap lands
-   on a phone.
+   the right-hand scrollbar that once sat here was a pointer control rather
+   than navigation — which left a 7.4-screen phone page with no persistent
+   navigation at all after the first screen. A LinkedIn tap lands on a phone.
+   That scrollbar is gone now (the native one does the scrolling and carries
+   no names), so the bar is the whole of the navigation at every width.
 
    The original trade below was real and is kept rather than deleted: the nav
    row does not owe the rail a gutter, because indenting past it spent 34px
@@ -416,47 +417,6 @@ section[id]{scroll-margin-top:72px}
 #main{scroll-margin-top:var(--bar-h,0px)}
 #main:focus{outline:none}
 
-/* ---------- the right-hand scrollbar ----------
-   A control, not a menu. The bar nav answers "take me there"; this answers
-   "where am I and let me drag". It exists because #rail is aria-hidden and
-   pointer-events:none, so the page's only orientation device was unusable
-   by the person who most needs one — someone navigating without a wheel.
-
-   The container does not take pointer events; only the hit strip, the thumb
-   and the marks do. A full-height 46px overlay that swallowed clicks would
-   break the full-bleed work band underneath it. */
-.vbar{position:fixed;right:0;top:0;bottom:0;width:46px;z-index:30;pointer-events:none}
-/* 28px of grab for a 3px line: the whole point is catching it with a mouse. */
-.vbar-hit{position:absolute;right:8px;top:clamp(56px,9vh,96px);bottom:clamp(56px,9vh,96px);
-  width:28px;pointer-events:auto;cursor:pointer;touch-action:none}
-.vbar-hit::before{content:'';position:absolute;left:50%;top:0;bottom:0;width:3px;
-  margin-left:-1.5px;border-radius:2px;background:rgb(var(--line-rgb) / .30)}
-.vbar-thumb{position:absolute;left:50%;top:0;width:7px;margin-left:-3.5px;
-  border-radius:4px;background:var(--ui);will-change:transform;
-  transition:background-color var(--fast) var(--fast-ease)}
-@media (hover:hover){ .vbar-hit:hover .vbar-thumb{background:var(--sig)} }
-.vbar.dragging .vbar-thumb{background:var(--sig)}
-.vbar.dragging .vbar-hit{cursor:grabbing}
-
-.vbar nav{display:contents}
-.vbar-mark{position:absolute;right:8px;display:flex;align-items:center;justify-content:flex-end;
-  text-decoration:none;
-  gap:8px;height:24px;margin-top:-12px;pointer-events:auto;cursor:pointer;
-  font-family:var(--label);font-size:10px;font-weight:500;letter-spacing:.07em;
-  text-transform:uppercase;color:var(--dim);white-space:nowrap;
-  transition:color var(--fast) var(--fast-ease)}
-.vbar-mark i{order:2;width:9px;height:1px;background:currentColor;flex:none;margin-right:9.5px}
-.vbar-mark span{order:1}
-@media (hover:hover){ .vbar-mark:hover{color:var(--ink)} }
-
-/* Re-derived rather than inherited: the labelled nav that lived here needed
-   1440 to clear the 1180 measure. This sits harder against the edge, so the
-   threshold is measured against painted text, not assumed. */
-/* Measured, not assumed: clear by 47px at 1360 and tight to 7px at 1280.
-   Better reach than the 1440 the labelled nav needed. */
-@media(max-width:1359px){.vbar{display:none}}
-@media(prefers-reduced-motion:reduce){.vbar-thumb{will-change:auto}}
-
 /* ---------- hero: argument left, proof right ---------- */
 .hero-grid{display:grid;gap:clamp(40px,5vw,72px);align-items:center}
 /* Two columns only from 1180. At 1024 a 360px panel left the claim 565px —
@@ -495,7 +455,13 @@ section[id]{scroll-margin-top:72px}
   border-bottom:1px solid var(--line)}
 /* One per row. Three across a 360px panel wrapped 2+1, which reads as a
    layout accident rather than a decision. */
-.metrics li{display:grid;grid-template-columns:2.25rem minmax(0,1fr);
+/* 3.5rem, not 2.25: the numbers gained a "+" and "10+" inks 53.2px against a
+   36px track, so it sat 5.2px INTO its own label at 1440 and above. The
+   element box never showed it — the box is the track and the glyphs simply
+   overflowed it — so this is measured with a Range over the text, which is
+   where the ink actually is. The track is shared by all three rows so the
+   labels stay on one axis; sizing it to content would stagger them. */
+.metrics li{display:grid;grid-template-columns:3.5rem minmax(0,1fr);
   align-items:baseline;gap:.75rem;min-width:0}
 .metrics b{font-family:var(--display);font-weight:600;font-size:var(--t-value);
   line-height:1;color:var(--ui)}
@@ -507,7 +473,31 @@ section[id]{scroll-margin-top:72px}
 .cap-d{font-size:.9375rem;color:var(--dim);margin:0;max-width:42ch}
 
 /* ---------- the rail: the request's trace ---------- */
-#rail{position:fixed;left:28px;top:0;bottom:0;width:2px;z-index:3;pointer-events:none}
+/* Anchored to the measure, not the window. At left:28px it was pinned to the
+   viewport edge while the column centred, so the distance from the rail to
+   the text it tracks was (viewport - measure)/2 plus a constant: 17px from
+   content at 1024, 100px at 1440, 660px at 2560. Nearly touching at one end,
+   stranded in empty margin at the other, considered at no width at all.
+
+   gap = clamp(16px, gutter * 0.33, 96px), rail = content left - gap, where
+   the measure is 1132px (the 1180 column less its 24px of padding, which is
+   where text actually starts). Gutter-centring was tried and rejected: at
+   2560 it puts the rail 357px from the text, which reads as a second element
+   in its own empty field rather than as the page's margin. The 96px cap is
+   what keeps it tied to the column at every width.
+
+   At the narrow end the floor of 16px lands it at x=8, inside the page's own
+   padding — where a margin rule belongs when there is no margin. Below 860
+   it is hidden outright, so the sticky-bar layout never sees it.
+
+   Percentages, not 100vw: for a fixed element these resolve against the
+   initial containing block, which excludes a classic scrollbar. 100vw does
+   not, and the native scrollbar is now restored — on a platform where it
+   takes layout width, 100vw would centre the rail half a scrollbar off the
+   column it is meant to be anchored to. */
+#rail{position:fixed;
+  left:calc(max(24px, (100% - 1132px) / 2) - clamp(16px, (100% - 1132px) * .165, 96px));
+  top:0;bottom:0;width:2px;z-index:3;pointer-events:none}
 #rail .track{position:absolute;inset:0;background:linear-gradient(to bottom,transparent,var(--faint) 12%,var(--faint) 88%,transparent)}
 /* The trace scales and the head translates — never height/top. Animating
    geometry forces a layout every frame; on a page that moves continuously
@@ -557,8 +547,18 @@ p.lede-lead{color:var(--ink);font-weight:500;margin-top:1.1rem;max-width:52ch}
 .hero-meta{font-family:var(--label);font-size:var(--m-lg);font-weight:500;letter-spacing:.045em;
   color:var(--dim);margin:2rem 0 0;line-height:1.9}
 .hero-meta > span:first-child{color:var(--ink)}
+/* Small type gets a SHORTER line than body copy, not an unlimited one. The
+   page capped its paragraphs and never capped its metadata, so at 2560 the
+   11px and 13px lines ran the full 1132px column: a box permitting 162ch
+   holding a 95-character string on one line. Both counts describe the same
+   defect from different ends.
+
+   The caps are in ch, so each resolves against its own font-size and the
+   physical line grows with the type rather than against it: 11px -> 422px,
+   13px -> 474px, 17px -> 566px. A fixed px cap would have done the opposite
+   of what is wanted here. */
 .note{font-family:var(--label);font-size:var(--m-sm);letter-spacing:.06em;
-  text-transform:uppercase;color:var(--dim);margin-top:4rem}
+  text-transform:uppercase;color:var(--dim);margin-top:4rem;max-width:58ch}
 
 /* line-reveal mask. The span's from-state is set in JS, never here. */
 .rv{display:block;overflow:hidden}
@@ -605,14 +605,27 @@ section{position:relative;padding-block:clamp(44px,8.3vh,75px);padding-left:var(
 .sec-mark::after{content:'';flex:1;height:1px;min-width:0;
   background:linear-gradient(to right,var(--line),var(--line) 86%,transparent)}
 @media(max-width:860px){section{padding-left:16px}}
-/* 100svh LESS the bar, because the bar is in flow above it. At 100svh flat
-   the hero was always one bar-height taller than the viewport, so its bottom
-   edge sat below the fold at every size — which is why a scroll cue anchored
-   to that edge still landed off-screen. --bar-h is measured in script.js;
-   with no JS it falls back to 0 and the hero behaves as it did before. */
-#hero{min-height:calc(100svh - var(--bar-h, 0px));
-  display:flex;flex-direction:column;justify-content:flex-end;
-  padding-top:0;padding-bottom:clamp(44px,8.3vh,75px)}
+/* The hero is content-height, NOT one screen tall. It was
+   min-height:calc(100svh - var(--bar-h)) with its content anchored to the
+   bottom, which made every pixel of unused viewport pile up above the
+   eyebrow: 403px at 2560x1117, 36% of the first thing you see, and still
+   only 67px at 1366x768. A void on a large display and too tight on a
+   laptop, from one rule, because the gap was a residue of the floor rather
+   than a value anyone chose.
+
+   Dropping the floor is what lets both ends be constant at once. With a
+   floor, the slack has to go somewhere: at the top it is this void, at the
+   bottom it reopens the uniform section gap that padding-bottom exists to
+   set. Content-height has no slack to place, so the top gap is the clamp
+   below and the bottom gap is the same one every other section uses.
+
+   The cost is deliberate: on a tall display the hero no longer fills the
+   screen and Work's marker shows above the fold. That reads as a page that
+   continues, which is the honest thing for it to say, and nothing is
+   anchored to the hero's bottom edge any more — the scroll cue that once
+   was is long gone. */
+#hero{display:flex;flex-direction:column;
+  padding-top:clamp(104px,11vh,148px);padding-bottom:clamp(44px,8.3vh,75px)}
 
 /* ---------- hero proof strip ---------- */
 .proof{list-style:none;margin:2.5rem 0 0;padding:0;display:flex;flex-wrap:wrap;gap:.5rem 2rem;
@@ -730,6 +743,10 @@ section{position:relative;padding-block:clamp(44px,8.3vh,75px);padding-left:var(
 .panel-desc{font-size:.9375rem;color:var(--dim);max-width:48ch;margin:0;line-height:1.6}
 /* The NDA was a 64px headline about what you cannot see. Once, small, at the
    foot of the band. */
+/* The box stays full-column because its border-top is the rule that separates
+   the band; capping the box would shorten that rule into looking deliberate.
+   The span carries the measure instead. */
+.work-note > span{display:block;max-width:58ch}
 .work-note{max-width:1180px;margin:0 auto;padding:0 24px 0 calc(24px + var(--rail));
   font-family:var(--label);font-size:var(--m-sm);letter-spacing:.045em;color:var(--dim);
   padding-block:clamp(14px,1.6vw,20px);border-top:1px solid var(--line)}
@@ -893,7 +910,7 @@ section{position:relative;padding-block:clamp(44px,8.3vh,75px);padding-left:var(
   gap:.2rem 1.5rem;align-items:baseline;margin:1.5rem 0 0;max-width:none}
 @media(max-width:700px){.certs{grid-template-columns:1fr;gap:.1rem}}
 .certs .tl-when{white-space:nowrap}
-.certs span:last-child{font-size:var(--t-body);color:var(--dim);line-height:1.5}
+.certs span:last-child{font-size:var(--t-body);color:var(--dim);line-height:1.5;max-width:50ch}
 
 /* ---------- 8 · contact: arrival ---------- */
 #contact{position:relative}
@@ -912,8 +929,12 @@ section{position:relative;padding-block:clamp(44px,8.3vh,75px);padding-left:var(
    on first and it was the smallest type in the section, crushed between an
    80px claim and a 34px address. Two lines rather than one run-on: where he
    will work, and the languages he works in. */
+/* One logical line that WRAPS on a wide screen rather than stretching. It
+   was specced as a single line because it fits at every width down to 768 —
+   but fitting is not reading, and at 2560 "fits" meant 95 characters at
+   13px. Still one element and one sentence; the measure just ends it. */
 .contact-meta{font-family:var(--label);font-size:var(--m-lg);font-weight:500;letter-spacing:.045em;
-  color:var(--dim);margin:0 0 1.25rem;line-height:1.85}
+  color:var(--dim);margin:0 0 1.25rem;line-height:1.85;max-width:54ch}
 .contact-meta > span:first-child{color:var(--ink)}
 .mail{margin:1.75rem 0 2rem}
 .mail a{font-family:var(--display);font-weight:600;font-size:clamp(1.375rem,2.6vw,2.125rem);line-height:1.15;letter-spacing:-.015em;
@@ -978,6 +999,21 @@ section{position:relative;padding-block:clamp(44px,8.3vh,75px);padding-left:var(
   .stack li:hover,.grp li:hover{border-color:rgb(var(--line-rgb) / .34)}
   .panel{transition:background-color var(--fast) var(--fast-ease)}
   .panel:hover{background-color:rgb(var(--line-rgb) / .035)}
+  /* The proof card answers as ONE card, in the grammar the page already has:
+     .panel's wash for the surface, .stack li's value for the edge. Nothing
+     invented for it. No transform and no shadow — it sits beside the
+     headline, and 1px of lift here would shunt the page's proof block
+     against the thing it is proof for. Colour only, so nothing moves.
+
+     The edge goes to --ui rather than to .stack li's faint line value. That
+     value was tried first and measured 6/255 of painted luminance in light
+     and 3/255 in dark, stacked over the card's own --surface: a response you
+     cannot see is not one. --ui is the same move .bar-toggle and .mail a
+     already make on hover, and it ties to the card's own numbers, which are
+     --ui too. */
+  .brief{transition:background-color var(--fast) var(--fast-ease),
+                    border-color var(--fast) var(--fast-ease)}
+  .brief:hover{background-color:rgb(var(--line-rgb) / .035);border-color:var(--ui)}
 }
 
 :focus-visible{outline:2px solid var(--ui);outline-offset:3px}
@@ -1011,7 +1047,7 @@ section{position:relative;padding-block:clamp(44px,8.3vh,75px);padding-left:var(
    Save-as-PDF rendered the scrollbar, the rail, both glows and a sticky bar
    onto paper. None of them mean anything without a viewport to scroll. */
 @media print{
-  .vbar,#rail,.glow,.skip-link{display:none!important}
+  #rail,.glow,.skip-link{display:none!important}
   .bar{position:static!important;background:none!important;backdrop-filter:none!important}
   body{background:#fff!important;color:#000!important}
   .rv > span{transform:none!important;opacity:1!important}

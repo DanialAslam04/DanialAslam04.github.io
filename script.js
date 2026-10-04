@@ -332,84 +332,6 @@
     });
     var live = [].slice.call(document.querySelectorAll('[data-live]'));
 
-    /* ---- the right-hand scrollbar ----
-       A real control, not a second menu: track, proportional thumb, draggable,
-       with the section marks the left rail carries so it orients as well as
-       scrolls. Built here rather than in the markup so that with no JS there
-       is no inert control sitting on the page pretending to work.
-
-       aria-hidden deliberately. This is a pointer affordance for someone
-       without a wheel; keyboard users already have arrows, Page keys and
-       Home/End, and a half-built role="scrollbar" would be worse than an
-       honest decoration beside working keyboard scrolling. */
-    var vbar = document.createElement('div');
-    vbar.className = 'vbar';
-    var vhit = document.createElement('div'); vhit.className = 'vbar-hit';
-    /* The track and thumb are a pointer affordance with no keyboard story —
-       arrows, Page keys and Home/End already scroll — so they stay hidden
-       from assistive tech. The marks are destinations and must not be. */
-    vhit.setAttribute('aria-hidden', 'true');
-    var vthumb = document.createElement('div'); vthumb.className = 'vbar-thumb';
-    vhit.appendChild(vthumb);
-    vbar.appendChild(vhit);
-    /* Real anchors in a real landmark. The nav this replaced carried the
-       same promise in its own comment — middle-click, open-in-new-tab and
-       the Tab key all work again, and Lenis owns the scrolling because it
-       owns every other anchor on the page. */
-    var vnav = document.createElement('nav');
-    vnav.setAttribute('aria-label', 'Sections');
-    vbar.appendChild(vnav);
-    var vmarks = sections.map(function (sec) {
-      var name = sec.getAttribute('data-rail');
-      if (!name || !sec.id) return null;
-      var m = document.createElement('a');
-      m.className = 'vbar-mark';
-      m.href = '#' + sec.id;
-      m.innerHTML = '<i aria-hidden="true"></i><span>' + name + '</span>';
-      vnav.appendChild(m);
-      return m;
-    });
-    document.body.appendChild(vbar);
-
-    var trackTop = 0, trackH = 0, thumbH = 36, dragging = false, grabAt = 0;
-
-    function goTo(y, immediate) {
-      y = Math.max(0, Math.min(y, docH - vh));
-      if (lenisRef()) lenisRef().scrollTo(y, { immediate: !!immediate });
-      else window.scrollTo(0, y);
-    }
-    function lenisRef() { return window.__lenis || null; }
-
-    function yFromPointer(clientY) {
-      var span = Math.max(1, trackH - thumbH);
-      var pos = Math.max(0, Math.min(clientY - trackTop - grabAt, span));
-      return (pos / span) * Math.max(1, docH - vh);
-    }
-
-    vhit.addEventListener('pointerdown', function (e) {
-      var r = vthumb.getBoundingClientRect();
-      var onThumb = e.clientY >= r.top && e.clientY <= r.bottom;
-      grabAt = onThumb ? (e.clientY - r.top) : thumbH / 2;
-      dragging = true;
-      vbar.classList.add('dragging');
-      vhit.setPointerCapture(e.pointerId);
-      goTo(yFromPointer(e.clientY), true);
-      e.preventDefault();
-    });
-    vhit.addEventListener('pointermove', function (e) {
-      if (!dragging) return;
-      goTo(yFromPointer(e.clientY), true);   /* immediate: a drag is 1:1 or it fights you */
-    });
-    function endDrag(e) {
-      if (!dragging) return;
-      dragging = false;
-      vbar.classList.remove('dragging');
-      try { vhit.releasePointerCapture(e.pointerId); } catch (err) {}
-    }
-    vhit.addEventListener('pointerup', endDrag);
-    vhit.addEventListener('pointercancel', endDrag);
-
-
 
     var tops = [], litState = [];
     var liveTops = [], liveHeights = [], liveUnits = [], liveOn = [];
@@ -444,15 +366,6 @@
         ticks[i].style.top = ((top / docH) * vh) + 'px';
         return top;
       });
-      var vr = vhit.getBoundingClientRect();
-      trackTop = vr.top; trackH = vr.height;
-      thumbH = Math.max(36, Math.round(trackH * Math.min(1, vh / docH)));
-      vthumb.style.height = thumbH + 'px';          /* height here, never per frame */
-      for (var k = 0; k < vmarks.length; k++) {
-        if (!vmarks[k]) continue;
-        vmarks[k].style.top = ((tops[k] / docH) * trackH) + 'px';
-      }
-
       liveTops = live.map(function (el, i) {
         liveHeights[i] = el.offsetHeight;
         liveUnits[i] = el.querySelector('.unit') || el;
@@ -469,7 +382,6 @@
       head.style.transform = 'translateY(' + (p * vh) + 'px)';
       /* transform only — a top/height write here is a layout every frame,
          which is the thing the trace was rewritten to avoid. */
-      vthumb.style.transform = 'translateY(' + (p * (trackH - thumbH)) + 'px)';
       if (!landed && terminal && (terminalTop - y) < vh * 0.75) {
         terminal.classList.add('landed'); landed = true;   /* once, never looping */
       }
