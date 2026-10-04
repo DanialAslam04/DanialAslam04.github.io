@@ -189,3 +189,25 @@ li a[href]{min-height:0;display:inline}
     white-space:normal !important;justify-content:center;text-align:center;
     overflow-wrap:anywhere}
 }
+
+/* ---------------------------------------------- the portrait
+   Measured: the photo's studio backdrop averages rgb(29,29,29) against a page
+   at rgb(10,10,11) and cards at rgb(14,14,16) — roughly three times lighter
+   than the page and lighter than any other surface on it. Framed with a hard
+   border it read as a pasted grey panel rather than part of the page.
+
+   Fixed by dissolving the edges into the background instead of drawing a line
+   around them, so the backdrop falls away and only he remains. The mask is
+   centred at 32% height because his face sits in the upper third; the fade
+   must not reach it. Browsers without mask-image simply get the framed
+   version, which is what shipped before, so this degrades to the old look
+   rather than to a broken one. */
+.s18{
+  border:0;
+  filter:brightness(.92) contrast(1.04);
+  -webkit-mask-image:radial-gradient(118% 100% at 50% 32%, #000 52%, rgba(0,0,0,.72) 76%, rgba(0,0,0,0) 100%);
+          mask-image:radial-gradient(118% 100% at 50% 32%, #000 52%, rgba(0,0,0,.72) 76%, rgba(0,0,0,0) 100%);
+}
+@supports not (mask-image: radial-gradient(#000, transparent)) {
+  .s18{border:1px solid rgb(31,31,35);filter:none}
+}
