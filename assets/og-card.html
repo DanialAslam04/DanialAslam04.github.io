@@ -23,11 +23,33 @@
   both produce 1200x630, but the scaled route renders type at 2x and downsamples,
   which is visibly sharper.
 
-  Keep the output as PNG. The card is flat colour and text, which compresses
-  better losslessly than as JPEG, and JPEG rings around glyphs. Budget is
-  100 KB — re-check the figure after a type change rather than assuming it.
+  Keep the output as PNG, and write it at the SAME path. Platforms cache the
+  card by URL: an in-place update reaches every link already shared, while a
+  rename leaves those links with nothing. That is why this is still a .png
+  even though the card now contains a photograph.
 
-  Render over http rather than file:// so the @font-face below resolves.
+  Budget: 128 KB, re-derived 2026-10-04, was 100 KB. The old figure was set
+  when the card was flat colour and text; a photograph does not compress in
+  long runs and the honest cost of the face at 118px is about 117 KB. Holding
+  100 KB would have meant an 88px face, which reads as a token rather than a
+  person — the opposite of why the face was added. Re-check this figure after
+  any change that alters what KIND of content is on the card, not merely its
+  type sizes.
+
+  Two things the encode depends on, both measured rather than assumed:
+  write colorType 2 with deflateLevel 9 and deflateStrategy 1. The screenshot
+  comes back RGBA and the card is fully opaque, so dropping the alpha channel
+  is lossless and saves about 13 KB; strategy 1 beats the default, and
+  strategy 2 is catastrophic here (387 KB).
+
+  JPEG was tested rather than dismissed: q92 is 85 KB with the full-size face
+  and its ringing measures 16/255 maximum on 0.41% of pixels in the headline
+  band, which is invisible. It is a legitimate option and the only reason it
+  is not used is the URL-cache argument above.
+
+  Render over http rather than file:// so the @font-face below resolves. The
+  photo is a sibling file now, so http is doubly required: over file:// the
+  font silently falls back AND the face may not load at all.
 
   Colours are the site's dark-theme tokens from styles.css. If those change,
   change them here too — nothing links the two automatically.
@@ -140,16 +162,42 @@
     line-height: 1.4;
   }
 
+  /* max-width is a guard, not a layout: the face occupies the bottom-right
+     corner, so a stack line long enough to run under it would collide. Six
+     entries did, by 27px. Five clear it. If this list grows, check the gap
+     rather than trusting that it still fits. */
   .stack {
     position: absolute;
     left: 50px;
     bottom: 32px;
+    max-width: 360px;
     font-size: 12.5px;
     color: var(--muted);
     letter-spacing: .015em;
   }
   .stack b { color: #C3D0DC; font-weight: 600; }
   h1 { font-weight: 600; }
+
+  /* The face sits bottom-right, below the headline's band, because a
+     one-line 42px name and a right-hand photo cannot both fit across 600px:
+     the name alone inks about 430px, leaving under 170px of column. Rather
+     than shrink the name or wrap it, the circle takes the corner the stack
+     line leaves empty. Measured clear of the h1, not assumed.
+
+     118px here is 236 device px at deviceScaleFactor 2, against a 400x400
+     source — inside native, same budget rule as the hero. A circle for the
+     same reason as the hero too, though the card is always dark so it is
+     consistency rather than necessity. */
+  .face {
+    position: absolute;
+    right: 50px;
+    bottom: 30px;
+    width: 118px;
+    height: 118px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid rgba(148,163,184,.28);
+  }
 </style>
 </head>
 <body>
@@ -164,6 +212,8 @@
   <p class="role">Backend &amp; Agentic AI Engineer</p>
   <p class="tagline">Autonomous by default.<br/>Gated where it counts.</p>
 
-  <p class="stack"><b>Google ADK</b> · <b>MCP</b> · <b>Vertex AI</b> · <b>Spring Boot</b> · <b>FastAPI</b> · <b>GKE</b></p>
+  <img class="face" src="danial-aslam.jpg" alt=""/>
+
+  <p class="stack"><b>Google ADK</b> · <b>MCP</b> · <b>Vertex AI</b> · <b>Spring Boot</b> · <b>Google Cloud</b></p>
 </body>
 </html>
