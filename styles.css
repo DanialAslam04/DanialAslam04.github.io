@@ -211,3 +211,23 @@ li a[href]{min-height:0;display:inline}
 @supports not (mask-image: radial-gradient(#000, transparent)) {
   .s18{border:1px solid rgb(31,31,35);filter:none}
 }
+
+/* ---------------------------------------------- portrait: colour on hover
+   Carried over from the preview build. Grayscale at rest, full colour on
+   hover, with the brightness and contrast trim that was already there kept
+   on both states so the blend into the page does not shift.
+
+   Gated on (hover: hover) deliberately. A touch device can never trigger
+   hover, so without this the photo would simply be permanently grayscale on
+   every phone — a regression dressed as an effect. Phones get the colour
+   version at rest instead. */
+@media (hover: hover) and (pointer: fine) {
+  .s18{
+    filter:grayscale(1) brightness(.92) contrast(1.04);
+    transition:filter .5s cubic-bezier(.22,1,.36,1);
+  }
+  .s18:hover{filter:grayscale(0) brightness(1) contrast(1.02)}
+}
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: reduce) {
+  .s18{transition:none}
+}
