@@ -231,3 +231,118 @@ li a[href]{min-height:0;display:inline}
 @media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: reduce) {
   .s18{transition:none}
 }
+
+/* ---------------------------------------------- mobile header: one row
+   Measured on this markup, not guessed: the header pill only fits on a
+   single row at 680px and up. From 560 to 679 the name and the nav split
+   onto two rows (138px of sticky bar); at 480 and below the nav wraps as
+   well and the bar reaches 182px — 22% of a 390x844 phone viewport spent on
+   navigation before any content appears.
+
+   So below 680 the links move into a panel and a button opens it. Three
+   decisions worth keeping:
+
+   The panel is absolutely positioned *under* the pill rather than growing
+   inside it, so the sticky bar is the same height open or closed and the
+   page never jumps under the thumb. script.js offsets anchor jumps by
+   measuring whatever is sticky at the top; an absolute panel leaves that
+   measurement correct, where a growing header would have made it wrong at
+   exactly the moment it is read.
+
+   visibility carries the closed state — not display:none, which cannot
+   animate, and not the hidden attribute, which the CSS could not then
+   override per breakpoint. visibility:hidden still removes the links from
+   the tab order and the accessibility tree, so a closed menu is closed to a
+   keyboard and a screen reader too, not merely invisible.
+
+   Every rule is gated on .s1[data-nav], which only script.js ever sets. If
+   the script fails to load the header keeps its current wrapped layout:
+   tall, but with every link reachable. The failure mode is the old look,
+   not a page with no navigation. */
+
+.navq{display:none}
+
+@media(max-width:679px){
+  .s1[data-nav] .s3{position:relative;flex-wrap:nowrap;gap:0;padding:6px 6px 6px 18px}
+
+  .s1[data-nav] .navq{
+    display:inline-flex;align-items:center;justify-content:center;
+    flex:0 0 auto;width:44px;height:44px;min-height:44px;
+    margin:0;padding:0;border:0;border-radius:999px;
+    background:transparent;color:rgb(232,232,238);cursor:pointer;
+    -webkit-appearance:none;appearance:none;-webkit-tap-highlight-color:transparent;
+  }
+  .s1[data-nav] .navq:active{background:rgba(255,255,255,.055)}
+  .s1[data-nav="open"] .navq{color:rgb(198,241,53)}
+
+  /* Three bars, after trying two.
+
+     Two equal rules 8-10px apart rendered and read as an equals sign, not as
+     a menu — the pair groups, but it groups into the wrong symbol. Rendered
+     at 4x to check, it was still "=". Unequal bar lengths would fix the
+     closed state and ruin the open one, because the X comes out lopsided.
+
+     So: three bars, and the middle one leaves on open. The span is the
+     middle bar and ::before/::after are the outer two, offset 6px from the
+     span's own box — which puts 4.25px of air above and below it and centres
+     the whole 13.75px icon on the span, so the X that the outer two collapse
+     into is centred too, with no magic numbers to keep in sync.
+
+     1.75px, not 1.5px: a hairline on a near-black ground loses too much to
+     antialiasing at 1x, where a phone at 2x or 3x would have hidden it. */
+  .navq-i{
+    position:relative;display:block;
+    width:17px;height:1.75px;border-radius:2px;background:currentColor;
+    transition:background-color .16s ease;
+  }
+  .navq-i::before,.navq-i::after{
+    content:'';position:absolute;left:0;display:block;
+    width:17px;height:1.75px;border-radius:2px;background:currentColor;
+    transition:top .26s cubic-bezier(.22,1,.36,1),
+               transform .26s cubic-bezier(.22,1,.36,1);
+  }
+  .navq-i::before{top:-6px}
+  .navq-i::after{top:6px}
+  /* The middle bar leaves by losing its background, NOT by opacity and not
+     by a transform. Both of those would have taken the outer two with it:
+     ::before and ::after render inside their originating element's opacity
+     group and inherit its transform, so the first attempt faded the whole
+     icon and the open state rendered as nothing at all. Background is the
+     one property here that belongs to the span alone — the outer bars paint
+     from currentColor, which is a colour, not a background. */
+  .s1[data-nav="open"] .navq-i{background:transparent}
+  .s1[data-nav="open"] .navq-i::before{top:0;transform:rotate(45deg)}
+  .s1[data-nav="open"] .navq-i::after{top:0;transform:rotate(-45deg)}
+
+  .s1[data-nav] .s6{
+    position:absolute;top:calc(100% + 8px);left:0;right:0;z-index:30;
+    display:block;box-sizing:border-box;padding:8px;
+    border:1px solid rgb(31,31,35);border-radius:22px;
+    background:rgb(14,14,16);
+    box-shadow:0 20px 48px -16px rgba(0,0,0,.92);
+    font-size:16px;
+    visibility:hidden;opacity:0;transform:translateY(-8px) scale(.985);
+    transform-origin:100% 0;
+    transition:opacity .2s ease,
+               transform .26s cubic-bezier(.22,1,.36,1),
+               visibility .26s;
+  }
+  .s1[data-nav="open"] .s6{visibility:visible;opacity:1;transform:none}
+
+  .s1[data-nav] .s6 .s7{
+    display:flex;align-items:center;width:100%;box-sizing:border-box;
+    min-height:52px;padding:0 16px;border-radius:13px;
+    color:rgb(232,232,238);letter-spacing:-0.01em;
+  }
+  .s1[data-nav] .s6 .s7:active{background:rgba(255,255,255,.055)}
+  .s1[data-nav] .s6 .s8{
+    display:flex;align-items:center;justify-content:center;
+    width:100%;box-sizing:border-box;min-height:52px;
+    margin:8px 0 0;padding:0 22px;
+  }
+}
+
+@media(max-width:679px) and (prefers-reduced-motion:reduce){
+  .s1[data-nav] .s6,
+  .navq-i,.navq-i::before,.navq-i::after{transition:none}
+}
