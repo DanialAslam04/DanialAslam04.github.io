@@ -15,7 +15,7 @@
       deviceScaleFactor: 2,            // -> a 1200x630 file with crisp type
     });
     const p = await ctx.newPage();
-    await p.goto('file:///absolute/path/to/assets/og-card.html');
+    await p.goto('http://localhost:PORT/assets/og-card.html');
     await p.screenshot({ path: 'assets/og-image.png' });
     await b.close();
 
@@ -23,36 +23,45 @@
   both produce 1200x630, but the scaled route renders type at 2x and downsamples,
   which is visibly sharper.
 
+  Render over http rather than file://, or the @font-face below silently falls
+  back to a system sans and the photo may not load at all. Everything about the
+  layout below is tuned to Geist's metrics; a fallback face changes the line
+  widths and the two-column split stops fitting.
+
   Keep the output as PNG, and write it at the SAME path. Platforms cache the
   card by URL: an in-place update reaches every link already shared, while a
   rename leaves those links with nothing. That is why this is still a .png
-  even though the card now contains a photograph.
+  even though the card contains a photograph.
 
-  Budget: 128 KB, re-derived 2026-10-04, was 100 KB. The old figure was set
-  when the card was flat colour and text; a photograph does not compress in
-  long runs and the honest cost of the face at 118px is about 117 KB. Holding
-  100 KB would have meant an 88px face, which reads as a token rather than a
-  person — the opposite of why the face was added. Re-check this figure after
-  any change that alters what KIND of content is on the card, not merely its
-  type sizes.
+  Budget: 128 KB, re-derived 2026-10-04. A photograph does not compress in long
+  runs the way flat colour does, and the honest cost of a face large enough to
+  read as a person rather than a token is most of that. Re-check the figure
+  after any change that alters what KIND of content is on the card, not merely
+  its type sizes.
 
-  Two things the encode depends on, both measured rather than assumed:
-  write colorType 2 with deflateLevel 9 and deflateStrategy 1. The screenshot
+  This card lands at 104.1 KB (106,583 bytes). Desaturating the portrait is
+  worth 22.4 KB of that, measured by rendering the identical card with the
+  grayscale filter removed: 129,565 bytes in colour against 106,583 here. The
+  colour version only fits the budget at all by about 2 KB, so the desaturation
+  is buying headroom as well as matching the site.
+
+  The encode: colorType 2, deflateLevel 9, deflateStrategy 0. The screenshot
   comes back RGBA and the card is fully opaque, so dropping the alpha channel
-  is lossless and saves about 13 KB; strategy 1 beats the default, and
-  strategy 2 is catastrophic here (387 KB).
+  is lossless — verified per-pixel at encode time rather than assumed.
 
-  JPEG was tested rather than dismissed: q92 is 85 KB with the full-size face
-  and its ringing measures 16/255 maximum on 0.41% of pixels in the headline
-  band, which is invisible. It is a legitimate option and the only reason it
-  is not used is the URL-cache argument above.
+  Strategy is measured, and the right answer MOVED when the card changed. On
+  the previous card (colour face, navy ground) strategy 1 won by 1,009 bytes;
+  on this one strategy 0 wins by 836. Strategy 3 costs 27 KB and strategy 2 is
+  catastrophic (382.9 KB). The difference between 0 and 1 is under 1% either
+  way, so the point is not the saving — it is that a strategy copied forward
+  from a previous card is an assumption, not a measurement. Re-run all four.
 
-  Render over http rather than file:// so the @font-face below resolves. The
-  photo is a sibling file now, so http is doubly required: over file:// the
-  font silently falls back AND the face may not load at all.
-
-  Colours are the site's dark-theme tokens from styles.css. If those change,
-  change them here too — nothing links the two automatically.
+  Colours are the site's tokens from styles.css — black ground, one lime
+  accent. If those change, change them here too: nothing links the two
+  automatically, and this file being out of step with the site is exactly the
+  bug this revision fixed. The previous card was still the navy/blue build
+  months after the site stopped being navy, so every link ever shared previewed
+  a design that no longer existed.
 -->
 <html lang="en">
 <head>
@@ -62,158 +71,170 @@
      file, not a page, so keep it out of search results. -->
 <meta name="robots" content="noindex, nofollow"/>
 <style>
-  /* Same tokens as the site's dark theme, so the card and the page match. */
-  /* The site's dark tokens, as of the Geist rebuild. The teal second accent
-     is gone: the page runs a two-level blue, an interface level and a signal
-     level, and a third hue on the card would be the only place it appears. */
+  /* The site's tokens, verbatim from styles.css. */
   :root {
-    --bg:     #070B12;
-    --text:   #EEF1F6;
-    --muted:  #8891A3;
-    --accent: #4DA3FF;   /* interface blue */
-    --signal: #96CEFF;   /* signal blue — the brighter of the two */
+    --bg:    #0A0A0B;
+    --fg:    #F2F2F4;
+    --fg-2:  #B3B3BC;
+    --fg-3:  #7E7E88;
+    --acc:   #CCF24D;
+    --line:  rgba(255,255,255,.09);
   }
-  @font-face{font-family:'Geist';font-style:normal;font-weight:400 700;
+  @font-face{font-family:'Geist';font-style:normal;font-weight:100 900;
     src:url('geist-latin.woff2') format('woff2');font-display:block}
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+  @font-face{font-family:'Geist Mono';font-style:normal;font-weight:100 900;
+    src:url('geist-mono-latin.woff2') format('woff2');font-display:block}
 
+  * { box-sizing: border-box; margin: 0; padding: 0; }
   html, body { width: 600px; height: 315px; }
 
-  /* The page's 56px grid is deliberately NOT here. Measured, it cost 18 KB
-     of a 100 KB budget — a flat ground compresses in long runs and a grid
-     breaks every one of them — and at the size a social card is actually
-     looked at, a .055 alpha line is invisible. 18 KB for texture nobody
-     sees, on a file every crawler fetches. The card reads as the site
-     through the navy, the Geist and the two-level blue instead. */
   body {
-    background-color: var(--bg);
-    color: var(--text);
-    font-family: 'Geist', -apple-system, "SF Pro Display", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: 'Geist', -apple-system, "Helvetica Neue", Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    padding: 0 50px;
     position: relative;
     overflow: hidden;
   }
 
-  /* A single accent hairline down the left edge — the only ornament. */
-  .rail {
+  /* ------------------------------------------------ the portrait panel
+     A full-bleed right column rather than a circle dropped into a corner.
+     The site's portrait is a rounded rectangle under a radial mask, never a
+     circle, and it sits at the edge of its column — this is the same move at
+     card scale. The left edge fades into the ground so the photograph reads
+     as part of the card instead of pasted onto it.
+
+     Sized, not styled: 133x163 here is 266x326 device px at deviceScaleFactor
+     2, against a 400x400 source — inside native. The first draft of this card
+     ran the portrait full-bleed down the right edge, which looked better and
+     was wrong: 196x315 is 392x630 device px, a 1.58x upscale of a 400px file.
+     The budget rule above is the reason this box is bounded.
+
+     Its top and bottom are not free either: top aligns with the headline's
+     first line, bottom with the footer rule, so the photograph measures the
+     same block the type does. Change the type sizes and these two numbers
+     have to move with them.
+
+     Desaturated to match the site's resting state: on a pointer device the
+     portrait there is grayscale until hovered, which is how most people see
+     it. It is also the more sober of the two, which is the point of the card. */
+  .portrait {
     position: absolute;
-    left: 0; top: 0; bottom: 0;
-    width: 5px;
-    background: linear-gradient(to bottom, var(--accent), var(--signal));
+    right: 44px; top: 91px;
+    width: 133px; height: 163px;
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid var(--line);
   }
-
-  .eyebrow {
-    display: flex;
-    align-items: center;
-    gap: 9px;
-    margin-bottom: 17px;
-  }
-  .mark {
-    width: 19px; height: 19px;
-    border-radius: 5px;
-    background: var(--accent);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    gap: 2px;
-    flex: none;
-  }
-  .mark i { display: block; height: 2.6px; border-radius: 2px; background: var(--bg); }
-  .mark i:nth-child(1) { width: 11px; }
-  .mark i:nth-child(2) { width: 8px; }
-  .mark i:nth-child(3) { width: 4.5px; }
-
-  .eyebrow span {
-    font-size: 12.5px;
-    letter-spacing: .09em;
-    text-transform: uppercase;
-    color: var(--muted);
-    font-weight: 600;
-  }
-
-  h1 {
-    font-size: 42px;
-    line-height: 1.05;
-    font-weight: 700;
-    letter-spacing: -.023em;
-    margin-bottom: 11px;
-  }
-
-  .role {
-    font-size: 21px;
-    font-weight: 600;
-    color: var(--text);
-    margin-bottom: 19px;
-  }
-
-  /* Sans, like the page — the second family went with the rebuild. */
-  .tagline {
-    font-size: 17px;
-    font-weight: 600;
-    color: var(--signal);
-    letter-spacing: -.012em;
-    padding-left: 13px;
-    border-left: 2px solid var(--accent);
-    line-height: 1.4;
-  }
-
-  /* max-width is a guard, not a layout: the face occupies the bottom-right
-     corner, so a stack line long enough to run under it would collide. Six
-     entries did, by 27px. Five clear it. If this list grows, check the gap
-     rather than trusting that it still fits. */
-  .stack {
-    position: absolute;
-    left: 50px;
-    bottom: 32px;
-    max-width: 360px;
-    font-size: 12.5px;
-    color: var(--muted);
-    letter-spacing: .015em;
-  }
-  .stack b { color: #C3D0DC; font-weight: 600; }
-  h1 { font-weight: 600; }
-
-  /* The face sits bottom-right, below the headline's band, because a
-     one-line 42px name and a right-hand photo cannot both fit across 600px:
-     the name alone inks about 430px, leaving under 170px of column. Rather
-     than shrink the name or wrap it, the circle takes the corner the stack
-     line leaves empty. Measured clear of the h1, not assumed.
-
-     118px here is 236 device px at deviceScaleFactor 2, against a 400x400
-     source — inside native, same budget rule as the hero. A circle for the
-     same reason as the hero too, though the card is always dark so it is
-     consistency rather than necessity. */
-  .face {
-    position: absolute;
-    right: 50px;
-    bottom: 30px;
-    width: 118px;
-    height: 118px;
-    border-radius: 50%;
+  .portrait img {
+    width: 100%; height: 100%;
     object-fit: cover;
-    border: 1px solid rgba(148,163,184,.28);
+    object-position: 50% 22%;
+    display: block;
+    filter: grayscale(1) brightness(.95) contrast(1.06);
   }
+
+  /* ------------------------------------------------ the text column
+     Width is set against the portrait panel, not guessed: 600 - 196 panel
+     - 44 left gutter leaves 360, and the headline is sized to sit inside it.
+     Measured, not assumed — see the regeneration notes. */
+  .col {
+    position: absolute;
+    left: 44px; top: 48px;
+    width: 353px;
+  }
+
+  /* eyebrow: the DA mark plus the domain, in mono like every label on the
+     site. The mark is the favicon's artwork, same paths, so the tab icon and
+     the share card are visibly one thing. */
+  .eyebrow { display: flex; align-items: center; gap: 9px; }
+  .eyebrow svg { display: block; flex: none; }
+  .eyebrow span {
+    font-family: 'Geist Mono', ui-monospace, monospace;
+    font-size: 10.5px;
+    font-weight: 500;
+    letter-spacing: .085em;
+    text-transform: uppercase;
+    color: var(--fg-3);
+  }
+
+  /* The headline is the site's h1, not the name: the platform already prints
+     the name above the image from og:title, so repeating it at the largest
+     size on the card spends the card's one loud voice on a duplicate. */
+  h1 {
+    margin-top: 24px;
+    font-size: 32px;
+    line-height: 1.12;
+    font-weight: 600;
+    letter-spacing: -.028em;
+    color: var(--fg);
+  }
+  h1 em { font-style: normal; color: var(--acc); }
+
+  .byline { margin-top: 22px; }
+  .byline .name {
+    font-size: 15.5px;
+    font-weight: 600;
+    letter-spacing: -.011em;
+    color: var(--fg);
+  }
+  .byline .role {
+    margin-top: 3px;
+    font-size: 13.5px;
+    font-weight: 400;
+    color: var(--fg-2);
+  }
+
+  /* ------------------------------------------------ the footer rule
+     Runs from the gutter to the portrait's right edge and sits exactly on the
+     portrait's bottom border, in the same colour — so the two read as one
+     continuous hairline rather than a stub that stops in open space. That
+     alignment is why .portrait's height is what it is; the two numbers are
+     the same number and have to move together. */
+  .foot {
+    position: absolute;
+    left: 44px; bottom: 34px;
+    width: 512px;
+    padding-top: 13px;
+    border-top: 1px solid var(--line);
+    font-family: 'Geist Mono', ui-monospace, monospace;
+    font-size: 10px;
+    letter-spacing: .035em;
+    color: var(--fg-3);
+    white-space: nowrap;
+  }
+  .foot b { color: var(--fg-2); font-weight: 500; }
+
 </style>
 </head>
 <body>
-  <div class="rail"></div>
+  <div class="portrait"><img src="danial-aslam.jpg" alt=""/></div>
 
-  <div class="eyebrow">
-    <div class="mark"><i></i><i></i><i></i></div>
-    <span>danialaslam04.github.io</span>
+  <div class="col">
+    <div class="eyebrow">
+      <!-- the favicon's artwork, same paths, scaled to 19px -->
+      <svg viewBox="0 0 64 64" width="19" height="19" aria-hidden="true">
+        <rect width="64" height="64" rx="14" fill="#CCF24D"/>
+        <g fill="#0A0A0B" fill-rule="evenodd">
+          <path d="M8.5 15 L12.5 15 A17 17 0 0 1 12.5 49 L8.5 49 Z
+                   M15.5 22 A7 10 0 0 1 15.5 42 L15.5 22 Z"/>
+          <path d="M33.5 49 L41.4 15 L47.4 15 L55.5 49 L47.9 49 L46.2 40.5 L43.0 40.5 L41.3 49 Z
+                   M44.5 25.5 L46.4 35.5 L42.8 35.5 Z"/>
+        </g>
+      </svg>
+      <span>danialaslam04.github.io</span>
+    </div>
+
+    <h1>Autonomous by default.<br/><em>Gated where it counts.</em></h1>
+
+    <div class="byline">
+      <div class="name">Muhammad Danial Aslam</div>
+      <div class="role">Backend &amp; Agentic AI Engineer</div>
+    </div>
   </div>
 
-  <h1>Muhammad&nbsp;Danial&nbsp;Aslam</h1>
-  <p class="role">Backend &amp; Agentic AI Engineer</p>
-  <p class="tagline">Autonomous by default.<br/>Gated where it counts.</p>
-
-  <img class="face" src="danial-aslam.jpg" alt=""/>
-
-  <p class="stack"><b>Google ADK</b> · <b>MCP</b> · <b>Vertex AI</b> · <b>Spring Boot</b> · <b>Google Cloud</b></p>
+  <div class="foot">
+    <b>Google ADK</b> · <b>MCP</b> · <b>Vertex AI</b> · <b>Spring Boot</b>
+  </div>
 </body>
 </html>
