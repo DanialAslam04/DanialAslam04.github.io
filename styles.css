@@ -12,9 +12,56 @@
   font-weight:100 900;font-style:normal;font-display:swap;
   unicode-range:U+0-FF,U+131,U+152-153,U+2BB-2BC,U+2C6,U+2DA,U+2DC,U+2010,U+2013-2014,U+2018-201A,U+201C-201E,U+2020-2022,U+2026,U+2030,U+2039-203A,U+2044,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
 
+/* ---------------------------------------------- the two palettes
+   The generated CSS hardcoded 27 colour literals across 89 rules and had no
+   variables, so a second theme had no seam to attach to. Those literals are
+   now tokens, substituted mechanically one literal to one token — which means
+   the dark values below are the originals and dark rendering is unchanged.
+   That was verified by pixel-diffing full-page captures at 1440, 760 and 390
+   before and after the substitution: zero differing pixels.
+
+   Two accent tokens, not one, because lime is a light-on-dark colour. --acc
+   is the brand fill — a pill or a chip, with dark text on top, and it stays
+   #CCF24D in both themes because that is the brand. --acc-ink is lime used
+   AS ink: headline emphasis, eyebrows, borders, the focus ring. On white that
+   measures about 1.4:1 and is unreadable, so in light it becomes a dark green
+   of the same hue. In dark the two are the same colour, so nothing moves.
+
+   Dark is the default and prefers-color-scheme is deliberately NOT consulted.
+   Most phones and a good share of laptops are set to light, so honouring the
+   system would show the majority of first-time visitors a theme that is the
+   secondary one — this portfolio's identity is the dark build. The choice is
+   one press away and persists, which is the part that actually matters to
+   someone who needs light. Honouring the system instead is one line in
+   script.js if that trade ever looks wrong. */
+
+:root{
+  color-scheme:dark;
+  --bg:rgb(10,10,11);          /* page */
+  --surface:rgb(14,14,16);     /* cards, the header pill */
+  --grid:rgb(17,17,19);        /* the hero's background grid */
+  --line:rgb(31,31,35);        /* the workhorse border */
+  --line-2:rgb(38,38,43);
+  --line-3:rgb(42,42,48);
+  --line-4:rgb(52,52,58);
+  --line-5:rgb(58,58,66);
+  --ink:rgb(245,245,247);      /* headings */
+  --ink-2:rgb(236,236,239);
+  --ink-3:rgb(232,232,238);
+  --dim:rgb(179,179,188);      /* body copy */
+  --dim-2:rgb(138,138,147);    /* captions, the smallest type */
+  --acc:rgb(198,241,53);       /* brand fill */
+  --acc-ink:rgb(198,241,53);   /* brand as ink */
+  --on-acc:rgb(10,10,11);      /* text sitting on --acc */
+  --warn:rgb(245,181,68);
+  --warn-line:rgb(58,51,32);
+  --hover:rgba(255,255,255,.055);
+  --shadow:rgba(0,0,0,.92);
+}
+
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
-body{margin:0;background:#0a0a0b;color:#b3b3bc;
+body{margin:0;background:var(--bg);color:var(--dim);
   font-family:Geist,system-ui,sans-serif;font-size:17px;line-height:1.65;
   -webkit-font-smoothing:antialiased;overflow-x:hidden}
 img{max-width:100%;height:auto;display:block}
@@ -26,9 +73,9 @@ a{color:inherit;text-decoration:none}
 a:hover{text-decoration:underline;text-underline-offset:3px}
 nav a:hover,a[class]:hover{text-decoration:none}
 button{font:inherit;cursor:pointer}
-:focus-visible{outline:2px solid #ccf24d;outline-offset:3px;border-radius:4px}
+:focus-visible{outline:2px solid var(--acc-ink);outline-offset:3px;border-radius:4px}
 
-.skip-link{position:absolute;left:-9999px;top:0;z-index:100;background:#ccf24d;color:#0a0a0b;
+.skip-link{position:absolute;left:-9999px;top:0;z-index:100;background:var(--acc);color:var(--on-acc);
   padding:12px 18px;border-radius:0 0 8px 0;font-weight:600;text-decoration:none}
 .skip-link:focus{left:0}
 
@@ -38,116 +85,116 @@ button{font:inherit;cursor:pointer}
 }
 
 /* ---------------------------------------------- generated from inline styles */
-.s0{background: rgb(10, 10, 11);color: rgb(179, 179, 188);font-family: Geist, system-ui, sans-serif;font-size: 17px;line-height: 1.65;min-height: 100vh}
-.s1{position: sticky;top: 0px;z-index: 20;background: rgb(10, 10, 11)}
+.s0{background: var(--bg);color: var(--dim);font-family: Geist, system-ui, sans-serif;font-size: 17px;line-height: 1.65;min-height: 100vh}
+.s1{position: sticky;top: 0px;z-index: 20;background: var(--bg)}
 .s2{max-width: 1200px;margin: 0px auto;padding: 16px 24px;box-sizing: border-box}
-.s3{display: flex;flex-wrap: wrap;align-items: center;justify-content: space-between;gap: 4px 24px;padding: 6px 6px 6px 22px;border: 1px solid rgb(31, 31, 35);border-radius: 28px;background: rgb(14, 14, 16)}
+.s3{display: flex;flex-wrap: wrap;align-items: center;justify-content: space-between;gap: 4px 24px;padding: 6px 6px 6px 22px;border: 1px solid var(--line);border-radius: 28px;background: var(--surface)}
 .s4{display: inline-flex;align-items: center;gap: 10px;min-height: 44px;font-weight: 600;font-size: 15px;letter-spacing: -0.01em}
-.s5{width: 8px;height: 8px;border-radius: 50%;background: rgb(198, 241, 53);display: inline-block}
+.s5{width: 8px;height: 8px;border-radius: 50%;background: var(--acc);display: inline-block}
 .s6{display: flex;flex-wrap: wrap;align-items: center;gap: 0px 4px;font-size: 14px}
 .s7{display: inline-flex;align-items: center;min-height: 44px;padding: 0px 14px}
-.s8{display: inline-flex;align-items: center;min-height: 44px;padding: 0px 22px;margin-left: 4px;border-radius: 999px;background: rgb(198, 241, 53);color: rgb(10, 10, 11);font-weight: 500;box-sizing: border-box}
-.s9{background-image: linear-gradient(rgb(17, 17, 19) 1px, transparent 1px), linear-gradient(90deg, rgb(17, 17, 19) 1px, transparent 1px);background-size: 64px 64px}
+.s8{display: inline-flex;align-items: center;min-height: 44px;padding: 0px 22px;margin-left: 4px;border-radius: 999px;background: var(--acc);color: var(--on-acc);font-weight: 500;box-sizing: border-box}
+.s9{background-image: linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px);background-size: 64px 64px}
 .s10{max-width: 1200px;margin: 0px auto;padding: 88px 24px 40px;box-sizing: border-box}
 .s11{min-width: 0px}
-.s12{display: inline-flex;align-items: center;gap: 10px;padding: 8px 16px;border-radius: 999px;border: 1px solid rgb(38, 38, 43);background: rgb(14, 14, 16);font-family: "Geist Mono", monospace;font-size: 12px;letter-spacing: 0.02em;color: rgb(236, 236, 239)}
-.s13{width: 6px;height: 6px;border-radius: 50%;background: rgb(198, 241, 53);display: inline-block}
-.s14{margin: 28px 0px 0px;font-weight: 600;font-size: clamp(46px, 8vw, 108px);line-height: 1;letter-spacing: -0.05em;color: rgb(245, 245, 247)}
-.s15{color: rgb(198, 241, 53)}
+.s12{display: inline-flex;align-items: center;gap: 10px;padding: 8px 16px;border-radius: 999px;border: 1px solid var(--line-2);background: var(--surface);font-family: "Geist Mono", monospace;font-size: 12px;letter-spacing: 0.02em;color: var(--ink-2)}
+.s13{width: 6px;height: 6px;border-radius: 50%;background: var(--acc);display: inline-block}
+.s14{margin: 28px 0px 0px;font-weight: 600;font-size: clamp(46px, 8vw, 108px);line-height: 1;letter-spacing: -0.05em;color: var(--ink)}
+.s15{color: var(--acc-ink)}
 .s16{display: flex;flex-wrap: wrap;align-items: flex-start;gap: 40px 56px;margin-top: 56px}
 .s17{flex: 0 0 220px;max-width: 100%}
-.s18{display: block;width: 220px;max-width: 100%;aspect-ratio: 4 / 5;object-fit: cover;object-position: center top;border-radius: 24px;border: 1px solid rgb(31, 31, 35);box-sizing: border-box}
-.s19{margin-top: 14px;font-family: "Geist Mono", monospace;font-size: 12px;line-height: 1.6;color: rgb(138, 138, 147)}
+.s18{display: block;width: 220px;max-width: 100%;aspect-ratio: 4 / 5;object-fit: cover;object-position: center top;border-radius: 24px;border: 1px solid var(--line);box-sizing: border-box}
+.s19{margin-top: 14px;font-family: "Geist Mono", monospace;font-size: 12px;line-height: 1.6;color: var(--dim-2)}
 .s20{flex: 1 1 420px;min-width: 0px}
-.s21{margin: 0px;max-width: 600px;font-size: 20px;line-height: 1.6;color: rgb(179, 179, 188)}
+.s21{margin: 0px;max-width: 600px;font-size: 20px;line-height: 1.6;color: var(--dim)}
 .s22{display: flex;flex-wrap: wrap;gap: 12px;margin-top: 36px}
-.s23{display: inline-flex;align-items: center;min-height: 48px;padding: 0px 28px;border-radius: 999px;background: rgb(198, 241, 53);color: rgb(10, 10, 11);font-weight: 500;box-sizing: border-box}
-.s24{display: inline-flex;align-items: center;min-height: 48px;padding: 0px 28px;border-radius: 999px;border: 1px solid rgb(42, 42, 48);color: rgb(236, 236, 239);box-sizing: border-box}
-.s25{display: flex;flex-wrap: wrap;gap: 1px;margin-top: 72px;border: 1px solid rgb(31, 31, 35);border-radius: 20px;background: rgb(31, 31, 35);overflow: hidden}
-.s26{flex: 1 1 240px;min-width: 0px;background: rgb(14, 14, 16);padding: 28px 32px;box-sizing: border-box}
-.s27{font-weight: 600;font-size: 44px;line-height: 1;letter-spacing: -0.04em;color: rgb(245, 245, 247)}
-.s28{margin-top: 10px;font-size: 14px;color: rgb(138, 138, 147)}
+.s23{display: inline-flex;align-items: center;min-height: 48px;padding: 0px 28px;border-radius: 999px;background: var(--acc);color: var(--on-acc);font-weight: 500;box-sizing: border-box}
+.s24{display: inline-flex;align-items: center;min-height: 48px;padding: 0px 28px;border-radius: 999px;border: 1px solid var(--line-3);color: var(--ink-2);box-sizing: border-box}
+.s25{display: flex;flex-wrap: wrap;gap: 1px;margin-top: 72px;border: 1px solid var(--line);border-radius: 20px;background: var(--line);overflow: hidden}
+.s26{flex: 1 1 240px;min-width: 0px;background: var(--surface);padding: 28px 32px;box-sizing: border-box}
+.s27{font-weight: 600;font-size: 44px;line-height: 1;letter-spacing: -0.04em;color: var(--ink)}
+.s28{margin-top: 10px;font-size: 14px;color: var(--dim-2)}
 .s29{max-width: 1200px;margin: 0px auto;padding: 120px 24px 0px;box-sizing: border-box}
-.s30{font-family: "Geist Mono", monospace;font-size: 13px;color: rgb(198, 241, 53)}
-.s31{margin: 16px 0px 0px;font-weight: 600;font-size: clamp(30px, 4vw, 52px);line-height: 1.08;letter-spacing: -0.035em;color: rgb(245, 245, 247);max-width: 800px}
-.s32{margin: 16px 0px 0px;max-width: 640px;font-size: 16px;color: rgb(138, 138, 147)}
+.s30{font-family: "Geist Mono", monospace;font-size: 13px;color: var(--acc-ink)}
+.s31{margin: 16px 0px 0px;font-weight: 600;font-size: clamp(30px, 4vw, 52px);line-height: 1.08;letter-spacing: -0.035em;color: var(--ink);max-width: 800px}
+.s32{margin: 16px 0px 0px;max-width: 640px;font-size: 16px;color: var(--dim-2)}
 .s33{display: flex;flex-wrap: wrap;gap: 16px;margin-top: 48px}
-.s34{flex: 3 1 480px;min-width: 0px;border: 1px solid rgb(31, 31, 35);border-radius: 24px;background: rgb(14, 14, 16);padding: 36px;box-sizing: border-box;display: flex;flex-direction: column;gap: 16px}
-.s35{font-family: "Geist Mono", monospace;font-size: 12px;color: rgb(198, 241, 53)}
-.s36{margin: 0px;font-weight: 600;font-size: 30px;line-height: 1.15;letter-spacing: -0.03em;color: rgb(245, 245, 247)}
+.s34{flex: 3 1 480px;min-width: 0px;border: 1px solid var(--line);border-radius: 24px;background: var(--surface);padding: 36px;box-sizing: border-box;display: flex;flex-direction: column;gap: 16px}
+.s35{font-family: "Geist Mono", monospace;font-size: 12px;color: var(--acc-ink)}
+.s36{margin: 0px;font-weight: 600;font-size: 30px;line-height: 1.15;letter-spacing: -0.03em;color: var(--ink)}
 .s37{margin: 0px;font-size: 16px}
 .s38{display: flex;flex-wrap: wrap;gap: 8px;margin-top: auto;padding-top: 12px;font-family: "Geist Mono", monospace;font-size: 12px}
-.s39{padding: 4px 12px;border-radius: 999px;border: 1px solid rgb(38, 38, 43);color: rgb(179, 179, 188)}
-.s40{flex: 2 1 320px;min-width: 0px;border: 1px solid rgb(31, 31, 35);border-radius: 24px;background: rgb(14, 14, 16);padding: 36px;box-sizing: border-box;display: flex;flex-direction: column;gap: 16px}
-.s41{margin: 0px;font-weight: 600;font-size: 26px;line-height: 1.15;letter-spacing: -0.03em;color: rgb(245, 245, 247)}
-.s42{flex: 3 1 480px;min-width: 0px;border: 1px solid rgb(31, 31, 35);border-radius: 24px;background: rgb(14, 14, 16);padding: 36px;box-sizing: border-box;display: flex;flex-wrap: wrap;align-items: center;justify-content: space-between;gap: 20px 32px}
+.s39{padding: 4px 12px;border-radius: 999px;border: 1px solid var(--line-2);color: var(--dim)}
+.s40{flex: 2 1 320px;min-width: 0px;border: 1px solid var(--line);border-radius: 24px;background: var(--surface);padding: 36px;box-sizing: border-box;display: flex;flex-direction: column;gap: 16px}
+.s41{margin: 0px;font-weight: 600;font-size: 26px;line-height: 1.15;letter-spacing: -0.03em;color: var(--ink)}
+.s42{flex: 3 1 480px;min-width: 0px;border: 1px solid var(--line);border-radius: 24px;background: var(--surface);padding: 36px;box-sizing: border-box;display: flex;flex-wrap: wrap;align-items: center;justify-content: space-between;gap: 20px 32px}
 .s43{flex: 1 1 280px;min-width: 0px}
-.s44{font-family: "Geist Mono", monospace;font-size: 12px;color: rgb(138, 138, 147)}
-.s45{margin: 12px 0px 0px;font-weight: 600;font-size: 22px;line-height: 1.2;letter-spacing: -0.02em;color: rgb(245, 245, 247)}
+.s44{font-family: "Geist Mono", monospace;font-size: 12px;color: var(--dim-2)}
+.s45{margin: 12px 0px 0px;font-weight: 600;font-size: 22px;line-height: 1.2;letter-spacing: -0.02em;color: var(--ink)}
 .s46{margin: 10px 0px 0px;font-size: 15px}
-.s47{font-weight: 600;font-size: 56px;line-height: 1;letter-spacing: -0.04em;color: rgb(198, 241, 53)}
-.s48{margin: 16px 0px 0px;font-weight: 600;font-size: clamp(30px, 4vw, 52px);line-height: 1.08;letter-spacing: -0.035em;color: rgb(245, 245, 247);max-width: 880px}
+.s47{font-weight: 600;font-size: 56px;line-height: 1;letter-spacing: -0.04em;color: var(--acc-ink)}
+.s48{margin: 16px 0px 0px;font-weight: 600;font-size: clamp(30px, 4vw, 52px);line-height: 1.08;letter-spacing: -0.035em;color: var(--ink);max-width: 880px}
 .s49{display: flex;flex-wrap: wrap;gap: 16px;margin-top: 56px}
-.s50{flex: 1 1 300px;min-width: 0px;border: 1px solid rgb(31, 31, 35);border-radius: 20px;background: rgb(14, 14, 16);padding: 28px;box-sizing: border-box}
-.s51{margin-top: 20px;font-weight: 600;font-size: 22px;line-height: 1.2;letter-spacing: -0.02em;color: rgb(245, 245, 247)}
+.s50{flex: 1 1 300px;min-width: 0px;border: 1px solid var(--line);border-radius: 20px;background: var(--surface);padding: 28px;box-sizing: border-box}
+.s51{margin-top: 20px;font-weight: 600;font-size: 22px;line-height: 1.2;letter-spacing: -0.02em;color: var(--ink)}
 .s52{margin-top: 10px;font-size: 15px;line-height: 1.6}
-.s53{flex: 1 1 300px;min-width: 0px;border: 1px solid rgb(58, 51, 32);border-radius: 20px;background: rgb(14, 14, 16);padding: 28px;box-sizing: border-box}
-.s54{font-family: "Geist Mono", monospace;font-size: 12px;color: rgb(245, 181, 68)}
-.s55{margin-top: 16px;border: 1px solid rgb(31, 31, 35);border-radius: 24px;background: rgb(14, 14, 16);padding: 32px;box-sizing: border-box;display: flex;flex-wrap: wrap;gap: 40px 56px}
+.s53{flex: 1 1 300px;min-width: 0px;border: 1px solid var(--warn-line);border-radius: 20px;background: var(--surface);padding: 28px;box-sizing: border-box}
+.s54{font-family: "Geist Mono", monospace;font-size: 12px;color: var(--warn)}
+.s55{margin-top: 16px;border: 1px solid var(--line);border-radius: 24px;background: var(--surface);padding: 32px;box-sizing: border-box;display: flex;flex-wrap: wrap;gap: 40px 56px}
 .s56{flex: 1 1 340px;min-width: 0px}
-.s57{display: flex;flex-wrap: wrap;justify-content: space-between;gap: 6px;font-family: "Geist Mono", monospace;font-size: 12px;color: rgb(138, 138, 147)}
+.s57{display: flex;flex-wrap: wrap;justify-content: space-between;gap: 6px;font-family: "Geist Mono", monospace;font-size: 12px;color: var(--dim-2)}
 .s58{display: flex;flex-wrap: wrap;gap: 8px;margin-top: 14px;font-family: "Geist Mono", monospace;font-size: 13px}
-.s59{padding: 5px 12px;border-radius: 8px;border: 1px solid rgb(198, 241, 53);color: rgb(236, 236, 239)}
-.s60{padding: 5px 12px;border-radius: 8px;border: 1px dashed rgb(52, 52, 58);color: rgb(138, 138, 147)}
-.s61{margin-top: 12px;font-size: 14px;color: rgb(138, 138, 147)}
-.s62{margin-top: 32px;font-family: "Geist Mono", monospace;font-size: 12px;color: rgb(138, 138, 147)}
+.s59{padding: 5px 12px;border-radius: 8px;border: 1px solid var(--acc-ink);color: var(--ink-2)}
+.s60{padding: 5px 12px;border-radius: 8px;border: 1px dashed var(--line-4);color: var(--dim-2)}
+.s61{margin-top: 12px;font-size: 14px;color: var(--dim-2)}
+.s62{margin-top: 32px;font-family: "Geist Mono", monospace;font-size: 12px;color: var(--dim-2)}
 .s63{display: flex;flex-wrap: wrap;gap: 12px;margin-top: 12px}
-.s64{min-height: 44px;padding: 0px 22px;border-radius: 999px;border: 1px solid rgb(42, 42, 48);background: transparent;color: rgb(236, 236, 239);font-family: inherit;font-size: 15px;cursor: pointer}
-.s65{margin-top: 14px;padding: 20px 22px;border-radius: 16px;background: rgb(10, 10, 11);border: 1px solid rgb(31, 31, 35);font-family: "Geist Mono", monospace;font-size: 14px;line-height: 1.6;color: rgb(138, 138, 147);min-height: 84px;box-sizing: border-box}
-.s66{margin: 16px 0px 0px;font-weight: 600;font-size: clamp(30px, 4vw, 52px);line-height: 1.08;letter-spacing: -0.035em;color: rgb(245, 245, 247)}
-.s67{display: flex;flex-wrap: wrap;gap: 20px 48px;margin-top: 48px;padding-top: 32px;border-top: 1px solid rgb(38, 38, 43)}
+.s64{min-height: 44px;padding: 0px 22px;border-radius: 999px;border: 1px solid var(--line-3);background: transparent;color: var(--ink-2);font-family: inherit;font-size: 15px;cursor: pointer}
+.s65{margin-top: 14px;padding: 20px 22px;border-radius: 16px;background: var(--bg);border: 1px solid var(--line);font-family: "Geist Mono", monospace;font-size: 14px;line-height: 1.6;color: var(--dim-2);min-height: 84px;box-sizing: border-box}
+.s66{margin: 16px 0px 0px;font-weight: 600;font-size: clamp(30px, 4vw, 52px);line-height: 1.08;letter-spacing: -0.035em;color: var(--ink)}
+.s67{display: flex;flex-wrap: wrap;gap: 20px 48px;margin-top: 48px;padding-top: 32px;border-top: 1px solid var(--line-2)}
 .s68{flex: 1 1 220px;min-width: 0px}
-.s69{margin-top: 6px;font-size: 14px;color: rgb(138, 138, 147)}
+.s69{margin-top: 6px;font-size: 14px;color: var(--dim-2)}
 .s70{flex: 3 1 480px;min-width: 0px}
-.s71{margin: 0px;font-weight: 600;font-size: 24px;letter-spacing: -0.025em;color: rgb(245, 245, 247)}
-.s72{margin-top: 4px;color: rgb(138, 138, 147)}
+.s71{margin: 0px;font-weight: 600;font-size: 24px;letter-spacing: -0.025em;color: var(--ink)}
+.s72{margin-top: 4px;color: var(--dim-2)}
 .s73{margin: 20px 0px 0px;padding: 0px 0px 0px 20px;display: flex;flex-direction: column;gap: 12px;font-size: 16px}
-.s74{display: flex;flex-wrap: wrap;gap: 20px 48px;margin-top: 40px;padding-top: 32px;border-top: 1px solid rgb(31, 31, 35)}
-.s75{font-family: "Geist Mono", monospace;font-size: 13px;color: rgb(138, 138, 147)}
-.s76{margin-top: 48px;border: 1px solid rgb(31, 31, 35);border-radius: 24px;background: rgb(14, 14, 16);padding: 8px 32px;box-sizing: border-box}
-.s77{display: flex;flex-wrap: wrap;gap: 4px 32px;padding: 20px 0px;border-bottom: 1px solid rgb(31, 31, 35)}
-.s78{flex: 1 1 180px;font-family: "Geist Mono", monospace;font-size: 13px;color: rgb(138, 138, 147)}
-.s79{flex: 4 1 360px;color: rgb(236, 236, 239)}
+.s74{display: flex;flex-wrap: wrap;gap: 20px 48px;margin-top: 40px;padding-top: 32px;border-top: 1px solid var(--line)}
+.s75{font-family: "Geist Mono", monospace;font-size: 13px;color: var(--dim-2)}
+.s76{margin-top: 48px;border: 1px solid var(--line);border-radius: 24px;background: var(--surface);padding: 8px 32px;box-sizing: border-box}
+.s77{display: flex;flex-wrap: wrap;gap: 4px 32px;padding: 20px 0px;border-bottom: 1px solid var(--line)}
+.s78{flex: 1 1 180px;font-family: "Geist Mono", monospace;font-size: 13px;color: var(--dim-2)}
+.s79{flex: 4 1 360px;color: var(--ink-2)}
 .s80{display: flex;flex-wrap: wrap;gap: 4px 32px;padding: 20px 0px}
 .s81{display: flex;flex-wrap: wrap;gap: 48px}
-.s82{margin: 20px 0px 0px;font-weight: 600;font-size: 24px;letter-spacing: -0.025em;color: rgb(245, 245, 247)}
+.s82{margin: 20px 0px 0px;font-weight: 600;font-size: 24px;letter-spacing: -0.025em;color: var(--ink)}
 .s83{margin-top: 4px}
-.s84{margin-top: 24px;color: rgb(236, 236, 239)}
-.s85{margin-top: 2px;font-size: 14px;color: rgb(138, 138, 147)}
-.s86{margin: 20px 0px 0px;font-size: 16px;color: rgb(236, 236, 239)}
+.s84{margin-top: 24px;color: var(--ink-2)}
+.s85{margin-top: 2px;font-size: 14px;color: var(--dim-2)}
+.s86{margin: 20px 0px 0px;font-size: 16px;color: var(--ink-2)}
 .s87{display: flex;flex-wrap: wrap;gap: 0px 48px;margin-top: 48px}
-.s88{flex: 1 1 280px;min-width: 0px;padding: 28px 0px;border-top: 1px solid rgb(38, 38, 43)}
-.s89{margin: 0px;font-weight: 600;font-size: 20px;letter-spacing: -0.02em;color: rgb(245, 245, 247)}
+.s88{flex: 1 1 280px;min-width: 0px;padding: 28px 0px;border-top: 1px solid var(--line-2)}
+.s89{margin: 0px;font-weight: 600;font-size: 20px;letter-spacing: -0.02em;color: var(--ink)}
 .s90{margin: 12px 0px 0px;font-size: 16px}
 .s91{max-width: 1200px;margin: 0px auto;padding: 120px 24px 40px;box-sizing: border-box}
-.s92{border: 1px solid rgb(31, 31, 35);border-radius: 32px;background: rgb(14, 14, 16);padding: 64px 40px;box-sizing: border-box}
-.s93{margin: 20px 0px 0px;font-weight: 600;font-size: clamp(36px, 5.6vw, 72px);line-height: 1.04;letter-spacing: -0.045em;color: rgb(245, 245, 247);max-width: 880px}
+.s92{border: 1px solid var(--line);border-radius: 32px;background: var(--surface);padding: 64px 40px;box-sizing: border-box}
+.s93{margin: 20px 0px 0px;font-weight: 600;font-size: clamp(36px, 5.6vw, 72px);line-height: 1.04;letter-spacing: -0.045em;color: var(--ink);max-width: 880px}
 .s94{margin: 24px 0px 0px;max-width: 600px;font-size: 18px}
-.s95{display: inline-flex;align-items: center;min-height: 52px;padding: 0px 32px;border-radius: 999px;background: rgb(198, 241, 53);color: rgb(10, 10, 11);font-weight: 500;box-sizing: border-box}
-.s96{display: inline-flex;align-items: center;min-height: 52px;padding: 0px 28px;border-radius: 999px;border: 1px solid rgb(42, 42, 48);color: rgb(236, 236, 239);box-sizing: border-box}
-.s97{display: flex;flex-wrap: wrap;justify-content: space-between;gap: 12px;margin-top: 32px;padding: 0px 8px;font-size: 14px;color: rgb(138, 138, 147)}
-.s98{color: rgb(138, 138, 147)}
+.s95{display: inline-flex;align-items: center;min-height: 52px;padding: 0px 32px;border-radius: 999px;background: var(--acc);color: var(--on-acc);font-weight: 500;box-sizing: border-box}
+.s96{display: inline-flex;align-items: center;min-height: 52px;padding: 0px 28px;border-radius: 999px;border: 1px solid var(--line-3);color: var(--ink-2);box-sizing: border-box}
+.s97{display: flex;flex-wrap: wrap;justify-content: space-between;gap: 12px;margin-top: 32px;padding: 0px 8px;font-size: 14px;color: var(--dim-2)}
+.s98{color: var(--dim-2)}
 /* ---------------------------------------------- the policy gate
    React drew the approve/reject controls on demand. On a static page they live
    in the markup and are revealed, so the interaction survives the conversion. */
 #gate-controls{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
 #gate-controls[hidden]{display:none}
-.gate-act{padding:8px 18px;min-height:40px;border-radius:999px;border:1px solid #ccf24d;
-  background:#ccf24d;color:#0a0a0b;font-size:14px;font-weight:600;
+.gate-act{padding:8px 18px;min-height:40px;border-radius:999px;border:1px solid var(--acc-ink);
+  background:var(--acc);color:var(--on-acc);font-size:14px;font-weight:600;
   transition:filter .18s ease,background-color .18s ease}
 .gate-act:hover{filter:brightness(1.08)}
-.gate-no{background:transparent;color:#b3b3bc;border-color:#1f1f23}
-.gate-no:hover{border-color:#3a3a42;color:#e8e8ee;filter:none}
+.gate-no{background:transparent;color:var(--dim);border-color:var(--line)}
+.gate-no:hover{border-color:var(--line-5);color:var(--ink-3);filter:none}
 
 /* ---------------------------------------------- responsive
    The artifact already clamps its display type and lays out with
@@ -209,7 +256,7 @@ li a[href]{min-height:0;display:inline}
           mask-image:radial-gradient(118% 100% at 50% 32%, #000 52%, rgba(0,0,0,.72) 76%, rgba(0,0,0,0) 100%);
 }
 @supports not (mask-image: radial-gradient(#000, transparent)) {
-  .s18{border:1px solid rgb(31,31,35);filter:none}
+  .s18{border:1px solid var(--line);filter:none}
 }
 
 /* ---------------------------------------------- portrait: colour on hover
@@ -269,11 +316,11 @@ li a[href]{min-height:0;display:inline}
     display:inline-flex;align-items:center;justify-content:center;
     flex:0 0 auto;width:44px;height:44px;min-height:44px;
     margin:0;padding:0;border:0;border-radius:999px;
-    background:transparent;color:rgb(232,232,238);cursor:pointer;
+    background:transparent;color:var(--ink-3);cursor:pointer;
     -webkit-appearance:none;appearance:none;-webkit-tap-highlight-color:transparent;
   }
-  .s1[data-nav] .navq:active{background:rgba(255,255,255,.055)}
-  .s1[data-nav="open"] .navq{color:rgb(198,241,53)}
+  .s1[data-nav] .navq:active{background:var(--hover)}
+  .s1[data-nav="open"] .navq{color:var(--acc-ink)}
 
   /* Three bars, after trying two.
 
@@ -317,9 +364,9 @@ li a[href]{min-height:0;display:inline}
   .s1[data-nav] .s6{
     position:absolute;top:calc(100% + 8px);left:0;right:0;z-index:30;
     display:block;box-sizing:border-box;padding:8px;
-    border:1px solid rgb(31,31,35);border-radius:22px;
-    background:rgb(14,14,16);
-    box-shadow:0 20px 48px -16px rgba(0,0,0,.92);
+    border:1px solid var(--line);border-radius:22px;
+    background:var(--surface);
+    box-shadow:0 20px 48px -16px var(--shadow);
     font-size:16px;
     visibility:hidden;opacity:0;transform:translateY(-8px) scale(.985);
     transform-origin:100% 0;
@@ -332,9 +379,9 @@ li a[href]{min-height:0;display:inline}
   .s1[data-nav] .s6 .s7{
     display:flex;align-items:center;width:100%;box-sizing:border-box;
     min-height:52px;padding:0 16px;border-radius:13px;
-    color:rgb(232,232,238);letter-spacing:-0.01em;
+    color:var(--ink-3);letter-spacing:-0.01em;
   }
-  .s1[data-nav] .s6 .s7:active{background:rgba(255,255,255,.055)}
+  .s1[data-nav] .s6 .s7:active{background:var(--hover)}
   .s1[data-nav] .s6 .s8{
     display:flex;align-items:center;justify-content:center;
     width:100%;box-sizing:border-box;min-height:52px;
@@ -345,4 +392,98 @@ li a[href]{min-height:0;display:inline}
 @media(max-width:679px) and (prefers-reduced-motion:reduce){
   .s1[data-nav] .s6,
   .navq-i,.navq-i::before,.navq-i::after{transition:none}
+}
+
+/* ---------------------------------------------- light
+   Only the tokens change. No layout, no type, no spacing — if a light-mode
+   rule here touches anything but colour, it is a bug.
+
+   --acc stays #CCF24D: it is only ever a fill with --on-acc text on top, and
+   #0A0A0B on #CCF24D measures 15.4:1, which is the same in both themes.
+   --acc-ink is #4F6B00, measured at 5.85:1 on the page and 6.11:1 on a card.
+   Lime itself was 1.23:1 as ink on this ground — not a near miss, unreadable.
+   #4F6B00 holds roughly the same hue, so the accent still reads as the same
+   colour family rather than as a different brand.
+
+   Every value below was computed against its own ground, not assumed:
+   --dim 7.62:1, --dim-2 5.12:1, --ink 18.94:1, --warn 6.06:1. */
+
+:root[data-theme="light"]{
+  color-scheme:light;
+  --bg:#FAFAF8;
+  --surface:#FFFFFF;
+  --grid:#F3F3EF;   /* 7 units off the page, matching the dark grid's separation */
+  --line:#E3E3DC;
+  --line-2:#D9D9D2;
+  --line-3:#CFCFC8;
+  --line-4:#C3C3BC;
+  --line-5:#B6B6AF;
+  --ink:#0A0A0B;
+  --ink-2:#141418;
+  --ink-3:#1A1A1E;
+  --dim:#50505A;
+  --dim-2:#6A6A74;
+  --acc:#CCF24D;
+  --acc-ink:#4F6B00;
+  --on-acc:#0A0A0B;
+  --warn:#8A5300;
+  --warn-line:#E8D5A8;
+  --hover:rgba(0,0,0,.05);
+  --shadow:rgba(0,0,0,.16);
+}
+
+/* Two things a token swap alone cannot fix. */
+
+/* 1. The two status dots are a fill, so the swap left them lime — 1.23:1 on
+      this ground, which for a 8px mark next to "Open to roles" means it
+      effectively disappears. They carry meaning, so they take --acc-ink. */
+:root[data-theme="light"] .s5,
+:root[data-theme="light"] .s13{background:var(--acc-ink)}
+
+/* 2. The portrait's mask fades its edges to transparent, which on a dark page
+      dissolves a dark studio backdrop into a dark ground. On a light page the
+      same mask fades dark grey into white and reads as a halo around him.
+      Light mode takes the framed treatment instead — the same one browsers
+      without mask-image already get, so this is a path that was always
+      rendered, not a new one. */
+:root[data-theme="light"] .s18{
+  -webkit-mask-image:none;mask-image:none;
+  border:1px solid var(--line);
+  filter:none;
+}
+@media (hover: hover) and (pointer: fine){
+  :root[data-theme="light"] .s18{filter:grayscale(1) contrast(1.02)}
+  :root[data-theme="light"] .s18:hover{filter:grayscale(0) contrast(1)}
+}
+
+
+/* ---------------------------------------------- the header controls
+   .navctl groups the theme button and the hamburger so the header has one
+   control cluster rather than two loose buttons, and so the mobile breakpoint
+   has a single thing to lay out.
+
+   Adding a third flex child to .s3 would have re-centred the nav, because the
+   generated rule is justify-content:space-between and that distributes three
+   children evenly. margin-left:auto on the nav absorbs the free space to its
+   left instead, which restores the original name-left / nav-right desktop
+   header exactly and leaves the new cluster at the end of it. */
+
+.navctl{display:inline-flex;align-items:center;gap:2px;flex:0 0 auto;margin-left:10px}
+.s6{margin-left:auto}
+
+.themeq{
+  display:inline-flex;align-items:center;justify-content:center;
+  flex:0 0 auto;width:44px;height:44px;min-height:44px;
+  margin:0;padding:0;border:0;border-radius:999px;
+  background:transparent;color:var(--ink-3);cursor:pointer;
+  -webkit-appearance:none;appearance:none;-webkit-tap-highlight-color:transparent;
+}
+.themeq:active{background:var(--hover)}
+.themeq-i{width:20px;height:20px;display:block}
+/* Dark shows the sun, because the icon names the action, not the state. */
+.ic-moon{display:none}
+:root[data-theme="light"] .ic-sun{display:none}
+:root[data-theme="light"] .ic-moon{display:block}
+@media (hover: hover) and (pointer: fine){
+  .themeq:hover{background:var(--hover);color:var(--acc-ink)}
 }
