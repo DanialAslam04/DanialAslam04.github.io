@@ -1,8 +1,18 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Muhammad Danial Aslam">
-  <rect width="64" height="64" rx="14" fill="#05060A"/>
-  <g fill="#4DA3FF">
-    <rect x="14" y="17" width="36" height="6" rx="3"/>
-    <rect x="19" y="29" width="26" height="6" rx="3"/>
-    <rect x="25" y="41" width="14" height="6" rx="3"/>
+  <!-- Lime tile with the letters knocked out in the page background colour.
+       A solid fill survives a 16px tab far better than light strokes on a dark
+       square, and the lime is the accent the site actually uses (#CCF24D).
+       The letterforms are paths, not <text>: an SVG favicon has no guaranteed
+       font, so text would be rendered in whatever the browser happens to have.
+       The A's diagonals are cut wider than the D's stem on purpose — measured
+       perpendicular, a slanted stroke of equal horizontal width reads lighter. -->
+  <rect width="64" height="64" rx="14" fill="#CCF24D"/>
+  <g fill="#0A0A0B" fill-rule="evenodd">
+    <!-- D: 7-wide stem, semicircular bowl -->
+    <path d="M8.5 15 L12.5 15 A17 17 0 0 1 12.5 49 L8.5 49 Z
+             M15.5 22 A7 10 0 0 1 15.5 42 L15.5 22 Z"/>
+    <!-- A: 7.5-wide legs, crossbar at y 35.5-40.5 -->
+    <path d="M33.5 49 L41.4 15 L47.4 15 L55.5 49 L47.9 49 L46.2 40.5 L43.0 40.5 L41.3 49 Z
+             M44.5 25.5 L46.4 35.5 L42.8 35.5 Z"/>
   </g>
 </svg>
