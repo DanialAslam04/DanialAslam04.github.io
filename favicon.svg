@@ -1,38 +1,66 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Muhammad Danial Aslam">
-  <!-- Dark tile, lime letters — the site's own orientation. The page is a black
-       ground with lime ink, not lime with black ink, and the first version of
-       this icon had that backwards: a lime tile is ~70% ink coverage and reads
-       as a bright blob in a tab strip. This is 28.9%, measured.
+  <!-- Styled after the icon at hamzadaniyal7.github.io — lifted tile, hairline
+       accent ring, gradient monogram — in this site's palette.
 
-       On dark browser chrome the #0A0A0B tile all but disappears and the mark
-       reads as bare lime letters. That is fine, and intended: the letters are
-       the mark. A hairline edge to hold the tile shape was tried and turned
-       into a muddy ring at 16px that ate into the letters. A tile-less version
-       was tried too and fails on LIGHT chrome, where lime on near-white has
-       almost no contrast.
+       THE LETTERS ARE REAL GEIST, converted to outlines.
 
-       The letterforms are paths, not <text>: an SVG favicon has no guaranteed
-       font, so text renders in whatever the browser happens to have.
+       They are the actual D and A from assets/geist-latin.woff2, the same file
+       the page loads, instanced at wght 700. Note that the site itself sets
+       600 — the header name, the h1, and 17 of the 22 font-weight declarations
+       in styles.css. 700 is a deliberate half-step heavier: a favicon spends
+       its life at 16 and 20px, where a stroke that reads comfortably at 15px
+       of running text loses too much to antialiasing. Both were rendered at
+       every size before choosing. If the icon and the wordmark should match
+       exactly, 600 is the change, and the only edit is these two paths.
 
-       Two things that are measured, not eyeballed:
-       - The A's diagonals are cut wider than the D's stem. Measured
-         perpendicular, a slanted stroke of equal horizontal width reads
-         lighter than an upright one. Light-on-dark needs the same
-         compensation again, so these strokes are heavier than the first
-         (dark-on-light) draft of the same letters.
-       - The 1.12 scale is the largest that still clears the tile's 14px corner
-         radius; verified by rendering on magenta at 256px and counting lime
-         pixels falling outside the rounded rect (zero). The 32.63 y-origin
-         centres the letters: at 1.12 about a true centre they sat 5px of 256
-         high, because the A's apex is pointed and the D's bowl is not. -->
-  <rect width="64" height="64" rx="14" fill="#0A0A0B"/>
-  <g fill="#CCF24D" fill-rule="evenodd"
-     transform="translate(32,32.63) scale(1.12) translate(-32,-32)">
+       An earlier version of this file used hand-drawn geometric shapes, a
+       half-round D and a slab A. They read as shapes rather than as letters:
+       no real bowl, no crossbar, no modulation.
+
+       Outlines, not <text>, and this is not a stylistic choice. An SVG favicon
+       loads no font and @font-face does not apply inside it, so <text> renders
+       in whatever face the browser happens to have — which differs across
+       platforms and can differ between a tab and a bookmark on one machine.
+       The reference icon has this bug; its "HD" is <text> with a font stack.
+       Regenerating these paths needs fontTools and brotli (for woff2), the
+       font instanced with varLib.instancer, outlines taken with SVGPathPen.
+
+       Tracking -30/1000 em, because two caps set at their natural advances sit
+       too loose to read as one mark. Centred on the INKED bounds, not the
+       advance widths — advances carry sidebearings, which are not symmetric
+       between D and A, so centring on them lands the mark visibly off-axis.
+
+       The tile is #1F1F23, this site's border token rather than its page
+       black. The page black made the tile vanish into dark browser chrome,
+       which was deliberate in an earlier version and is exactly what the
+       reference does differently: a lifted tile plus a ring makes the mark a
+       mark on every chrome, light or dark.
+
+       The ring is the accent at 40%. At full strength a hairline turned to mud
+       at 16px when tried earlier; at 40% over a lifted tile it holds, because
+       it now separates two close tones instead of fighting the tile.
+
+       The gradient is invisible at 16px — across 15px of letterform there is
+       nothing to see. It pays off at 32px and up: bookmarks, PWA icons, the
+       macOS tab overview. It costs nothing to carry, so it stays.
+
+       Verified rather than assumed: zero lime pixels outside the rounded rect
+       at 256px over a magenta ground, and the probe was first proven able to
+       see a bleed by re-running it at scale 1.8, which escaped by 30 pixels.
+       Ink coverage 13.5%, against 29.5% for the version this replaces. -->
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#AFD62E"/>
+      <stop offset="1" stop-color="#D9F673"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="14" fill="#1F1F23"/>
+  <rect x="0.5" y="0.5" width="63" height="63" rx="13.5" fill="none"
+        stroke="#CCF24D" stroke-opacity="0.4"/>
+  <g fill="url(#g)" fill-rule="evenodd">
     <!-- D -->
-    <path d="M8 14 L12 14 A17.5 17.5 0 0 1 12 49 L8 49 Z
-             M15.8 21.5 A5.9 10 0 0 1 15.8 41.5 L15.8 21.5 Z"/>
+    <path d="M10 43.81V20.19H18.13Q23.89 20.19 26.98 23.27Q30.07 26.35 30.07 32.03Q30.07 37.69 27.03 40.75Q23.99 43.81 18.33 43.81ZM15.06 39.56H18.13Q21.57 39.56 23.22 37.7Q24.87 35.84 24.87 32.01Q24.87 28.16 23.22 26.3Q21.57 24.44 18.13 24.44H15.06Z"/>
     <!-- A -->
-    <path d="M34.5 49 L41.9 14 L48.6 14 L56 49 L48.3 49 L46.6 40 L43.9 40 L42.2 49 Z
-             M45.25 24 L47.2 35 L43.3 35 Z"/>
+    <path d="M30.98 43.81 39.49 20.19H45.49L54 43.81H48.76L47.02 38.78H37.94L36.2 43.81ZM39.37 34.63H45.61L42.5 25.5Z"/>
   </g>
 </svg>
