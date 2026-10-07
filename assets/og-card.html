@@ -39,8 +39,8 @@
   after any change that alters what KIND of content is on the card, not merely
   its type sizes.
 
-  This card lands at 104.1 KB (106,583 bytes). Desaturating the portrait is
-  worth 22.4 KB of that, measured by rendering the identical card with the
+  This card lands at 104.0 KB (106,459 bytes). Desaturating the portrait is
+  worth ~22 KB of that, measured by rendering the identical card with the
   grayscale filter removed: 129,565 bytes in colour against 106,583 here. The
   colour version only fits the budget at all by about 2 KB, so the desaturation
   is buying headroom as well as matching the site.
@@ -146,7 +146,9 @@
 
   /* eyebrow: the DA mark plus the domain, in mono like every label on the
      site. The mark is the favicon's artwork, same paths, so the tab icon and
-     the share card are visibly one thing. */
+     the share card are visibly one thing. The tile is dropped here: the card's
+     ground is already the tile's colour, so it would be invisible, and the
+     letters alone carry the mark. */
   .eyebrow { display: flex; align-items: center; gap: 9px; }
   .eyebrow svg { display: block; flex: none; }
   .eyebrow span {
@@ -213,13 +215,13 @@
   <div class="col">
     <div class="eyebrow">
       <!-- the favicon's artwork, same paths, scaled to 19px -->
-      <svg viewBox="0 0 64 64" width="19" height="19" aria-hidden="true">
-        <rect width="64" height="64" rx="14" fill="#CCF24D"/>
-        <g fill="#0A0A0B" fill-rule="evenodd">
-          <path d="M8.5 15 L12.5 15 A17 17 0 0 1 12.5 49 L8.5 49 Z
-                   M15.5 22 A7 10 0 0 1 15.5 42 L15.5 22 Z"/>
-          <path d="M33.5 49 L41.4 15 L47.4 15 L55.5 49 L47.9 49 L46.2 40.5 L43.0 40.5 L41.3 49 Z
-                   M44.5 25.5 L46.4 35.5 L42.8 35.5 Z"/>
+      <svg viewBox="0 0 64 64" width="20" height="20" aria-hidden="true">
+        <g fill="#CCF24D" fill-rule="evenodd"
+           transform="translate(32,32.63) scale(1.12) translate(-32,-32)">
+          <path d="M8 14 L12 14 A17.5 17.5 0 0 1 12 49 L8 49 Z
+                   M15.8 21.5 A5.9 10 0 0 1 15.8 41.5 L15.8 21.5 Z"/>
+          <path d="M34.5 49 L41.9 14 L48.6 14 L56 49 L48.3 49 L46.6 40 L43.9 40 L42.2 49 Z
+                   M45.25 24 L47.2 35 L43.3 35 Z"/>
         </g>
       </svg>
       <span>danialaslam04.github.io</span>
