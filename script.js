@@ -69,3 +69,62 @@
     target.focus({ preventScroll: true });
   });
 })();
+
+/* Portfolio C — the mobile header menu.
+ *
+ * Deliberately a second IIFE: the gate block above returns early when its
+ * nodes are absent, and the menu must not be collateral damage of that.
+ *
+ * The CSS collapse is gated on .s1[data-nav], set here and nowhere else, so
+ * no-JS keeps the old wrapped header with every link reachable rather than a
+ * header with a dead button.
+ */
+(function () {
+  'use strict';
+
+  var bar  = document.querySelector('.s1');
+  var btn  = document.getElementById('nav-toggle');
+  var menu = document.getElementById('nav-menu');
+  if (!bar || !btn || !menu) return;
+
+  function near(e, sel) {
+    return e.target && e.target.closest ? e.target.closest(sel) : null;
+  }
+  function isOpen() { return btn.getAttribute('aria-expanded') === 'true'; }
+  function set(open) {
+    bar.setAttribute('data-nav', open ? 'open' : 'closed');
+    btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    // the label names the action, not the state, or a screen reader reads the
+    // button as "open menu" at the exact moment the menu is open
+    btn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+  }
+
+  set(false);
+
+  btn.addEventListener('click', function (e) {
+    e.stopPropagation();          // keep the document handler from re-closing it
+    set(!isOpen());
+  });
+
+  // a tap on a link dismisses the panel; the smooth scroll in the block above
+  // still runs, and reads the sticky height correctly because the panel is
+  // absolute and never changed that height
+  menu.addEventListener('click', function (e) { if (near(e, 'a[href]')) set(false); });
+
+  document.addEventListener('click', function (e) {
+    if (isOpen() && !near(e, '.s3')) set(false);
+  });
+
+  document.addEventListener('keydown', function (e) {
+    if ((e.key === 'Escape' || e.key === 'Esc') && isOpen()) { set(false); btn.focus(); }
+  });
+
+  /* Rotating to landscape or widening past the breakpoint must not leave the
+     panel latched open behind a header that no longer has a button to close
+     it. addListener is the deprecated spelling, kept because Safari only
+     learned addEventListener on MediaQueryList in 14. */
+  var wide = window.matchMedia('(min-width:680px)');
+  function onWide() { if (wide.matches && isOpen()) set(false); }
+  if (wide.addEventListener) { wide.addEventListener('change', onWide); }
+  else if (wide.addListener) { wide.addListener(onWide); }
+})();
