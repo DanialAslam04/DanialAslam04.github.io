@@ -39,22 +39,25 @@
   after any change that alters what KIND of content is on the card, not merely
   its type sizes.
 
-  This card lands at 104.0 KB (106,459 bytes). Desaturating the portrait is
-  worth ~22 KB of that, measured by rendering the identical card with the
-  grayscale filter removed: 129,565 bytes in colour against 106,583 here. The
-  colour version only fits the budget at all by about 2 KB, so the desaturation
-  is buying headroom as well as matching the site.
+  This card lands at 103.0 KB (105,452 bytes). Desaturating the portrait is
+  worth ~22 KB of that, measured on 2026-10-07 by rendering the identical card
+  with the grayscale filter removed: 129,565 bytes in colour against 106,583
+  for the same card desaturated. The colour version only fits the budget at all
+  by about 2 KB, so the desaturation is buying headroom as well as matching the
+  site.
 
   The encode: colorType 2, deflateLevel 9, deflateStrategy 0. The screenshot
   comes back RGBA and the card is fully opaque, so dropping the alpha channel
   is lossless — verified per-pixel at encode time rather than assumed.
 
   Strategy is measured, and the right answer MOVED when the card changed. On
-  the previous card (colour face, navy ground) strategy 1 won by 1,009 bytes;
-  on this one strategy 0 wins by 836. Strategy 3 costs 27 KB and strategy 2 is
-  catastrophic (382.9 KB). The difference between 0 and 1 is under 1% either
+  an older card (colour face, navy ground) strategy 1 won by 1,009 bytes; on
+  this one strategy 0 wins by 834. Strategy 3 costs 27 KB and strategy 2 is
+  catastrophic (382.0 KB). The difference between 0 and 1 is under 1% either
   way, so the point is not the saving — it is that a strategy copied forward
-  from a previous card is an assumption, not a measurement. Re-run all four.
+  from a previous card is an assumption, not a measurement. Re-run all four:
+  this was re-run on 2026-10-08 for the Spring Boot -> FastAPI change and 0
+  held, which is a result, not a reason to stop checking.
 
   Colours are the site's tokens from styles.css — black ground, one lime
   accent. If those change, change them here too: nothing links the two
@@ -236,7 +239,7 @@
   </div>
 
   <div class="foot">
-    <b>Google ADK</b> · <b>MCP</b> · <b>Vertex AI</b> · <b>Spring Boot</b>
+    <b>Google ADK</b> · <b>MCP</b> · <b>Vertex AI</b> · <b>FastAPI</b>
   </div>
 </body>
 </html>

@@ -128,3 +128,48 @@
   if (wide.addEventListener) { wide.addEventListener('change', onWide); }
   else if (wide.addListener) { wide.addListener(onWide); }
 })();
+
+/* Portfolio C — the theme switch.
+ *
+ * The attribute is set by a tiny inline script in <head>, not here: this file
+ * is deferred, so applying the theme at this point would paint the dark page
+ * and then repaint it light on every single load for anyone who chose light.
+ * All this block does is own the switching from then on.
+ *
+ * prefers-color-scheme is not consulted. Dark is what the site is; the stored
+ * choice is the only thing that overrides it. To follow the system instead,
+ * the inline script in <head> is the one line to change.
+ */
+(function () {
+  'use strict';
+
+  var root = document.documentElement;
+  var btn  = document.getElementById('theme-toggle');
+  if (!btn) return;
+
+  var meta = document.querySelector('meta[name="theme-color"]');
+  // read the real computed background rather than restating the hex here, so
+  // the browser chrome can never disagree with the stylesheet
+  function paintChrome() {
+    if (!meta) return;
+    meta.setAttribute('content', getComputedStyle(document.body).backgroundColor);
+  }
+
+  function apply(theme, remember) {
+    root.setAttribute('data-theme', theme);
+    btn.setAttribute('aria-label',
+      theme === 'light' ? 'Switch to dark theme' : 'Switch to light theme');
+    btn.setAttribute('aria-pressed', theme === 'light' ? 'true' : 'false');
+    paintChrome();
+    if (remember) {
+      // a private window throws on write; the theme must still switch
+      try { localStorage.setItem('theme', theme); } catch (e) {}
+    }
+  }
+
+  apply(root.getAttribute('data-theme') === 'light' ? 'light' : 'dark', false);
+
+  btn.addEventListener('click', function () {
+    apply(root.getAttribute('data-theme') === 'light' ? 'dark' : 'light', true);
+  });
+})();
